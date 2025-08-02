@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بروجرد، پاریس کوچولوی من</title>
+    <meta name="theme-color" content="#4a6fa5">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>بروجرد | پاریس کوچولوی من</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js" defer></script>
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit-code.js" crossorigin="anonymous"></script>
+</head>
+<body class="light-mode">
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-sun light-icon"></i>
+                        <i class="fas fa-moon dark-icon"></i>
+                    </div>
+                </div>
+                <div class="header-center">
+                    <div class="app-title">
+                        <h1>بروجرد</h1>
+                        <p>پاریس کوچولوی من</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell notification-icon"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+
+        
+        <!-- Notification Panel -->
+        <div class="notification-panel">
+            <div class="notification-header">
+                <h3>اعلانات</h3>
+                <button class="close-notifications">&times;</button>
+            </div>
+            <div class="notification-list">
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p>برگزاری مراسم روز بروجرد در پارک شیرین‌پور</p>
+                        <span class="notification-time">2 ساعت پیش</span>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p>قطع آب در منطقه مرکزی شهر از ساعت 10 تا 14</p>
+                        <span class="notification-time">5 ساعت پیش</span>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p>نمایشگاه صنایع دستی در فرهنگسرای بروجرد</p>
+                        <span class="notification-time">1 روز پیش</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Home Section -->
+            <section id="home" class="content-section active">
+                <div class="stories-container">
+                    <div class="stories-wrapper">
+                        <div class="stories">
+                            <!-- Stories will be loaded by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="popular-services">
+                    <div class="section-header">
+                        <h2>خدمات پرکاربرد</h2>
+                        <button class="view-all-btn" id="view-all-services">مشاهده همه</button>
+                    </div>
+                    <div class="services-grid">
+                        <!-- Popular services will be loaded by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="tourism-preview">
+                    <div class="section-header">
+                        <h2>جاذبه‌های گردشگری</h2>
+                        <button class="view-all-btn" id="view-all-tourism">مشاهده همه</button>
+                    </div>
+                    <div class="preview-grid">
+                        <!-- Tourism preview will be loaded by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services" class="content-section">
+                <div class="services-search">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="services-search-input" placeholder="جستجوی خدمات...">
+                    </div>
+                </div>
+                <div class="services-categories">
+                    <!-- Categories will be loaded by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Chatbot Section -->
+            <section id="chatbot" class="content-section">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="chat-title">
+                            <h2>چت بات بروجرد</h2>
+                            <p>سوالات خود را درباره شهر بروجرد بپرسید</p>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="close-chat"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="chat-messages">
+                        <div class="message bot-message">
+                            <div class="message-content">
+                                <p>سلام! من چت بات بروجرد هستم. چطور می‌توانم به شما کمک کنم؟</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" placeholder="پیام خود را بنویسید..." id="chat-input">
+                        <button class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tourism Section -->
+            <section id="tourism" class="content-section">
+                <div class="tourism-header">
+                    <h2>جاذبه‌های گردشگری بروجرد</h2>
+                    <div class="tourism-filter">
+                        <button class="filter-btn active" data-filter="all">همه</button>
+                        <button class="filter-btn" data-filter="historical">تاریخی</button>
+                        <button class="filter-btn" data-filter="natural">طبیعی</button>
+                        <button class="filter-btn" data-filter="religious">مذهبی</button>
+                    </div>
+                </div>
+                <div class="tourism-grid">
+                    <!-- Tourism items will be loaded by JavaScript -->
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="content-section">
+                <div class="about-container">
+                    <div class="about-header">
+                        <img src="images/icons/fava-logo.png" alt="فاوای بروجرد">
+                        <h2>سازمان فناوری اطلاعات و ارتباطات شهرستان بروجرد</h2>
+                    </div>
+                    <div class="about-content">
+                        <div class="about-description">
+                            <p>سازمان فاوا بروجرد با هدف هوشمندسازی شهر و ارائه خدمات دیجیتال به شهروندان تاسیس شده است. این اپلیکیشن یکی از محصولات این سازمان برای خدمت رسانی بهتر به مردم عزیز بروجرد می‌باشد.</p>
+                        </div>
+                        
+                        <div class="about-features">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <h3>خدمات سریع</h3>
+                                <p>دسترسی سریع به تمام خدمات شهری</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h3>امنیت بالا</h3>
+                                <p>اطلاعات شما با امنیت کامل ذخیره می‌شود</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <h3>کاربرپسند</h3>
+                                <p>طراحی زیبا و کاربردی برای همه</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-section">
+                            <h3>راه‌های ارتباطی</h3>
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span>۰۶۶-۴۲۲۵۰۰۰۰</span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>info@fava-borujerd.ir</span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>بروجرد، میدان امام، ساختمان فاوا</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <h3>ما را در شبکه‌های اجتماعی دنبال کنید</h3>
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-telegram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-section="home">
+                <i class="fas fa-home"></i>
+                <span>خانه</span>
+            </button>
+            <button class="nav-btn" data-section="services">
+                <i class="fas fa-concierge-bell"></i>
+                <span>خدمات</span>
+            </button>
+            <button class="nav-btn chat-btn" data-section="chatbot">
+                <div class="chat-bubble">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <span>چت بات</span>
+            </button>
+            <button class="nav-btn" data-section="tourism">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>گردشگری</span>
+            </button>
+            <button class="nav-btn" data-section="about">
+                <i class="fas fa-info-circle"></i>
+                <span>درباره ما</span>
+            </button>
+        </nav>
+
+        <!-- Story Viewer Modal -->
+        <div class="story-modal">
+            <div class="story-viewer">
+                <div class="story-header">
+                    <div class="progress-bars">
+                        <!-- Progress bars will be added by JavaScript -->
+                    </div>
+                    <div class="story-user">
+                        <img src="" alt="User" class="user-avatar">
+                        <div class="user-info">
+                            <span class="username"></span>
+                            <span class="time"></span>
+                        </div>
+                    </div>
+                    <button class="close-story">&times;</button>
+                </div>
+                <div class="story-content">
+                    <img src="" alt="Story" class="story-image">
+                    <div class="story-caption"></div>
+                </div>
+                <div class="story-footer">
+                    <div class="story-actions">
+                        <button class="like-btn">
+                            <i class="far fa-heart"></i>
+                            <span class="like-count">0</span>
+                        </button>
+                        <button class="share-btn">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Modal -->
+        <div class="service-modal">
+            <div class="modal-content">
+                <button class="close-modal">&times;</button>
+                <div class="modal-header">
+                    <img src="" alt="Service Icon" class="service-icon">
+                    <h3 class="service-title"></h3>
+                </div>
+                <div class="modal-body">
+                    <p>این بخش در حال توسعه است و به زودی قابل دسترس خواهد بود.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-ok">متوجه شدم</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tourism Detail Modal -->
+        <div class="tourism-modal">
+            <div class="modal-content">
+                <button class="close-modal">&times;</button>
+                <div class="modal-header">
+                    <img src="" alt="Tourism Image" class="tourism-image">
+                </div>
+                <div class="modal-body">
+                    <h3 class="tourism-title"></h3>
+                    <div class="tourism-type"></div>
+                    <p class="tourism-description"></p>
+                    <div class="tourism-actions">
+                        <button class="btn-direction">
+                            <i class="fas fa-directions"></i>
+                            <span>مسیریابی</span>
+                        </button>
+                        <button class="btn-favorite">
+                            <i class="far fa-heart"></i>
+                            <span>ذخیره</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/theme.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>

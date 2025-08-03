@@ -1,7 +1,7 @@
-// === تنظیم کلید API نشون خودت را جایگزین کن ===
+// === جایگزین کن با کلید API خودت از پنل نشان ===
 const API_KEY = 'web.5dc58996f477487a824e08f9516d1641';
 
-// مختصات مرکز بروجرد برای اعتبارسنجی محدوده
+// محدوده جغرافیایی تقریبی بروجرد (برای اعتبارسنجی کاربر)
 const BOROJERD_BOUNDS = {
     north: 33.9400,
     south: 33.8500,
@@ -9,10 +9,12 @@ const BOROJERD_BOUNDS = {
     west: 48.7000,
 };
 
-let map, userMarker, isochroneLayer;
+let map;
+let userMarker;
+let isochroneLayer;
 const infoDiv = document.getElementById('info');
 
-// ساخت نقشه و تنظیمات اولیه
+// ایجاد نقشه و تنظیمات اولیه
 function initMap(lat, lng) {
     map = L.map('map', {
         center: [lat, lng],
@@ -38,32 +40,32 @@ function initMap(lat, lng) {
     }).addTo(map).bindPopup('موقعیت شما').openPopup();
 }
 
-// نمایش پیام خطا یا اطلاع‌رسانی
+// نمایش پیام به کاربر
 function showInfo(message) {
-    infoDiv.innerText = message;
+    infoDiv.innerHTML = message;
 }
 
-// فراخوانی سرویس ایزکرون (Isochrone) برای محدوده دسترسی
-async function fetchIsochrone(lat, lng, timeMinutes = 10) {
-    const url = `https://api.neshan.org/v2/isochrone`;
-    const body = {
-        point: `${lng},${lat}`,
-        range: timeMinutes * 60,
-        range_type: "time", // زمان به ثانیه
-        vehicle: "car"
-    };
+// اعتبارسنجی داخل محدوده بودن کاربر
+function isInsideBorojerd(lat, lng) {
+    return (lat >= BOROJERD_BOUNDS.south && lat <= BOROJERD_BOUNDS.north) &&
+           (lng >= BOROJERD_BOUNDS.west && lng <= BOROJERD_BOUNDS.east);
+}
 
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Api-Key': API_KEY,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+// فراخوانی سرویس ایزکرون (محدوده دسترسی)
+async function fetchIsochrone(lat, lng, distanceKm = 5, polygon = true) {
+    const url = new URL('https://api.neshan.org/v1/isochrone');
+    url.searchParams.append('location', `${lat},${lng}`);
+    url.searchParams.append('distance', distanceKm);
+    url.searchParams.append('polygon', polygon);
+
+    const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: { 'Api-Key': API_KEY }
     });
 
     if (!response.ok) {
-        throw new Error('خطا در دریافت محدوده دسترسی');
+        const errData = await response.json();
+        throw new Error(`خطا در دریافت محدوده: ${errData.message || response.statusText}`);
     }
 
     const data = await response.json();
@@ -75,37 +77,49 @@ function drawIsochrone(geojson) {
     if (isochroneLayer) {
         map.removeLayer(isochroneLayer);
     }
+
     isochroneLayer = L.geoJSON(geojson, {
         style: {
-            color: '#2196F3',
+            color: '#1e88e5',
+            weight: 3,
             fillColor: '#90caf9',
-            fillOpacity: 0.3,
-            weight: 3
+            fillOpacity: 0.3
         }
     }).addTo(map);
+
+    map.fitBounds(isochroneLayer.getBounds());
 }
 
-// جستجوی بیمارستان‌ها در محدوده مشخص
+// جستجوی بیمارستان‌ها با پارامترهای API نشان (شعاع و کلمه "بیمارستان")
 async function fetchHospitals(lat, lng, radiusMeters = 3000) {
-    const url = `https://api.neshan.org/v1/search?term=بیمارستان&lat=${lat}&lng=${lng}&radius=${radiusMeters}&limit=50`;
-    const response = await fetch(url, {
+    const url = new URL('https://api.neshan.org/v1/search');
+    url.searchParams.append('term', 'بیمارستان');
+    url.searchParams.append('lat', lat);
+    url.searchParams.append('lng', lng);
+    url.searchParams.append('radius', radiusMeters);
+    url.searchParams.append('limit', 50);
+
+    const response = await fetch(url.toString(), {
+        method: 'GET',
         headers: { 'Api-Key': API_KEY }
     });
+
     if (!response.ok) {
-        throw new Error('خطا در دریافت بیمارستان‌ها');
+        throw new Error('خطا در دریافت لیست بیمارستان‌ها');
     }
+
     const data = await response.json();
     return data;
 }
 
-// نمایش بیمارستان‌ها روی نقشه و لیست اطلاعات
+// نمایش بیمارستان‌ها روی نقشه و داخل لیست
 function displayHospitals(hospitals) {
     if (!hospitals || hospitals.length === 0) {
         showInfo('هیچ بیمارستانی در محدوده شما یافت نشد.');
         return;
     }
 
-    // پاک کردن نشانگرهای قبلی (اگر نیاز باشه میشه اضافه کرد)
+    // پاک کردن نشانگرهای قبلی اگر لازم بود (در این نسخه ساده شده)
     hospitals.forEach(hospital => {
         L.marker([hospital.location.lat, hospital.location.lng], {
             icon: L.icon({
@@ -117,19 +131,13 @@ function displayHospitals(hospitals) {
         }).addTo(map).bindPopup(`<b>${hospital.name}</b><br>${hospital.address || ''}`);
     });
 
-    // ساخت لیست بیمارستان‌ها در قسمت info
+    // لیست بیمارستان‌ها
     const listHtml = hospitals.map(h => `<div><strong>${h.name}</strong><br>${h.address || ''}</div>`).join('<hr/>');
     showInfo(listHtml);
 }
 
-// اعتبارسنجی موقعیت در محدوده بروجرد
-function isInsideBorojerd(lat, lng) {
-    return (lat >= BOROJERD_BOUNDS.south && lat <= BOROJERD_BOUNDS.north) &&
-           (lng >= BOROJERD_BOUNDS.west && lng <= BOROJERD_BOUNDS.east);
-}
-
-// شروع فرآیند
-async function start() {
+// شروع اجرای برنامه
+function start() {
     if (!navigator.geolocation) {
         showInfo('مرورگر شما از GPS پشتیبانی نمی‌کند.');
         return;
@@ -147,17 +155,17 @@ async function start() {
         initMap(lat, lng);
 
         try {
-            // گرفتن محدوده دسترسی 10 دقیقه‌ای رانندگی
-            const isochroneData = await fetchIsochrone(lat, lng, 10);
+            // دریافت محدوده دسترسی تا 5 کیلومتر
+            const isochroneData = await fetchIsochrone(lat, lng, 5, true);
             drawIsochrone(isochroneData);
 
-            // جستجوی بیمارستان‌ها در محدوده 3 کیلومتر
-            const hospitalData = await fetchHospitals(lat, lng, 3000);
-            displayHospitals(hospitalData.items);
-        } catch (err) {
-            showInfo(err.message);
+            // دریافت بیمارستان‌ها در شعاع 3 کیلومتر
+            const hospitalsData = await fetchHospitals(lat, lng, 3000);
+            displayHospitals(hospitalsData.items);
+        } catch (error) {
+            showInfo(`خطا: ${error.message}`);
         }
-    }, err => {
+    }, error => {
         showInfo('دسترسی به موقعیت مکانی مسدود شده است.');
     });
 }

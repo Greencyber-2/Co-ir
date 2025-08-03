@@ -206,6 +206,11 @@ function renderChatHistory() {
             dislikeBtn.dataset.index = index;
             dislikeBtn.innerHTML = '<i class="far fa-thumbs-down"></i>';
             
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.dataset.index = index;
+            copyBtn.innerHTML = '<i class="far fa-copy"></i>';
+            
             if (msg.liked === true) {
                 likeBtn.querySelector('i').classList.add('liked');
             } else if (msg.liked === false) {
@@ -214,10 +219,12 @@ function renderChatHistory() {
             
             actionsElement.appendChild(likeBtn);
             actionsElement.appendChild(dislikeBtn);
+            actionsElement.appendChild(copyBtn);
             messageElement.appendChild(actionsElement);
             
             likeBtn.addEventListener('click', () => handleFeedback(index, true));
             dislikeBtn.addEventListener('click', () => handleFeedback(index, false));
+            copyBtn.addEventListener('click', () => copyMessage(index));
         }
         
         chatMessages.appendChild(messageElement);
@@ -229,6 +236,18 @@ function handleFeedback(index, isLike) {
     chatHistory[index].liked = isLike;
     saveChatHistory();
     renderChatHistory();
+}
+
+// Copy message to clipboard
+function copyMessage(index) {
+    const message = chatHistory[index].message;
+    navigator.clipboard.writeText(message).then(() => {
+        const copyBtn = document.querySelector(`.copy-btn[data-index="${index}"] i`);
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+            copyBtn.classList.remove('copied');
+        }, 2000);
+    });
 }
 
 // Save chat history to localStorage

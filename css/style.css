@@ -667,22 +667,26 @@ h2 {
 }
 
 .user-message {
-    align-self: flex-end;
+    align-self: flex-start;
     background-color: var(--primary-color);
     color: white;
     border-bottom-right-radius: 5px;
     margin-right: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    direction: ltr;
 }
 
 .bot-message {
-    align-self: flex-start;
+    align-self: flex-end;
     background-color: var(--card-bg);
     color: var(--text-color);
     border: 1px solid var(--border-color);
     border-bottom-left-radius: 5px;
     margin-left: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: right;
+    direction: rtl;
 }
 
 .message-content {
@@ -692,24 +696,29 @@ h2 {
 
 .message-content p {
     margin: 0;
-    direction: ltr;
-    text-align: right;
 }
 
 .message-time {
     font-size: 0.7rem;
     opacity: 0.7;
     margin-top: 6px;
-    direction: ltr;
-    text-align: right;
+    align-self: flex-start;
 }
 
-/* Message Actions (Like/Dislike) */
+.user-message .message-time {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.bot-message .message-time {
+    color: var(--text-light);
+}
+
+/* Message Actions (Like/Dislike/Copy) */
 .message-actions {
     display: flex;
     gap: 8px;
     margin-top: 10px;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -749,6 +758,16 @@ h2 {
 
 .dislike-btn .fa-thumbs-down.disliked {
     color: var(--danger-color);
+    transform: scale(1.1);
+}
+
+.copy-btn .fa-copy {
+    color: var(--text-light);
+    transition: all 0.2s ease;
+}
+
+.copy-btn .fa-copy.copied {
+    color: var(--primary-color);
     transform: scale(1.1);
 }
 
@@ -1018,7 +1037,6 @@ h2 {
 .dark-mode .message-actions button:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
-
 
 
 

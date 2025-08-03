@@ -78,7 +78,8 @@ function setupChatListeners() {
     });
     
     // Toggle suggestions
-    toggleSuggestionsBtn.addEventListener('click', () => {
+    toggleSuggestionsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         suggestionsContainer.classList.toggle('show');
     });
     
@@ -176,6 +177,11 @@ function hideTypingIndicator() {
 
 // Render chat history
 function renderChatHistory() {
+    // Store scroll position before rendering
+    const wasAtBottom = isScrolledToBottom();
+    const prevScrollHeight = chatMessages.scrollHeight;
+    const prevScrollTop = chatMessages.scrollTop;
+    
     chatMessages.innerHTML = '';
     
     // Show welcome screen if no messages have been sent yet
@@ -230,13 +236,34 @@ function renderChatHistory() {
             actionsElement.appendChild(copyBtn);
             messageContainer.appendChild(actionsElement);
             
-            likeBtn.addEventListener('click', () => handleFeedback(index, true));
-            dislikeBtn.addEventListener('click', () => handleFeedback(index, false));
-            copyBtn.addEventListener('click', () => copyMessage(index));
+            likeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleFeedback(index, true);
+            });
+            dislikeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleFeedback(index, false);
+            });
+            copyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                copyMessage(index);
+            });
         }
         
         chatMessages.appendChild(messageContainer);
     });
+    
+    // Restore scroll position
+    if (!wasAtBottom) {
+        const newScrollHeight = chatMessages.scrollHeight;
+        chatMessages.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+    } else {
+        scrollToBottom();
+    }
+}
+
+function isScrolledToBottom() {
+    return chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 10;
 }
 
 // Handle feedback (like/dislike)

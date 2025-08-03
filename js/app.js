@@ -651,34 +651,10 @@ function toggleLike() {
     likeIcon.style.color = story.liked ? 'var(--danger-color)' : 'var(--white)';
 }
 
-// Open Service Modal
+// در تابع openServiceModal تغییرات زیر را اعمال کنید:
 function openServiceModal(service) {
-    const modal = document.querySelector('.service-modal');
-    const icon = modal.querySelector('.service-icon');
-    const title = modal.querySelector('.service-title');
-    
-    icon.src = `images/service-icons/${service.icon}`;
-    icon.alt = service.name;
-    title.textContent = service.name;
-    
-    modal.style.display = 'flex';
-    
-    // Close modal when clicking outside
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-    
-    // Close button
-    document.querySelector('.service-modal .close-modal').addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-    
-    // OK button
-    document.querySelector('.btn-ok').addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
+    // به جای نمایش مودال، کاربر را به صفحه مربوطه هدایت می‌کنیم
+    window.location.href = `services/${service.id}.html`;
 }
 
 // Filter Services

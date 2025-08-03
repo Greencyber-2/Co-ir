@@ -1,110 +1,23 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بیمارستان‌های نزدیک من</title>
-    <link rel="stylesheet" href="hospital.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Iranian+Sans&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <title>بیمارستان‌های نزدیک - بروجرد</title>
+    <link rel="stylesheet" href="hospital.css" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-hospital"></i> بیمارستان‌های نزدیک من</h1>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="جستجوی بیمارستان...">
-                <button id="search-btn"><i class="fas fa-search"></i></button>
-            </div>
-        </header>
+    <header>
+        <h1>بیمارستان‌های نزدیک شما در بروجرد</h1>
+    </header>
+    <main>
+        <div id="map"></div>
+        <div id="info"></div>
+    </main>
 
-        <main>
-            <div class="map-container">
-                <div id="map"></div>
-                <div class="map-controls">
-                    <button id="locate-btn" title="موقعیت فعلی من">
-                        <i class="fas fa-location-arrow"></i>
-                    </button>
-                    <button id="zoom-in-btn" title="بزرگنمایی">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    <button id="zoom-out-btn" title="کوچکنمایی">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="sidebar">
-                <div class="user-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span id="current-location">در حال دریافت موقعیت...</span>
-                </div>
-                
-                <div class="filter-section">
-                    <h3><i class="fas fa-filter"></i> فیلترها</h3>
-                    <div class="filter-options">
-                        <label>
-                            <input type="checkbox" name="hospital-type" value="public" checked> دولتی
-                        </label>
-                        <label>
-                            <input type="checkbox" name="hospital-type" value="private" checked> خصوصی
-                        </label>
-                        <label>
-                            <input type="checkbox" name="hospital-type" value="specialized" checked> تخصصی
-                        </label>
-                    </div>
-                    <div class="distance-filter">
-                        <label>فاصله (کیلومتر):</label>
-                        <input type="range" id="distance-range" min="1" max="20" value="10">
-                        <span id="distance-value">10</span>
-                    </div>
-                </div>
-
-                <div class="hospitals-list">
-                    <h3><i class="fas fa-list"></i> لیست بیمارستان‌ها</h3>
-                    <div id="hospitals-container">
-                        <div class="loading">
-                            <i class="fas fa-spinner fa-spin"></i> در حال دریافت اطلاعات...
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <footer>
-            <p>© 2023 بیمارستان‌های نزدیک من - تمام حقوق محفوظ است</p>
-            <div class="social-links">
-                <a href="#"><i class="fab fa-telegram"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Hospital Details Modal -->
-    <div id="hospital-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="modal-hospital-name"></h2>
-            <div class="modal-body">
-                <div class="modal-info">
-                    <p><i class="fas fa-map-marker-alt"></i> <span id="modal-hospital-address"></span></p>
-                    <p><i class="fas fa-phone"></i> <span id="modal-hospital-phone"></span></p>
-                    <p><i class="fas fa-star"></i> امتیاز: <span id="modal-hospital-rating"></span></p>
-                    <p><i class="fas fa-clock"></i> ساعت کاری: <span id="modal-hospital-hours"></span></p>
-                    <p><i class="fas fa-info-circle"></i> نوع: <span id="modal-hospital-type"></span></p>
-                    <p><i class="fas fa-road"></i> فاصله: <span id="modal-hospital-distance"></span></p>
-                </div>
-                <div class="modal-actions">
-                    <button id="directions-btn"><i class="fas fa-directions"></i> مسیریابی</button>
-                    <button id="call-btn"><i class="fas fa-phone"></i> تماس</button>
-                    <button id="save-btn"><i class="fas fa-bookmark"></i> ذخیره</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Neshan Maps JS -->
+    <script src="https://static.neshan.org/sdk/leaflet/1.6.0/leaflet.js"></script>
+    <link rel="stylesheet" href="https://static.neshan.org/sdk/leaflet/1.6.0/leaflet.css" />
 
     <script src="hospital.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer></script>
 </body>
 </html>

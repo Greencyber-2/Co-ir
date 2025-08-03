@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateIcons(savedTheme);
     }
 
-    // Toggle Theme on Click
-    themeToggleBtn.addEventListener('click', () => {
+    // Toggle Theme Function
+    function toggleTheme() {
         if (body.classList.contains('dark-mode')) {
             body.classList.remove('dark-mode');
             body.classList.add('light-mode');
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('themeMode', 'dark-mode');
             updateIcons('dark-mode');
         }
-    });
+    }
 
     function updateIcons(mode) {
         if (mode === 'dark-mode') {
@@ -36,4 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             darkIcon.style.display = 'none';
         }
     }
+
+    // Add event listener
+    themeToggleBtn.addEventListener('click', toggleTheme);
 });

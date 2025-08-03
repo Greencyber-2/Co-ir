@@ -1,7 +1,6 @@
 // DOM Elements
 const navButtons = document.querySelectorAll('.nav-btn');
 const contentSections = document.querySelectorAll('.content-section');
-const themeToggle = document.querySelector('.theme-toggle');
 const storiesContainer = document.querySelector('.stories');
 const popularServicesGrid = document.querySelector('.popular-services .services-grid');
 const servicesCategories = document.querySelector('.services-categories');
@@ -444,7 +443,6 @@ function setupEventListeners() {
     });
     
     // Theme toggle
-    themeToggle.addEventListener('click', toggleTheme);
     
     // View all services button
     viewAllServicesBtn.addEventListener('click', () => {

@@ -768,14 +768,17 @@ h2 {
 
 .like-btn.active {
     color: var(--success-color);
+    background-color: rgba(40, 167, 69, 0.1);
 }
 
 .dislike-btn.active {
     color: var(--danger-color);
+    background-color: rgba(220, 53, 69, 0.1);
 }
 
 .copy-btn.copied {
     color: var(--primary-color);
+    background-color: rgba(74, 111, 165, 0.1);
 }
 
 .copy-btn.copied::after {
@@ -851,7 +854,7 @@ h2 {
     align-items: center;
     background-color: var(--input-bg);
     border-radius: 24px;
-    padding: 5px 15px 5px 5px;
+    padding: 5px 5px 5px 15px;
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     direction: rtl;
@@ -888,7 +891,7 @@ h2 {
     padding: 8px;
     border-radius: 50%;
     transition: all 0.3s ease;
-    margin-left: 5px;
+    margin-right: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -911,7 +914,7 @@ h2 {
     cursor: pointer;
     transition: all 0.3s ease;
     flex-shrink: 0;
-    margin-left: 5px;
+    margin-right: 5px;
 }
 
 #send-message-btn:hover {
@@ -1031,6 +1034,18 @@ h2 {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.dark-mode .like-btn.active {
+    background-color: rgba(52, 206, 87, 0.2);
+}
+
+.dark-mode .dislike-btn.active {
+    background-color: rgba(228, 96, 109, 0.2);
+}
+
+.dark-mode .copy-btn.copied {
+    background-color: rgba(109, 143, 199, 0.2);
+}
+
 /* Responsive Adjustments */
 @media (max-width: 480px) {
     .message {
@@ -1042,7 +1057,7 @@ h2 {
     }
     
     .input-container {
-        padding: 5px 10px 5px 5px;
+        padding: 5px 5px 5px 10px;
     }
     
     #send-message-btn {
@@ -1065,6 +1080,21 @@ h2 {
     
     .chatbot-details h3 {
         font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .input-container {
+        padding: 8px 8px 8px 20px;
+    }
+    
+    #send-message-btn {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .toggle-suggestions-btn {
+        font-size: 1.2rem;
     }
 }
 

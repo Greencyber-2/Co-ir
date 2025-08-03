@@ -12,25 +12,42 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="light-mode">
-    <!-- Preloader -->
+    <!-- Preloader Super Premium -->
     <div class="preloader">
+        <div class="preloader-overlay"></div>
         <div class="preloader-container">
-            <div class="preloader-logo">
-                <img src="images/logo.png" alt="بروجرد" class="logo-img">
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill"></div>
-                    </div>
-                    <div class="progress-text">0%</div>
+            <!-- لوگو با انیمیشن 3D -->
+            <div class="logo-3d-container">
+                <div class="logo-3d-inner">
+                    <img src="images/logo.png" alt="بروجرد" class="logo-3d">
                 </div>
             </div>
-            <div class="preloader-animation">
-                <div class="animation-circle"></div>
-                <div class="animation-circle"></div>
-                <div class="animation-circle"></div>
+            
+            <!-- نوار پیشرفت پیشرفته -->
+            <div class="progress-track">
+                <div class="progress-bar">
+                    <div class="progress-fill" data-progress="0"></div>
+                    <div class="progress-dots"></div>
+                </div>
+                <div class="progress-info">
+                    <span class="progress-percent">0%</span>
+                    <span class="progress-status">در حال آماده‌سازی...</span>
+                </div>
             </div>
-            <div class="loading-text">در حال بارگذاری...</div>
-            <div class="loading-subtext">لطفاً چند لحظه صبر کنید</div>
+            
+            <!-- انیمیشن پارتیکل پیشرفته -->
+            <div class="particles-container">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <!-- 15 ذره دیگر در CSS تولید می‌شوند -->
+            </div>
+            
+            <!-- پیام‌های متغیر -->
+            <div class="loading-messages">
+                <p class="current-message">در حال بارگذاری منابع...</p>
+                <p class="tip-message">نکته: این فرآیند فقط یکبار انجام می‌شود</p>
+            </div>
         </div>
     </div>
 

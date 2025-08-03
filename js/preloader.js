@@ -1,124 +1,201 @@
-// preloader.js
-class AdvancedPreloader {
+class UltraPreloader {
     constructor() {
         this.preloader = document.querySelector('.preloader');
-        this.progressBar = document.querySelector('.progress-fill');
-        this.progressText = document.querySelector('.progress-text');
+        this.progressFill = document.querySelector('.progress-fill');
+        this.progressPercent = document.querySelector('.progress-percent');
+        this.progressStatus = document.querySelector('.progress-status');
+        this.currentMessage = document.querySelector('.current-message');
         this.appContainer = document.querySelector('.app-container');
-        this.loadedAssets = 0;
+        
+        this.assets = {
+            images: [],
+            fonts: [],
+            scripts: [],
+            stylesheets: [],
+            videos: [],
+            iframes: []
+        };
+        
+        this.loadedCount = 0;
         this.totalAssets = 0;
-        this.minDisplayTime = 2000; // حداقل زمان نمایش پیش‌لودر (2 ثانیه)
-        this.startTime = Date.now();
+        this.minDisplayTime = 2500; // 2.5 ثانیه حداقل نمایش
+        this.startTime = performance.now();
+        this.messages = [
+            "در حال بارگذاری منابع...",
+            "بهینه‌سازی عملکرد...",
+            "آماده‌سازی رابط کاربری...",
+            "تنظیمات نهایی...",
+            "تقریبا آماده است!"
+        ];
         
         this.init();
     }
     
     init() {
-        // مخفی کردن برنامه اصلی
         this.appContainer.style.display = 'none';
-        
-        // شناسایی منابع برای بارگذاری
-        this.detectAssets();
-        
-        // شروع ردیابی پیشرفت
-        this.trackLoadingProgress();
+        this.detectAllAssets();
+        this.setupEventListeners();
+        this.updateLoadingMessage();
+        this.startProgressAnimation();
     }
     
-    detectAssets() {
-        // تصاویر
-        const images = document.querySelectorAll('img');
-        // فونت‌ها
-        const fonts = Array.from(document.fonts);
-        // فایل‌های خارجی
-        const scripts = document.querySelectorAll('script[src]');
-        const stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+    detectAllAssets() {
+        // تشخیص تمام منابع
+        this.assets.images = Array.from(document.querySelectorAll('img')).filter(img => !img.hasAttribute('data-skip-preload'));
+        this.assets.fonts = Array.from(document.fonts);
+        this.assets.scripts = Array.from(document.querySelectorAll('script[src]'));
+        this.assets.stylesheets = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+        this.assets.videos = Array.from(document.querySelectorAll('video source'));
+        this.assets.iframes = Array.from(document.querySelectorAll('iframe'));
         
-        this.totalAssets = images.length + fonts.length + scripts.length + stylesheets.length + 1; // +1 برای خود صفحه
+        // محاسبه کل منابع
+        this.totalAssets = 
+            this.assets.images.length +
+            this.assets.fonts.length +
+            this.assets.scripts.length +
+            this.assets.stylesheets.length +
+            this.assets.videos.length +
+            this.assets.iframes.length +
+            3; // +3 برای DOMContentLoaded, window.load, و یک حاشیه امنیت
         
-        // اگر هیچ منبعی پیدا نشد
-        if (this.totalAssets === 1) {
-            this.totalAssets = 5; // مقدار پیش‌فرض برای نمایش روان
-        }
+        if (this.totalAssets < 10) this.totalAssets = 10;
     }
     
-    trackLoadingProgress() {
-        // ردیابی بارگذاری تصاویر
-        document.querySelectorAll('img').forEach(img => {
-            if (img.complete) {
-                this.assetLoaded();
-            } else {
+    setupEventListeners() {
+        // ردیابی تصاویر
+        this.assets.images.forEach(img => {
+            if (img.complete) this.assetLoaded();
+            else {
                 img.addEventListener('load', () => this.assetLoaded());
                 img.addEventListener('error', () => this.assetLoaded());
             }
         });
         
-        // ردیابی بارگذاری فونت‌ها
+        // ردیابی فونت‌ها
         document.fonts.ready.then(() => {
-            this.assetLoaded();
+            this.assetLoaded('فونت‌ها بارگذاری شدند');
         });
         
-        // ردیابی بارگذاری DOM
+        // ردیابی DOM
         document.addEventListener('DOMContentLoaded', () => {
-            this.assetLoaded();
+            this.assetLoaded('DOM آماده است');
         });
         
-        // ردیابی بارگذاری کامل صفحه
+        // ردیابی بارگذاری کامل
         window.addEventListener('load', () => {
-            this.assetLoaded(true);
+            this.assetLoaded('بارگذاری کامل شد', true);
+        });
+        
+        // ردیابی اسکریپت‌ها و استایل‌شیت‌ها
+        this.assets.scripts.forEach(script => {
+            script.addEventListener('load', () => this.assetLoaded());
+            script.addEventListener('error', () => this.assetLoaded());
+        });
+        
+        this.assets.stylesheets.forEach(link => {
+            link.addEventListener('load', () => this.assetLoaded());
+            link.addEventListener('error', () => this.assetLoaded());
         });
     }
     
-    assetLoaded(isFinal = false) {
-        this.loadedAssets++;
+    assetLoaded(message = '', isFinal = false) {
+        this.loadedCount++;
+        const progress = Math.min(100, Math.round((this.loadedCount / this.totalAssets)) * 100);
         
-        // محاسبه درصد پیشرفت
-        let progress = Math.min(100, Math.round((this.loadedAssets / this.totalAssets)) * 100);
+        // به‌روزرسانی UI
+        this.updateProgress(progress);
         
-        // به‌روزرسانی نوار پیشرفت
-        this.progressBar.style.width = `${progress}%`;
-        this.progressText.textContent = `${progress}%`;
+        if (message) {
+            this.showStatusMessage(message);
+        }
         
-        // اگر بارگذاری کامل شد یا به 100% رسیدیم
         if (isFinal || progress >= 100) {
             this.finishLoading();
         }
     }
     
-    finishLoading() {
-        const elapsedTime = Date.now() - this.startTime;
-        const remainingTime = Math.max(0, this.minDisplayTime - elapsedTime);
+    updateProgress(percent) {
+        this.progressFill.style.width = `${percent}%`;
+        this.progressFill.setAttribute('data-progress', percent);
+        this.progressPercent.textContent = `${percent}%`;
+        
+        // تغییر رنگ بر اساس پیشرفت
+        if (percent < 30) {
+            this.progressFill.style.background = 'linear-gradient(90deg, #ff5f6d, #ffc371)';
+        } else if (percent < 70) {
+            this.progressFill.style.background = 'linear-gradient(90deg, #2193b0, #6dd5ed)';
+        } else {
+            this.progressFill.style.background = 'linear-gradient(90deg, #11998e, #38ef7d)';
+        }
+    }
+    
+    showStatusMessage(message) {
+        this.progressStatus.textContent = message;
+        this.progressStatus.style.opacity = '1';
         
         setTimeout(() => {
-            // انیمیشن محو شدن
+            this.progressStatus.style.opacity = '0.7';
+        }, 2000);
+    }
+    
+    updateLoadingMessage() {
+        let counter = 0;
+        setInterval(() => {
+            this.currentMessage.textContent = this.messages[counter % this.messages.length];
+            counter++;
+        }, 3000);
+    }
+    
+    startProgressAnimation() {
+        // پیشرفت اولیه برای منابعی که سریع بارگذاری می‌شوند
+        let fakeProgress = 0;
+        const fakeInterval = setInterval(() => {
+            if (fakeProgress < 20) {
+                fakeProgress += 1;
+                const currentProgress = parseInt(this.progressFill.getAttribute('data-progress'));
+                if (currentProgress < 20) {
+                    this.updateProgress(fakeProgress);
+                }
+            } else {
+                clearInterval(fakeInterval);
+            }
+        }, 100);
+    }
+    
+    finishLoading() {
+        const elapsed = performance.now() - this.startTime;
+        const remaining = Math.max(0, this.minDisplayTime - elapsed);
+        
+        setTimeout(() => {
             this.preloader.classList.add('fade-out');
             
-            // نمایش برنامه اصلی پس از اتمام انیمیشن
             setTimeout(() => {
                 this.preloader.style.display = 'none';
                 this.appContainer.style.display = 'block';
-                
-                // انیمیشن ظاهر شدن برنامه
-                this.appContainer.style.opacity = '0';
-                this.appContainer.style.animation = 'appFadeIn 0.8s ease forwards';
-                
-                // اضافه کردن انیمیشن به style در صورت عدم وجود
-                if (!document.querySelector('style#app-animation')) {
-                    const style = document.createElement('style');
-                    style.id = 'app-animation';
-                    style.textContent = `
-                        @keyframes appFadeIn {
-                            from { opacity: 0; transform: translateY(20px); }
-                            to { opacity: 1; transform: translateY(0); }
-                        }
-                    `;
-                    document.head.appendChild(style);
-                }
-            }, 800);
-        }, remainingTime);
+                this.animateAppEntry();
+            }, 1000);
+        }, remaining);
+    }
+    
+    animateAppEntry() {
+        this.appContainer.style.opacity = '0';
+        this.appContainer.style.transform = 'translateY(20px)';
+        this.appContainer.style.animation = 'appEntry 1s ease forwards';
+        
+        // ایجاد keyframe دینامیک
+        const style = document.createElement('style');
+        style.id = 'app-entry-animation';
+        style.textContent = `
+            @keyframes appEntry {
+                0% { opacity: 0; transform: translateY(20px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
     }
 }
 
-// راه‌اندازی پیش‌لودر زمانی که DOM آماده است
+// راه‌اندازی زمانی که DOM آماده است
 document.addEventListener('DOMContentLoaded', () => {
-    new AdvancedPreloader();
+    new UltraPreloader();
 });

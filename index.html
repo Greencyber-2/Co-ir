@@ -12,21 +12,29 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="light-mode">
-    <!-- Preloader Super Premium -->
+    <!-- Preloader Ultra Modern -->
     <div class="preloader">
-        <div class="preloader-overlay"></div>
-        <div class="preloader-container">
-            <!-- لوگو با انیمیشن 3D -->
-            <div class="logo-3d-container">
-                <div class="logo-3d-inner">
-                    <img src="images/logo.png" alt="بروجرد" class="logo-3d">
+        <div class="preloader-background">
+            <div class="gradient-overlay"></div>
+            <div class="particles-container"></div>
+        </div>
+        
+        <div class="preloader-content">
+            <!-- لوگو با انیمیشن مدرن -->
+            <div class="logo-wrapper">
+                <div class="logo-circle">
+                    <svg class="logo-circle-svg" viewBox="0 0 200 200">
+                        <circle class="circle-bg" cx="100" cy="100" r="90" />
+                        <circle class="circle-progress" cx="100" cy="100" r="90" />
+                    </svg>
+                    <img src="images/logo.png" alt="بروجرد" class="logo-img">
                 </div>
             </div>
             
             <!-- نوار پیشرفت پیشرفته -->
-            <div class="progress-track">
-                <div class="progress-bar">
-                    <div class="progress-fill" data-progress="0"></div>
+            <div class="progress-container">
+                <div class="progress-track">
+                    <div class="progress-fill"></div>
                     <div class="progress-dots"></div>
                 </div>
                 <div class="progress-info">
@@ -35,21 +43,16 @@
                 </div>
             </div>
             
-            <!-- انیمیشن پارتیکل پیشرفته -->
-            <div class="particles-container">
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <!-- 15 ذره دیگر در CSS تولید می‌شوند -->
-            </div>
-            
-            <!-- پیام‌های متغیر -->
+            <!-- پیام‌های هوشمند -->
             <div class="loading-messages">
-                <p class="current-message">در حال بارگذاری منابع...</p>
-                <p class="tip-message">نکته: این فرآیند فقط یکبار انجام می‌شود</p>
+                <p class="current-message">در حال بارگذاری...</p>
+                <p class="tip-message">بروجرد | پاریس کوچولوی ایران</p>
             </div>
         </div>
     </div>
+
+
+
 
     <div class="app-container">
         <!-- Header -->

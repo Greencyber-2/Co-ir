@@ -1,62 +1,68 @@
-class UltraPreloader {
+class UltraModernPreloader {
     constructor() {
         this.preloader = document.querySelector('.preloader');
         this.progressFill = document.querySelector('.progress-fill');
+        this.circleProgress = document.querySelector('.circle-progress');
         this.progressPercent = document.querySelector('.progress-percent');
         this.progressStatus = document.querySelector('.progress-status');
         this.currentMessage = document.querySelector('.current-message');
-        this.appContainer = document.querySelector('.app-container');
+        this.tipMessage = document.querySelector('.tip-message');
         
         this.assets = {
             images: [],
             fonts: [],
             scripts: [],
             stylesheets: [],
-            videos: [],
-            iframes: []
+            videos: []
         };
         
         this.loadedCount = 0;
         this.totalAssets = 0;
-        this.minDisplayTime = 2500; // 2.5 ثانیه حداقل نمایش
+        this.minDisplayTime = 2500;
         this.startTime = performance.now();
-        this.messages = [
+        
+        this.loadingMessages = [
             "در حال بارگذاری منابع...",
             "بهینه‌سازی عملکرد...",
             "آماده‌سازی رابط کاربری...",
             "تنظیمات نهایی...",
-            "تقریبا آماده است!"
+            "آماده نمایش..."
+        ];
+        
+        this.tips = [
+            "بروجرد به پاریس کوچولو معروف است",
+            "مسجد جامع بروجرد یکی از قدیمی‌ترین مساجد ایران است",
+            "تالاب بیشه دالان از جاذبه‌های طبیعی بروجرد است",
+            "بروجرد مرکز تولید محصولات کشاورزی در استان لرستان است",
+            "امامزاده قاسم از زیارتگاه‌های مهم بروجرد است"
         ];
         
         this.init();
     }
     
     init() {
-        this.appContainer.style.display = 'none';
+        document.body.style.overflow = 'hidden';
         this.detectAllAssets();
         this.setupEventListeners();
-        this.updateLoadingMessage();
-        this.startProgressAnimation();
+        this.startMessageRotation();
+        this.startTipRotation();
+        this.startInitialProgress();
     }
     
     detectAllAssets() {
-        // تشخیص تمام منابع
-        this.assets.images = Array.from(document.querySelectorAll('img')).filter(img => !img.hasAttribute('data-skip-preload'));
+        this.assets.images = Array.from(document.querySelectorAll('img'));
         this.assets.fonts = Array.from(document.fonts);
         this.assets.scripts = Array.from(document.querySelectorAll('script[src]'));
         this.assets.stylesheets = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
         this.assets.videos = Array.from(document.querySelectorAll('video source'));
-        this.assets.iframes = Array.from(document.querySelectorAll('iframe'));
         
-        // محاسبه کل منابع
         this.totalAssets = 
             this.assets.images.length +
             this.assets.fonts.length +
             this.assets.scripts.length +
             this.assets.stylesheets.length +
             this.assets.videos.length +
-            this.assets.iframes.length +
-            3; // +3 برای DOMContentLoaded, window.load, و یک حاشیه امنیت
+            3; // +3 برای DOMContentLoaded, window.load و حاشیه امنیت
         
         if (this.totalAssets < 10) this.totalAssets = 10;
     }
@@ -100,9 +106,8 @@ class UltraPreloader {
     
     assetLoaded(message = '', isFinal = false) {
         this.loadedCount++;
-        const progress = Math.min(100, Math.round((this.loadedCount / this.totalAssets)) * 100);
+        const progress = Math.min(100, Math.round((this.loadedCount / this.totalAssets) * 100));
         
-        // به‌روزرسانی UI
         this.updateProgress(progress);
         
         if (message) {
@@ -115,17 +120,27 @@ class UltraPreloader {
     }
     
     updateProgress(percent) {
+        // نوار پیشرفت خطی
         this.progressFill.style.width = `${percent}%`;
-        this.progressFill.setAttribute('data-progress', percent);
+        
+        // نوار پیشرفت دایره‌ای
+        const circumference = 565; // 2 * π * r (r=90)
+        const offset = circumference - (percent / 100) * circumference;
+        this.circleProgress.style.strokeDashoffset = offset;
+        
+        // درصد عددی
         this.progressPercent.textContent = `${percent}%`;
         
         // تغییر رنگ بر اساس پیشرفت
         if (percent < 30) {
-            this.progressFill.style.background = 'linear-gradient(90deg, #ff5f6d, #ffc371)';
+            this.progressFill.style.background = 'linear-gradient(90deg, var(--warning), var(--accent))';
+            this.circleProgress.style.stroke = 'var(--warning)';
         } else if (percent < 70) {
-            this.progressFill.style.background = 'linear-gradient(90deg, #2193b0, #6dd5ed)';
+            this.progressFill.style.background = 'linear-gradient(90deg, var(--accent), var(--primary))';
+            this.circleProgress.style.stroke = 'var(--accent)';
         } else {
-            this.progressFill.style.background = 'linear-gradient(90deg, #11998e, #38ef7d)';
+            this.progressFill.style.background = 'linear-gradient(90deg, var(--primary), var(--success))';
+            this.circleProgress.style.stroke = 'var(--success)';
         }
     }
     
@@ -138,28 +153,37 @@ class UltraPreloader {
         }, 2000);
     }
     
-    updateLoadingMessage() {
+    startMessageRotation() {
         let counter = 0;
         setInterval(() => {
-            this.currentMessage.textContent = this.messages[counter % this.messages.length];
+            this.currentMessage.textContent = this.loadingMessages[counter % this.loadingMessages.length];
             counter++;
         }, 3000);
     }
     
-    startProgressAnimation() {
-        // پیشرفت اولیه برای منابعی که سریع بارگذاری می‌شوند
+    startTipRotation() {
+        let counter = 0;
+        setInterval(() => {
+            this.tipMessage.textContent = this.tips[counter % this.tips.length];
+            counter++;
+        }, 5000);
+    }
+    
+    startInitialProgress() {
+        // پیشرفت اولیه برای بهبود UX
         let fakeProgress = 0;
-        const fakeInterval = setInterval(() => {
-            if (fakeProgress < 20) {
-                fakeProgress += 1;
-                const currentProgress = parseInt(this.progressFill.getAttribute('data-progress'));
-                if (currentProgress < 20) {
-                    this.updateProgress(fakeProgress);
-                }
-            } else {
-                clearInterval(fakeInterval);
+        const interval = setInterval(() => {
+            fakeProgress += Math.random() * 5;
+            if (fakeProgress >= 20) {
+                clearInterval(interval);
+                return;
             }
-        }, 100);
+            
+            const currentProgress = parseInt(this.progressPercent.textContent);
+            if (currentProgress < 20) {
+                this.updateProgress(fakeProgress);
+            }
+        }, 200);
     }
     
     finishLoading() {
@@ -171,31 +195,35 @@ class UltraPreloader {
             
             setTimeout(() => {
                 this.preloader.style.display = 'none';
-                this.appContainer.style.display = 'block';
-                this.animateAppEntry();
-            }, 1000);
+                document.body.style.overflow = '';
+                this.showAppContent();
+            }, 800);
         }, remaining);
     }
     
-    animateAppEntry() {
-        this.appContainer.style.opacity = '0';
-        this.appContainer.style.transform = 'translateY(20px)';
-        this.appContainer.style.animation = 'appEntry 1s ease forwards';
+    showAppContent() {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        
+        // انیمیشن ظاهر شدن محتوا
+        document.querySelector('.app-container').style.animation = 'appFadeIn 0.8s ease forwards';
         
         // ایجاد keyframe دینامیک
-        const style = document.createElement('style');
-        style.id = 'app-entry-animation';
-        style.textContent = `
-            @keyframes appEntry {
-                0% { opacity: 0; transform: translateY(20px); }
-                100% { opacity: 1; transform: translateY(0); }
-            }
-        `;
-        document.head.appendChild(style);
+        if (!document.querySelector('#app-fade-animation')) {
+            const style = document.createElement('style');
+            style.id = 'app-fade-animation';
+            style.textContent = `
+                @keyframes appFadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
 }
 
-// راه‌اندازی زمانی که DOM آماده است
+// راه‌اندازی پیش‌لودر
 document.addEventListener('DOMContentLoaded', () => {
-    new UltraPreloader();
+    new UltraModernPreloader();
 });

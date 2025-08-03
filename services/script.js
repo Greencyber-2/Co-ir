@@ -1,55 +1,62 @@
-// مرکز بروجرد
-const center = L.latLng(33.8972, 48.7516);
-const radius = 10000; // شعاع به متر (10 کیلومتر)
+const map = L.map('map').setView([33.8972, 48.7516], 14);
 
-const map = L.map('map', {
-    minZoom: 13,
-    maxZoom: 18
-}).setView(center, 14);
-
-// بارگذاری نقشه
+// بارگذاری مپ از OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
+    attribution: '© OpenStreetMap'
 }).addTo(map);
 
-// دایره محدوده بروجرد روی نقشه
-L.circle(center, { radius: radius, color: 'blue', fillOpacity: 0.1 }).addTo(map);
+// نمایش دایره محدوده 10 کیلومتری بروجرد (اختیاری)
+const center = L.latLng(33.8972, 48.7516);
+L.circle(center, { radius: 10000, color: 'blue', fillOpacity: 0.05 }).addTo(map);
 
-// گرفتن مکان کاربر
+// پیام روی صفحه
+const messageDiv = document.getElementById('message');
+
+// نمایش پیام
+function showMessage(text, duration = 4000) {
+    messageDiv.innerText = text;
+    messageDiv.style.display = 'block';
+    setTimeout(() => messageDiv.style.display = 'none', duration);
+}
+
+// تابع اصلی: گرفتن GPS و نمایش رستوران‌های نزدیک
 if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
+    navigator.geolocation.getCurrentPosition(async position => {
         const userLatLng = L.latLng(position.coords.latitude, position.coords.longitude);
 
-        // چک کردن فاصله کاربر تا مرکز بروجرد
-        if (userLatLng.distanceTo(center) <= radius) {
-            L.marker(userLatLng).addTo(map)
-              .bindPopup("موقعیت شما")
-              .openPopup();
-            map.setView(userLatLng, 15);
+        L.marker(userLatLng, { icon: L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", iconSize: [30, 30] }) })
+         .addTo(map)
+         .bindPopup("موقعیت شما")
+         .openPopup();
 
-            // مکان‌های نزدیک رو لود کن
-            fetch('places.json')
-                .then(response => response.json())
-                .then(places => {
-                    places.forEach(place => {
-                        const placeLatLng = L.latLng(place.lat, place.lng);
-                        if (userLatLng.distanceTo(placeLatLng) <= 1000) { // 1km
-                            L.marker([place.lat, place.lng]).addTo(map)
-                              .bindPopup(`<b>${place.name}</b><br>دسته: ${place.type}`);
-                        }
-                    });
-                });
+        map.setView(userLatLng, 15);
+        showMessage("رستوران‌های نزدیک شما...");
 
-        } else {
-            document.getElementById('message').innerText = "شما خارج از محدوده بروجرد هستید.";
-            document.getElementById('message').style.display = 'block';
+        // دریافت لیست رستوران‌ها از JSON
+        const response = await fetch('restaurants.json');
+        const restaurants = await response.json();
+
+        let found = false;
+
+        restaurants.forEach(rest => {
+            const restLatLng = L.latLng(rest.lat, rest.lng);
+            const distance = userLatLng.distanceTo(restLatLng);
+
+            if (distance <= 2000) {  // فاصله زیر 2km
+                found = true;
+                L.marker([rest.lat, rest.lng], { icon: L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", iconSize: [30, 30] }) })
+                 .addTo(map)
+                 .bindPopup(`<b>${rest.name}</b><br>فاصله: ${Math.round(distance)} متر`);
+            }
+        });
+
+        if (!found) {
+            showMessage("هیچ رستورانی در ۲ کیلومتری شما یافت نشد.");
         }
 
     }, () => {
-        document.getElementById('message').innerText = "دسترسی به موقعیت مکانی مسدود شده است.";
-        document.getElementById('message').style.display = 'block';
+        showMessage("دسترسی به موقعیت مسدود شده است.");
     });
 } else {
-    document.getElementById('message').innerText = "مرورگر شما GPS را پشتیبانی نمی‌کند.";
-    document.getElementById('message').style.display = 'block';
+    showMessage("مرورگر شما GPS را پشتیبانی نمی‌کند.");
 }

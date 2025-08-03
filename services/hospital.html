@@ -1,21 +1,66 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <title>بیمارستان‌های نزدیک - بروجرد</title>
-    <link rel="stylesheet" href="hospital.css" />
-    <link rel="stylesheet" href="https://static.neshan.org/sdk/leaflet/1.6.0/leaflet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیدا کردن بیمارستان‌های نزدیک</title>
+    <link rel="stylesheet" href="hospital.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <h1>بیمارستان‌های نزدیک شما در بروجرد</h1>
-    </header>
-    <main>
-        <div id="map"></div>
-        <div id="info"></div>
-    </main>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-hospital"></i> بیمارستان‌های نزدیک شما</h1>
+            <p>با استفاده از موقعیت فعلی شما، نزدیک‌ترین بیمارستان‌ها را پیدا می‌کنیم</p>
+        </header>
 
-    <script src="https://static.neshan.org/sdk/leaflet/1.6.0/leaflet.js"></script>
+        <div class="controls">
+            <div class="input-group">
+                <label for="range-type">نوع محدوده:</label>
+                <select id="range-type">
+                    <option value="distance">مسافت (کیلومتر)</option>
+                    <option value="time">زمان (دقیقه)</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="range-value">محدوده:</label>
+                <input type="number" id="range-value" min="1" max="50" value="5">
+                <span id="range-unit">کیلومتر</span>
+            </div>
+            
+            <button id="find-hospitals" class="btn-primary">
+                <i class="fas fa-search-location"></i> پیدا کردن بیمارستان‌ها
+            </button>
+            
+            <button id="current-location" class="btn-secondary">
+                <i class="fas fa-location-arrow"></i> موقعیت فعلی من
+            </button>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="map-overlay">
+                <div id="loader" class="loader hidden">
+                    <div class="spinner"></div>
+                    <p>در حال دریافت اطلاعات...</p>
+                </div>
+                <div id="error-message" class="error-message hidden"></div>
+            </div>
+        </div>
+
+        <div class="results">
+            <h2><i class="fas fa-list"></i> لیست بیمارستان‌ها</h2>
+            <div id="hospital-list" class="hospital-list"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>استفاده از سرویس نقشه نشان | توسعه داده شده با <i class="fas fa-heart"></i></p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="hospital.js"></script>
 </body>
 </html>

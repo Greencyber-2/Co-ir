@@ -2,6 +2,7 @@
 const chatBtn = document.querySelector('.chat-btn');
 const chatbotContainer = document.querySelector('.chatbot-container');
 const backBtn = document.querySelector('.back-btn');
+const welcomeBackBtn = document.querySelector('.welcome-back-btn'); // اضافه شد
 const chatHeader = document.getElementById('chatHeader');
 const chatMessages = document.querySelector('.chatbot-messages');
 const chatInput = document.getElementById('chatbot-input-field');
@@ -52,13 +53,9 @@ function setupChatListeners() {
         scrollToBottom();
     });
     
-    // Close chat
-    backBtn.addEventListener('click', () => {
-        document.querySelector('#chatbot').classList.remove('active');
-        document.body.style.overflow = '';
-        switchSection('home');
-        setActiveNavButton(document.querySelector('.nav-btn[data-section="home"]'));
-    });
+    // Close chat (both back buttons)
+    backBtn.addEventListener('click', closeChat);
+    welcomeBackBtn.addEventListener('click', closeChat);
     
     // Send message on Enter key
     chatInput.addEventListener('keypress', (e) => {
@@ -113,6 +110,14 @@ function setupChatListeners() {
             suggestionsContainer.classList.remove('show');
         }
     });
+}
+
+// Close chat function (used by both back buttons)
+function closeChat() {
+    document.querySelector('#chatbot').classList.remove('active');
+    document.body.style.overflow = '';
+    switchSection('home');
+    setActiveNavButton(document.querySelector('.nav-btn[data-section="home"]'));
 }
 
 // Send message to chatbot
@@ -347,6 +352,23 @@ async function sendToChatbotAPI(message) {
         hideTypingIndicator();
         addMessage('bot', `خطا در دریافت پاسخ: ${error.message}`);
     }
+}
+
+// Switch between sections
+function switchSection(sectionId) {
+    const contentSections = document.querySelectorAll('.content-section');
+    contentSections.forEach(section => {
+        section.classList.toggle('active', section.id === sectionId);
+    });
+    window.scrollTo(0, 0);
+}
+
+// Set active nav button
+function setActiveNavButton(activeButton) {
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(button => {
+        button.classList.toggle('active', button === activeButton);
+    });
 }
 
 // Initialize chat when DOM is loaded

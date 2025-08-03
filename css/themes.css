@@ -16,7 +16,7 @@
     --text-color: #212529;
     --text-light: #6c757d;
     --card-bg: #ffffff;
-    --message-bg: #f5f7fa; /* رنگ جدید برای پیام‌های چت بات */
+    --message-bg: #f5f7fa;
     --border-color: #e9ecef;
     --nav-bg: #ffffff;
     --input-bg: #f8f9fa;
@@ -49,7 +49,7 @@
     --text-color: #f8f9fa;
     --text-light: #adb5bd;
     --card-bg: #2c2c2c;
-    --message-bg: #3a3a3a; /* رنگ جدید برای پیام‌های چت بات */
+    --message-bg: #3a3a3a;
     --border-color: #444;
     --nav-bg: #2c2c2c;
     --input-bg: #3a3a3a;

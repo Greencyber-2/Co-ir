@@ -632,10 +632,12 @@ h2 {
     background-color: var(--card-bg);
     border-radius: 18px;
     padding: 15px;
-    margin-bottom: 10px;
+    margin: auto;
+    max-width: 85%;
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     animation: fadeIn 0.4s ease;
+    text-align: center;
 }
 
 .welcome-message .message-content p:first-child {
@@ -659,6 +661,8 @@ h2 {
     animation: fadeIn 0.3s ease;
     line-height: 1.6;
     word-break: break-word;
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes fadeIn {
@@ -687,6 +691,7 @@ h2 {
 
 .message-content {
     font-size: 0.95rem;
+    margin-bottom: 4px;
 }
 
 .message-content p {
@@ -699,48 +704,66 @@ h2 {
     font-size: 0.7rem;
     opacity: 0.7;
     margin-top: 6px;
-    text-align: left;
-    direction: ltr;
 }
 
 .user-message .message-time {
     color: rgba(255, 255, 255, 0.7);
-    text-align: right;
+    align-self: flex-end;
+    direction: ltr;
+}
+
+.bot-message .message-time {
+    color: var(--text-light);
+    align-self: flex-start;
     direction: rtl;
 }
 
 /* Message Actions (Like/Dislike) */
 .message-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-top: 10px;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .message-actions button {
-    background: none;
+    background-color: rgba(0, 0, 0, 0.05);
     border: none;
+    border-radius: 50px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 0.9rem;
-    opacity: 0.6;
     transition: all 0.2s ease;
     color: var(--text-light);
-    padding: 4px;
 }
 
 .message-actions button:hover {
-    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.1);
     transform: scale(1.1);
+}
+
+.like-btn .fa-thumbs-up {
+    color: var(--text-light);
+    transition: all 0.2s ease;
 }
 
 .like-btn .fa-thumbs-up.liked {
     color: var(--success-color);
-    opacity: 1;
+    transform: scale(1.1);
+}
+
+.dislike-btn .fa-thumbs-down {
+    color: var(--text-light);
+    transition: all 0.2s ease;
 }
 
 .dislike-btn .fa-thumbs-down.disliked {
     color: var(--danger-color);
-    opacity: 1;
+    transform: scale(1.1);
 }
 
 /* Typing Indicator */
@@ -785,7 +808,7 @@ h2 {
 
 /* Chat Input Area */
 .chatbot-input {
-    padding: 12px 15px;
+    padding: 15px;
     background-color: var(--card-bg);
     border-top: 1px solid var(--border-color);
     position: relative;
@@ -798,7 +821,7 @@ h2 {
     border-radius: 24px;
     padding: 5px 15px 5px 5px;
     border: 1px solid var(--border-color);
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
     direction: rtl;
 }
 
@@ -857,42 +880,62 @@ h2 {
     animation: fadeIn 0.4s ease;
 }
 
-.suggestions-container p {
+.suggestions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.suggestions-header span {
     font-size: 0.8rem;
     color: var(--text-light);
-    margin-bottom: 8px;
-    text-align: right;
+}
+
+.suggestions-scroll-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.suggestions-scroll-buttons button {
+    background-color: var(--light-gray);
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-light);
+    font-size: 0.7rem;
+}
+
+.suggestions-scroll-buttons button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.suggestions-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
 }
 
 .suggestions {
     display: flex;
-    overflow-x: auto;
     gap: 8px;
+    transition: transform 0.3s ease;
+    width: max-content;
     padding-bottom: 5px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary-color) var(--light-gray);
-    direction: rtl;
-}
-
-.suggestions::-webkit-scrollbar {
-    height: 4px;
-}
-
-.suggestions::-webkit-scrollbar-track {
-    background: var(--light-gray);
-    border-radius: 2px;
-}
-
-.suggestions::-webkit-scrollbar-thumb {
-    background-color: var(--primary-color);
-    border-radius: 2px;
 }
 
 .suggestion-btn {
     background-color: var(--light-gray);
     border: none;
     border-radius: 16px;
-    padding: 6px 12px;
+    padding: 8px 12px;
     font-size: 0.8rem;
     color: var(--primary-color);
     cursor: pointer;
@@ -980,21 +1023,13 @@ h2 {
     background-color: var(--input-bg);
 }
 
-/* Loading dots animation */
-.typing-indicator::after {
-    content: '...';
-    display: inline-block;
-    width: 1em;
-    text-align: left;
-    animation: typingDots 1.5s infinite;
+.dark-mode .message-actions button {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-@keyframes typingDots {
-    0%, 20% { content: '.'; }
-    40% { content: '..'; }
-    60%, 100% { content: '...'; }
+.dark-mode .message-actions button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
-
 
 
 

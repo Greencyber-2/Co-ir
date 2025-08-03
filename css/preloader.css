@@ -9,146 +9,38 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: opacity 0.8s ease, visibility 0.8s ease;
-}
-
-.preloader-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-    text-align: center;
-    max-width: 90%;
-    padding: 20px;
+    transition: opacity 0.5s ease;
 }
 
 .preloader-logo {
-    width: 150px;
-    height: 150px;
-    position: relative;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    transition: transform 0.3s ease;
+    gap: 20px;
 }
 
 .preloader-logo img {
-    width: 100%;
+    width: 120px;
     height: auto;
-    object-fit: contain;
-    transition: transform 0.3s ease;
+    opacity: 0.9;
 }
 
-.preloader-text {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.preloader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(74, 111, 165, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
 }
 
-.preloader-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-    animation: fadeIn 1s ease;
-}
-
-.preloader-subtitle {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    animation: fadeIn 1.5s ease;
-}
-
-.loading-bar {
-    width: 100%;
-    max-width: 300px;
-    height: 8px;
-    background-color: var(--light-gray);
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.loading-progress {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    border-radius: 10px;
-    transition: width 0.3s ease;
-}
-
-.loading-percentage {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    margin-top: 8px;
-    animation: fadeIn 2s ease;
-}
-
-.loading-tips {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    font-style: italic;
-    max-width: 300px;
-    opacity: 0.8;
-    transition: opacity 0.5s ease;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Animations */
-@keyframes pulse {
-    0% { transform: scale(0.95); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .preloader.fade-out {
     opacity: 0;
-    visibility: hidden;
-}
-
-/* Loading wave effect */
-.loading-wave {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100px;
-    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%234a6fa5"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="%234a6fa5"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%234a6fa5"/></svg>');
-    background-size: cover;
-    background-repeat: no-repeat;
-    animation: wave 3s linear infinite;
-    opacity: 0.3;
-}
-
-@keyframes wave {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .preloader-logo {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .preloader-title {
-        font-size: 1.3rem;
-    }
-    
-    .loading-tips {
-        min-height: 60px;
-    }
+    pointer-events: none;
 }

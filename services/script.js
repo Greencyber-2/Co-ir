@@ -1,50 +1,45 @@
-// محدوده جغرافیایی بروجرد (باید دقیق‌تر بشه)
-const boroujerdBounds = L.latLngBounds(
-    [33.8700, 48.7200],  // جنوب غربی
-    [33.9200, 48.7800]   // شمال شرقی
-);
+// مرکز بروجرد
+const center = L.latLng(33.8972, 48.7516);
+const radius = 10000; // شعاع به متر (10 کیلومتر)
 
 const map = L.map('map', {
-    maxBounds: boroujerdBounds,
-    maxBoundsViscosity: 1.0,
     minZoom: 13,
     maxZoom: 18
-}).setView([33.8972, 48.7516], 14);
+}).setView(center, 14);
 
 // بارگذاری نقشه
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// لیست رستوران‌ها (نمونه دستی، بعداً می‌تونی از دیتابیس یا JSON بارگذاری کنی)
-const restaurants = [
-    { name: "رستوران نمونه 1", lat: 33.8990, lng: 48.7550 },
-    { name: "رستوران نمونه 2", lat: 33.8950, lng: 48.7500 },
-    { name: "رستوران نمونه 3", lat: 33.8930, lng: 48.7530 }
-];
+// دایره محدوده بروجرد روی نقشه
+L.circle(center, { radius: radius, color: 'blue', fillOpacity: 0.1 }).addTo(map);
 
-// تابع برای نمایش مکان‌های نزدیک
-function showNearbyPlaces(userLatLng) {
-    restaurants.forEach(place => {
-        const placeLatLng = L.latLng(place.lat, place.lng);
-        if (userLatLng.distanceTo(placeLatLng) <= 1000) { // فاصله کمتر از 1km
-            L.marker([place.lat, place.lng]).addTo(map)
-              .bindPopup(`<b>${place.name}</b>`);
-        }
-    });
-}
-
-// گرفتن لوکیشن کاربر
+// گرفتن مکان کاربر
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(position => {
         const userLatLng = L.latLng(position.coords.latitude, position.coords.longitude);
 
-        if (boroujerdBounds.contains(userLatLng)) {
+        // چک کردن فاصله کاربر تا مرکز بروجرد
+        if (userLatLng.distanceTo(center) <= radius) {
             L.marker(userLatLng).addTo(map)
               .bindPopup("موقعیت شما")
               .openPopup();
             map.setView(userLatLng, 15);
-            showNearbyPlaces(userLatLng);
+
+            // مکان‌های نزدیک رو لود کن
+            fetch('places.json')
+                .then(response => response.json())
+                .then(places => {
+                    places.forEach(place => {
+                        const placeLatLng = L.latLng(place.lat, place.lng);
+                        if (userLatLng.distanceTo(placeLatLng) <= 1000) { // 1km
+                            L.marker([place.lat, place.lng]).addTo(map)
+                              .bindPopup(`<b>${place.name}</b><br>دسته: ${place.type}`);
+                        }
+                    });
+                });
+
         } else {
             document.getElementById('message').innerText = "شما خارج از محدوده بروجرد هستید.";
             document.getElementById('message').style.display = 'block';

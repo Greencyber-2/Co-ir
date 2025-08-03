@@ -6,10 +6,11 @@ const chatMessages = document.querySelector('.chatbot-messages');
 const chatInput = document.getElementById('chatbot-input-field');
 const sendBtn = document.getElementById('send-message-btn');
 const refreshBtn = document.querySelector('.refresh-chat');
-const suggestionBtns = document.querySelectorAll('.suggestion-btn');
-const welcomeMessage = document.getElementById('welcomeMessage');
+const welcomeScreen = document.querySelector('.welcome-screen');
 const suggestionsContainer = document.querySelector('.suggestions-container');
 const toggleSuggestionsBtn = document.querySelector('.toggle-suggestions-btn');
+const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+const featureBtns = document.querySelectorAll('.feature-btn');
 
 // Chat state
 let chatHistory = [];
@@ -29,7 +30,6 @@ function initChat() {
         chatHistory.push({
             type: 'bot',
             message: 'سلام! 👋 من دستیار هوشمند شهر بروجرد هستم. چطور می‌تونم به شما کمک کنم؟\n\nمی‌تونید درباره جاذبه‌های گردشگری، خدمات شهری، تاریخچه و فرهنگ بروجرد از من سوال بپرسید.',
-            time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
             liked: null
         });
         saveChatHistory();
@@ -43,16 +43,15 @@ function initChat() {
 function setupChatListeners() {
     // Open chat
     chatBtn.addEventListener('click', () => {
-        chatbotContainer.classList.add('show');
+        document.querySelector('#chatbot').classList.add('active');
         document.body.style.overflow = 'hidden';
         scrollToBottom();
     });
     
     // Close chat
     backBtn.addEventListener('click', () => {
-        chatbotContainer.classList.remove('show');
+        document.querySelector('#chatbot').classList.remove('active');
         document.body.style.overflow = '';
-        // Switch back to home section
         switchSection('home');
         setActiveNavButton(document.querySelector('.nav-btn[data-section="home"]'));
     });
@@ -78,20 +77,36 @@ function setupChatListeners() {
         }
     });
     
+    // Toggle suggestions
+    toggleSuggestionsBtn.addEventListener('click', () => {
+        suggestionsContainer.classList.toggle('show');
+    });
+    
     // Suggestion buttons
     suggestionBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             chatInput.value = btn.textContent;
             chatInput.focus();
+            suggestionsContainer.classList.remove('show');
         });
     });
     
-    // Toggle suggestions
-    toggleSuggestionsBtn.addEventListener('click', () => {
-        suggestionsContainer.style.display = suggestionsContainer.style.display === 'none' ? 'block' : 'none';
-        toggleSuggestionsBtn.querySelector('i').className = 
-            suggestionsContainer.style.display === 'none' ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-        scrollToBottom();
+    // Feature buttons
+    featureBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            chatInput.value = btn.textContent;
+            chatInput.focus();
+            sendMessage();
+        });
+    });
+    
+    // Close suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.suggestions-container') && 
+            !e.target.closest('.toggle-suggestions-btn') &&
+            suggestionsContainer.classList.contains('show')) {
+            suggestionsContainer.classList.remove('show');
+        }
     });
 }
 
@@ -104,10 +119,10 @@ function sendMessage() {
     addMessage('user', message);
     chatInput.value = '';
     
-    // Remove welcome message if this is the first user message
+    // Remove welcome screen if this is the first user message
     if (!firstMessageSent) {
         firstMessageSent = true;
-        welcomeMessage.style.display = 'none';
+        welcomeScreen.style.display = 'none';
         // Remove welcome message from history
         chatHistory = chatHistory.filter(msg => msg.type !== 'bot' || !msg.message.includes('سلام! 👋'));
         saveChatHistory();
@@ -122,13 +137,10 @@ function sendMessage() {
 
 // Add message to chat UI
 function addMessage(type, message, liked = null) {
-    const timestamp = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
-    
     // Add to history
     chatHistory.push({
         type,
         message,
-        time: timestamp,
         liked
     });
     
@@ -166,10 +178,10 @@ function hideTypingIndicator() {
 function renderChatHistory() {
     chatMessages.innerHTML = '';
     
-    // Show welcome message if no messages have been sent yet
+    // Show welcome screen if no messages have been sent yet
     if (!firstMessageSent && chatHistory.some(msg => msg.type === 'bot' && msg.message.includes('سلام! 👋'))) {
-        welcomeMessage.style.display = 'block';
-        chatMessages.appendChild(welcomeMessage);
+        welcomeScreen.style.display = 'flex';
+        chatMessages.appendChild(welcomeScreen);
     }
     
     chatHistory.forEach((msg, index) => {
@@ -178,6 +190,9 @@ function renderChatHistory() {
             return;
         }
         
+        const messageContainer = document.createElement('div');
+        messageContainer.className = `message-container ${msg.type}-message-container`;
+        
         const messageElement = document.createElement('div');
         messageElement.className = `message ${msg.type}-message`;
         
@@ -185,49 +200,42 @@ function renderChatHistory() {
         contentElement.className = 'message-content';
         contentElement.innerHTML = `<p>${msg.message}</p>`;
         
-        const timeElement = document.createElement('div');
-        timeElement.className = 'message-time';
-        timeElement.textContent = msg.time;
-        
         messageElement.appendChild(contentElement);
-        messageElement.appendChild(timeElement);
+        messageContainer.appendChild(messageElement);
         
         if (msg.type === 'bot' && index > 0) {
             const actionsElement = document.createElement('div');
             actionsElement.className = 'message-actions';
             
             const likeBtn = document.createElement('button');
-            likeBtn.className = 'like-btn';
+            likeBtn.className = `like-btn ${msg.liked === true ? 'active' : ''}`;
             likeBtn.dataset.index = index;
             likeBtn.innerHTML = '<i class="far fa-thumbs-up"></i>';
+            likeBtn.title = 'پاسخ مفید بود';
             
             const dislikeBtn = document.createElement('button');
-            dislikeBtn.className = 'dislike-btn';
+            dislikeBtn.className = `dislike-btn ${msg.liked === false ? 'active' : ''}`;
             dislikeBtn.dataset.index = index;
             dislikeBtn.innerHTML = '<i class="far fa-thumbs-down"></i>';
+            dislikeBtn.title = 'پاسخ مفید نبود';
             
             const copyBtn = document.createElement('button');
             copyBtn.className = 'copy-btn';
             copyBtn.dataset.index = index;
             copyBtn.innerHTML = '<i class="far fa-copy"></i>';
-            
-            if (msg.liked === true) {
-                likeBtn.querySelector('i').classList.add('liked');
-            } else if (msg.liked === false) {
-                dislikeBtn.querySelector('i').classList.add('disliked');
-            }
+            copyBtn.title = 'کپی پاسخ';
             
             actionsElement.appendChild(likeBtn);
             actionsElement.appendChild(dislikeBtn);
             actionsElement.appendChild(copyBtn);
-            messageElement.appendChild(actionsElement);
+            messageContainer.appendChild(actionsElement);
             
             likeBtn.addEventListener('click', () => handleFeedback(index, true));
             dislikeBtn.addEventListener('click', () => handleFeedback(index, false));
             copyBtn.addEventListener('click', () => copyMessage(index));
         }
         
-        chatMessages.appendChild(messageElement);
+        chatMessages.appendChild(messageContainer);
     });
 }
 
@@ -242,11 +250,11 @@ function handleFeedback(index, isLike) {
 function copyMessage(index) {
     const message = chatHistory[index].message;
     navigator.clipboard.writeText(message).then(() => {
-        const copyBtn = document.querySelector(`.copy-btn[data-index="${index}"] i`);
+        const copyBtn = document.querySelector(`.copy-btn[data-index="${index}"]`);
         copyBtn.classList.add('copied');
         setTimeout(() => {
             copyBtn.classList.remove('copied');
-        }, 2000);
+        }, 1500);
     });
 }
 
@@ -260,13 +268,12 @@ function resetChat() {
     chatHistory = [{
         type: 'bot',
         message: 'سلام! 👋 من دستیار هوشمند شهر بروجرد هستم. چطور می‌تونم به شما کمک کنم؟\n\nمی‌تونید درباره جاذبه‌های گردشگری، خدمات شهری، تاریخچه و فرهنگ بروجرد از من سوال بپرسید.',
-        time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
         liked: null
     }];
     firstMessageSent = false;
     saveChatHistory();
     renderChatHistory();
-    welcomeMessage.style.display = 'block';
+    welcomeScreen.style.display = 'flex';
 }
 
 // Scroll to bottom of chat

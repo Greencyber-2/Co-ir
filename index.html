@@ -130,15 +130,11 @@
 
 
 
-
-
             <!-- Chatbot Section -->
             <section id="chatbot" class="content-section">
                 <div class="chatbot-container">
+                    <div class="chatbot-overlay"></div>
                     <div class="chatbot-header">
-                        <button class="back-btn">
-                            <i class="fas fa-arrow-right"></i>
-                        </button>
                         <div class="chatbot-info">
                             <img src="images/chatbot-avatar.png" alt="چت بات بروجرد" class="chatbot-avatar">
                             <div class="chatbot-details">
@@ -147,30 +143,37 @@
                             </div>
                         </div>
                         <div class="chatbot-actions">
-                            <button class="refresh-chat">
+                            <button class="refresh-chat" title="شروع مجدد چت">
                                 <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button class="back-btn" title="بازگشت">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
                     
                     <div class="chatbot-messages">
-                        <div class="welcome-message" id="welcomeMessage">
-                            <div class="message-content">
-                                <p>سلام! 👋 من دستیار هوشمند شهر بروجرد هستم. چطور می‌تونم به شما کمک کنم؟</p>
-                                <p>می‌تونید درباره جاذبه‌های گردشگری، خدمات شهری، تاریخچه و فرهنگ بروجرد از من سوال بپرسید.</p>
+                        <div class="welcome-screen">
+                            <div class="welcome-content">
+                                <div class="welcome-avatar">
+                                    <img src="images/chatbot-avatar.png" alt="چت بات بروجرد">
+                                </div>
+                                <div class="welcome-text">
+                                    <h3>سلام! 👋</h3>
+                                    <p>من دستیار هوشمند شهر بروجرد هستم. چطور می‌تونم به شما کمک کنم؟</p>
+                                </div>
+                                <div class="welcome-features">
+                                    <button class="feature-btn">جاذبه‌های گردشگری</button>
+                                    <button class="feature-btn">خدمات شهری</button>
+                                    <button class="feature-btn">تاریخچه و فرهنگ</button>
+                                </div>
                             </div>
                         </div>
                         <!-- Messages will be loaded here by JavaScript -->
                     </div>
                     
                     <div class="chatbot-input">
-                        <div class="suggestions-toggle">
-                            <button class="toggle-suggestions-btn">
-                                <i class="fas fa-chevron-up"></i>
-                                <span>سوالات پرتکرار</span>
-                            </button>
-                        </div>
-                        <div class="suggestions-container" style="display: none;">
+                        <div class="suggestions-container">
                             <div class="suggestions-wrapper">
                                 <div class="suggestions">
                                     <button class="suggestion-btn">جاذبه‌های گردشگری بروجرد</button>
@@ -183,15 +186,17 @@
                             </div>
                         </div>
                         <div class="input-container">
+                            <button class="toggle-suggestions-btn" title="سوالات پرتکرار">
+                                <i class="fas fa-lightbulb"></i>
+                            </button>
                             <input type="text" id="chatbot-input-field" placeholder="پیام خود را بنویسید..." autocomplete="off">
-                            <button id="send-message-btn">
+                            <button id="send-message-btn" title="ارسال پیام">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
-
 
 
 

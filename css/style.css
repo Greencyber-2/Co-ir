@@ -854,7 +854,7 @@ h2 {
     align-items: center;
     background-color: var(--input-bg);
     border-radius: 24px;
-    padding: 5px 5px 5px 15px;
+    padding: 5px 15px 5px 5px;
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     direction: rtl;
@@ -875,6 +875,7 @@ h2 {
     outline: none;
     direction: rtl;
     font-family: Vazirmatn, sans-serif;
+    margin: 0 10px;
 }
 
 #chatbot-input-field::placeholder {
@@ -891,7 +892,7 @@ h2 {
     padding: 8px;
     border-radius: 50%;
     transition: all 0.3s ease;
-    margin-right: 5px;
+    margin-left: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -914,7 +915,7 @@ h2 {
     cursor: pointer;
     transition: all 0.3s ease;
     flex-shrink: 0;
-    margin-right: 5px;
+    margin-left: 5px;
 }
 
 #send-message-btn:hover {
@@ -1057,7 +1058,7 @@ h2 {
     }
     
     .input-container {
-        padding: 5px 5px 5px 10px;
+        padding: 5px 10px 5px 5px;
     }
     
     #send-message-btn {
@@ -1085,7 +1086,7 @@ h2 {
 
 @media (min-width: 768px) {
     .input-container {
-        padding: 8px 8px 8px 20px;
+        padding: 5px 20px 5px 5px;
     }
     
     #send-message-btn {
@@ -1097,7 +1098,6 @@ h2 {
         font-size: 1.2rem;
     }
 }
-
 
 
 

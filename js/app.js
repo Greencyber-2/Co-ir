@@ -732,3 +732,19 @@ document.addEventListener('DOMContentLoaded', () => {
     checkThemePreference();
     init();
 });
+// در انتهای فایل app.js
+document.addEventListener('DOMContentLoaded', () => {
+    checkThemePreference();
+    
+    // یک Promise برای بارگذاری همه داده‌ها ایجاد می‌کنیم
+    const loadAllData = new Promise((resolve) => {
+        init();
+        resolve();
+    });
+    
+    // زمانی که همه داده‌ها بارگذاری شدند و صفحه کاملا لود شد
+    Promise.all([loadAllData, new Promise(resolve => window.addEventListener('load', resolve))])
+        .then(() => {
+            // اینجا پیش‌لودر در فایل preloader.js مدیریت می‌شود
+        });
+});

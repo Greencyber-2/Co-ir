@@ -2,6 +2,7 @@
 const chatBtn = document.querySelector('.chat-btn');
 const chatbotContainer = document.querySelector('.chatbot-container');
 const backBtn = document.querySelector('.back-btn');
+const chatHeader = document.getElementById('chatHeader');
 const chatMessages = document.querySelector('.chatbot-messages');
 const chatInput = document.getElementById('chatbot-input-field');
 const sendBtn = document.getElementById('send-message-btn');
@@ -25,6 +26,9 @@ function initChat() {
         chatHistory = JSON.parse(savedChat);
         firstMessageSent = chatHistory.some(msg => msg.type === 'user');
         renderChatHistory();
+        if (firstMessageSent) {
+            chatHeader.classList.add('show');
+        }
     } else {
         // Add welcome message to history if it's a new chat
         chatHistory.push({
@@ -124,6 +128,7 @@ function sendMessage() {
     if (!firstMessageSent) {
         firstMessageSent = true;
         welcomeScreen.style.display = 'none';
+        chatHeader.classList.add('show');
         // Remove welcome message from history
         chatHistory = chatHistory.filter(msg => msg.type !== 'bot' || !msg.message.includes('سلام! 👋'));
         saveChatHistory();
@@ -304,6 +309,7 @@ function resetChat() {
     saveChatHistory();
     renderChatHistory();
     welcomeScreen.style.display = 'flex';
+    chatHeader.classList.remove('show');
 }
 
 // Scroll to bottom of chat

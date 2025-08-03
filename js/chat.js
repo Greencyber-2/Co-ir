@@ -8,9 +8,8 @@ const sendBtn = document.getElementById('send-message-btn');
 const refreshBtn = document.querySelector('.refresh-chat');
 const suggestionBtns = document.querySelectorAll('.suggestion-btn');
 const welcomeMessage = document.getElementById('welcomeMessage');
-const suggestionsContainer = document.querySelector('.suggestions');
-const scrollLeftBtn = document.querySelector('.scroll-left');
-const scrollRightBtn = document.querySelector('.scroll-right');
+const suggestionsContainer = document.querySelector('.suggestions-container');
+const toggleSuggestionsBtn = document.querySelector('.toggle-suggestions-btn');
 
 // Chat state
 let chatHistory = [];
@@ -38,9 +37,6 @@ function initChat() {
     
     // Set up event listeners
     setupChatListeners();
-    
-    // Setup suggestions scroll
-    setupSuggestionsScroll();
 }
 
 // Set up event listeners for chat
@@ -89,29 +85,13 @@ function setupChatListeners() {
             chatInput.focus();
         });
     });
-}
-
-// Setup suggestions scroll
-function setupSuggestionsScroll() {
-    if (!scrollLeftBtn || !scrollRightBtn) return;
     
-    const suggestionsWrapper = document.querySelector('.suggestions-wrapper');
-    const suggestions = document.querySelector('.suggestions');
-    
-    let scrollPosition = 0;
-    const scrollStep = 150;
-    
-    scrollLeftBtn.addEventListener('click', () => {
-        scrollPosition -= scrollStep;
-        if (scrollPosition < 0) scrollPosition = 0;
-        suggestions.style.transform = `translateX(${scrollPosition}px)`;
-    });
-    
-    scrollRightBtn.addEventListener('click', () => {
-        const maxScroll = suggestions.scrollWidth - suggestionsWrapper.offsetWidth;
-        scrollPosition += scrollStep;
-        if (scrollPosition > maxScroll) scrollPosition = maxScroll;
-        suggestions.style.transform = `translateX(${scrollPosition}px)`;
+    // Toggle suggestions
+    toggleSuggestionsBtn.addEventListener('click', () => {
+        suggestionsContainer.style.display = suggestionsContainer.style.display === 'none' ? 'block' : 'none';
+        toggleSuggestionsBtn.querySelector('i').className = 
+            suggestionsContainer.style.display === 'none' ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+        scrollToBottom();
     });
 }
 

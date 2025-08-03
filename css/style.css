@@ -667,21 +667,21 @@ h2 {
 }
 
 .user-message {
-    align-self: flex-start;
+    align-self: flex-end;
     background-color: var(--primary-color);
     color: white;
-    border-bottom-left-radius: 5px;
-    margin-left: 8px;
+    border-bottom-right-radius: 5px;
+    margin-right: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .bot-message {
-    align-self: flex-end;
+    align-self: flex-start;
     background-color: var(--card-bg);
     color: var(--text-color);
     border: 1px solid var(--border-color);
-    border-bottom-right-radius: 5px;
-    margin-right: 8px;
+    border-bottom-left-radius: 5px;
+    margin-left: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -692,7 +692,7 @@ h2 {
 
 .message-content p {
     margin: 0;
-    direction: rtl;
+    direction: ltr;
     text-align: right;
 }
 
@@ -700,13 +700,8 @@ h2 {
     font-size: 0.7rem;
     opacity: 0.7;
     margin-top: 6px;
-    align-self: flex-start;
     direction: ltr;
-}
-
-.bot-message .message-time {
-    align-self: flex-end;
-    direction: rtl;
+    text-align: right;
 }
 
 /* Message Actions (Like/Dislike) */
@@ -714,7 +709,7 @@ h2 {
     display: flex;
     gap: 8px;
     margin-top: 10px;
-    justify-content: flex-start;
+    justify-content: flex-end;
     align-items: center;
 }
 
@@ -764,9 +759,9 @@ h2 {
     padding: 12px 16px;
     background-color: var(--card-bg);
     border-radius: 18px;
-    align-self: flex-end;
+    align-self: flex-start;
     border: 1px solid var(--border-color);
-    margin-right: 8px;
+    margin-left: 8px;
     margin-bottom: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     width: fit-content;
@@ -813,7 +808,7 @@ h2 {
     padding: 5px 15px 5px 5px;
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
-    direction: rtl;
+    direction: ltr;
 }
 
 .input-container:focus-within {
@@ -866,22 +861,43 @@ h2 {
 }
 
 /* Suggestions */
+.suggestions-toggle {
+    padding: 8px 15px;
+    text-align: center;
+}
+
+.toggle-suggestions-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin: 0 auto;
+    padding: 5px 10px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+}
+
+.toggle-suggestions-btn:hover {
+    background-color: rgba(74, 111, 165, 0.1);
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
 .suggestions-container {
     padding: 10px 15px;
     background-color: var(--card-bg);
     border-top: 1px solid var(--border-color);
-}
-
-.suggestions-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.suggestions-header span {
-    font-size: 0.8rem;
-    color: var(--text-light);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .suggestions-wrapper {

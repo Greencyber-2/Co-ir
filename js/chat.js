@@ -1,66 +1,229 @@
 // DOM Elements
-const chatInput = document.getElementById('chat-input');
-const sendBtn = document.getElementById('send-btn');
-const chatMessages = document.querySelector('.chat-messages');
-const chatContainer = document.querySelector('.chat-container');
-const closeChatBtn = document.querySelector('.close-chat');
-const chatBtn = document.querySelector('.nav-btn[data-section="chatbot"]');
-const chatStatus = document.getElementById('chat-status');
+const chatBtn = document.querySelector('.chat-btn');
+const chatbotContainer = document.querySelector('.chatbot-container');
+const backBtn = document.querySelector('.back-btn');
+const chatMessages = document.querySelector('.chatbot-messages');
+const chatInput = document.getElementById('chatbot-input-field');
+const sendBtn = document.getElementById('send-message-btn');
+const refreshBtn = document.querySelector('.refresh-chat');
+const suggestionBtns = document.querySelectorAll('.suggestion-btn');
 
-// Configuration
-const API_ENDPOINT = 'https://lively-dream-4d36.dns555104.workers.dev/';
-const TYPING_DELAY = 50; // ms between each character when showing bot response
-const THINKING_DELAY = 1000; // ms to simulate "thinking"
+// Chat state
+let chatHistory = [];
+let isTyping = false;
 
 // Initialize chat
 function initChat() {
-    // Add event listeners
-    sendBtn.addEventListener('click', sendMessage);
+    // Load chat history from localStorage
+    const savedChat = localStorage.getItem('borujerdChatHistory');
+    if (savedChat) {
+        chatHistory = JSON.parse(savedChat);
+        renderChatHistory();
+    } else {
+        // Add welcome message to history if it's a new chat
+        chatHistory.push({
+            type: 'bot',
+            message: 'سلام! 👋 من دستیار هوشمند شهر بروجرد هستم. چطور می‌تونم به شما کمک کنم؟\n\nمی‌تونید درباره جاذبه‌های گردشگری، خدمات شهری، تاریخچه و فرهنگ بروجرد از من سوال بپرسید.',
+            time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
+            liked: null
+        });
+        saveChatHistory();
+    }
+    
+    // Set up event listeners
+    setupChatListeners();
+}
+
+// Set up event listeners for chat
+function setupChatListeners() {
+    // Open chat
+    chatBtn.addEventListener('click', () => {
+        chatbotContainer.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        scrollToBottom();
+    });
+    
+    // Close chat
+    backBtn.addEventListener('click', () => {
+        chatbotContainer.classList.remove('show');
+        document.body.style.overflow = '';
+        // Switch back to home section
+        switchSection('home');
+        setActiveNavButton(document.querySelector('.nav-btn[data-section="home"]'));
+    });
+    
+    // Send message on Enter key
     chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && chatInput.value.trim() !== '') {
             sendMessage();
         }
     });
     
-    // Chat button in navigation
-    chatBtn.addEventListener('click', toggleChat);
+    // Send message on button click
+    sendBtn.addEventListener('click', () => {
+        if (chatInput.value.trim() !== '') {
+            sendMessage();
+        }
+    });
     
-    // Close chat button
-    closeChatBtn.addEventListener('click', toggleChat);
+    // Refresh chat
+    refreshBtn.addEventListener('click', () => {
+        if (confirm('آیا مطمئن هستید که می‌خواهید چت را ریست کنید؟ تمام تاریخچه چت پاک خواهد شد.')) {
+            resetChat();
+        }
+    });
+    
+    // Suggestion buttons
+    suggestionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            chatInput.value = btn.textContent;
+            chatInput.focus();
+        });
+    });
 }
 
-// Toggle chat visibility
-function toggleChat() {
-    chatContainer.classList.toggle('active');
-    
-    // Scroll to bottom when chat opens
-    if (chatContainer.classList.contains('active')) {
-        setTimeout(() => {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 100);
-    }
-}
-
-// Send message to API
-async function sendMessage() {
+// Send message to chatbot
+function sendMessage() {
     const message = chatInput.value.trim();
-    if (message === '') return;
+    if (message === '' || isTyping) return;
     
-    // Add user message
-    addMessage(message, 'user');
+    // Add user message to chat
+    addMessage('user', message);
     chatInput.value = '';
-    chatInput.disabled = true;
-    sendBtn.disabled = true;
     
     // Show typing indicator
     showTypingIndicator();
     
+    // Send to chatbot API
+    sendToChatbotAPI(message);
+}
+
+// Add message to chat UI
+function addMessage(type, message, liked = null) {
+    const timestamp = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+    
+    // Add to history
+    chatHistory.push({
+        type,
+        message,
+        time: timestamp,
+        liked
+    });
+    
+    saveChatHistory();
+    renderChatHistory();
+    scrollToBottom();
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+    isTyping = true;
+    
+    const typingElement = document.createElement('div');
+    typingElement.className = 'typing-indicator';
+    typingElement.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+    `;
+    
+    chatMessages.appendChild(typingElement);
+    scrollToBottom();
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+    isTyping = false;
+    const typingIndicator = document.querySelector('.typing-indicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+// Render chat history
+function renderChatHistory() {
+    chatMessages.innerHTML = '';
+    
+    chatHistory.forEach((msg, index) => {
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${msg.type}-message`;
+        
+        const contentElement = document.createElement('div');
+        contentElement.className = 'message-content';
+        contentElement.innerHTML = `<p>${msg.message}</p>`;
+        
+        const timeElement = document.createElement('div');
+        timeElement.className = 'message-time';
+        timeElement.textContent = msg.time;
+        
+        messageElement.appendChild(contentElement);
+        messageElement.appendChild(timeElement);
+        
+        if (msg.type === 'bot' && index > 0) {
+            const actionsElement = document.createElement('div');
+            actionsElement.className = 'message-actions';
+            actionsElement.innerHTML = `
+                <button class="like-btn" data-index="${index}">
+                    <i class="far fa-thumbs-up ${msg.liked === true ? 'liked' : ''}"></i>
+                </button>
+                <button class="dislike-btn" data-index="${index}">
+                    <i class="far fa-thumbs-down ${msg.liked === false ? 'disliked' : ''}"></i>
+                </button>
+            `;
+            messageElement.appendChild(actionsElement);
+        }
+        
+        chatMessages.appendChild(messageElement);
+    });
+    
+    // Set up like/dislike buttons
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', () => handleFeedback(btn.dataset.index, true));
+    });
+    
+    document.querySelectorAll('.dislike-btn').forEach(btn => {
+        btn.addEventListener('click', () => handleFeedback(btn.dataset.index, false));
+    });
+}
+
+// Handle feedback (like/dislike)
+function handleFeedback(index, isLike) {
+    chatHistory[index].liked = isLike;
+    saveChatHistory();
+    renderChatHistory();
+}
+
+// Save chat history to localStorage
+function saveChatHistory() {
+    localStorage.setItem('borujerdChatHistory', JSON.stringify(chatHistory));
+}
+
+// Reset chat
+function resetChat() {
+    chatHistory = [{
+        type: 'bot',
+        message: 'سلام! 👋 من دستیار هوشمند شهر بروجرد هستم. چطور می‌تونم به شما کمک کنم؟\n\nمی‌تونید درباره جاذبه‌های گردشگری، خدمات شهری، تاریخچه و فرهنگ بروجرد از من سوال بپرسید.',
+        time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
+        liked: null
+    }];
+    saveChatHistory();
+    renderChatHistory();
+}
+
+// Scroll to bottom of chat
+function scrollToBottom() {
+    setTimeout(() => {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 100);
+}
+
+// Send message to chatbot API
+async function sendToChatbotAPI(message) {
     try {
-        // Call Cloudflare worker API
-        const response = await fetch(API_ENDPOINT, {
+        const response = await fetch('https://lively-dream-4d36.dns555104.workers.dev/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ message })
         });
@@ -75,69 +238,12 @@ async function sendMessage() {
             throw new Error(data.error);
         }
         
-        // Simulate thinking delay
-        await new Promise(resolve => setTimeout(resolve, THINKING_DELAY));
-        
-        // Hide typing indicator
         hideTypingIndicator();
-        
-        // Add bot response with typing animation
-        await typeMessage(data.response || 'پاسخی دریافت نشد', 'bot');
+        addMessage('bot', data.response);
         
     } catch (error) {
         hideTypingIndicator();
-        addMessage(`خطا: ${error.message}`, 'bot', true);
-    } finally {
-        chatInput.disabled = false;
-        sendBtn.disabled = false;
-        chatInput.focus();
-    }
-}
-
-// Show typing indicator
-function showTypingIndicator() {
-    chatStatus.textContent = 'چت بات در حال تایپ...';
-    chatStatus.style.display = 'block';
-}
-
-// Hide typing indicator
-function hideTypingIndicator() {
-    chatStatus.style.display = 'none';
-}
-
-// Add message to chat
-function addMessage(text, sender, immediate = false) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${sender}-message`;
-    
-    const messageContent = document.createElement('div');
-    messageContent.className = 'message-content';
-    
-    const messageText = document.createElement('p');
-    if (immediate) {
-        messageText.textContent = text;
-    } else {
-        messageText.textContent = '';
-    }
-    
-    messageContent.appendChild(messageText);
-    messageDiv.appendChild(messageContent);
-    chatMessages.appendChild(messageDiv);
-    
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    return { messageDiv, messageText };
-}
-
-// Type message character by character
-async function typeMessage(text, sender) {
-    const { messageText } = addMessage('', sender);
-    
-    for (let i = 0; i < text.length; i++) {
-        messageText.textContent = text.substring(0, i + 1);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        await new Promise(resolve => setTimeout(resolve, TYPING_DELAY));
+        addMessage('bot', `خطا در دریافت پاسخ: ${error.message}`);
     }
 }
 

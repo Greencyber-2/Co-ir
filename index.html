@@ -128,34 +128,66 @@
                 </div>
             </section>
 
+
+
+
             <!-- Chatbot Section -->
             <section id="chatbot" class="content-section">
-                <div class="chat-container">
-                    <div class="chat-header">
-                        <div class="chat-title">
-                            <h2>چت بات بروجرد</h2>
-                            <p>سوالات خود را درباره شهر بروجرد بپرسید</p>
+                <div class="chatbot-container">
+                    <div class="chatbot-header">
+                        <button class="back-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <div class="chatbot-info">
+                            <img src="images/chatbot-avatar.png" alt="چت بات بروجرد" class="chatbot-avatar">
+                            <div class="chatbot-details">
+                                <h3>دستیار هوشمند بروجرد</h3>
+                                <p>پاسخگوی سوالات شما درباره شهر بروجرد</p>
+                            </div>
                         </div>
-                        <div class="chat-actions">
-                            <button class="close-chat"><i class="fas fa-times"></i></button>
+                        <div class="chatbot-actions">
+                            <button class="refresh-chat">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="chat-messages">
-                        <div class="message bot-message">
+                    
+                    <div class="chatbot-messages">
+                        <div class="welcome-message">
                             <div class="message-content">
-                                <p>سلام! من چت بات بروجرد هستم. چطور می‌توانم به شما کمک کنم؟</p>
+                                <p>سلام! 👋 من دستیار هوشمند شهر بروجرد هستم. چطور می‌تونم به شما کمک کنم؟</p>
+                                <p>می‌تونید درباره جاذبه‌های گردشگری، خدمات شهری، تاریخچه و فرهنگ بروجرد از من سوال بپرسید.</p>
+                            </div>
+                            <div class="message-actions">
+                                <button class="like-btn"><i class="far fa-thumbs-up"></i></button>
+                                <button class="dislike-btn"><i class="far fa-thumbs-down"></i></button>
+                            </div>
+                        </div>
+                        <!-- Messages will be loaded here by JavaScript -->
+                    </div>
+                    
+                    <div class="chatbot-input">
+                        <div class="input-container">
+                            <input type="text" id="chatbot-input-field" placeholder="پیام خود را بنویسید..." autocomplete="off">
+                            <button id="send-message-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="suggestions-container">
+                            <p>سوالات پرتکرار:</p>
+                            <div class="suggestions">
+                                <button class="suggestion-btn">جاذبه‌های گردشگری بروجرد</button>
+                                <button class="suggestion-btn">بهترین رستوران‌های بروجرد</button>
+                                <button class="suggestion-btn">مسجد جامع بروجرد کجاست؟</button>
                             </div>
                         </div>
                     </div>
-                    <div class="chat-input">
-                        <input type="text" placeholder="پیام خود را بنویسید..." id="chat-input">
-                        <button class="send-btn" id="send-btn">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                    <div class="chat-status" id="chat-status"></div>
                 </div>
             </section>
+
+
+
+
 
             <!-- Tourism Section -->
             <section id="tourism" class="content-section">

@@ -2,9 +2,9 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>رستوران‌های نزدیک من | بروجرد</title>
+    <title>بیمارستان‌های نزدیک من | بروجرد</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="پیدا کردن بهترین رستوران‌های نزدیک شما در بروجرد">
+    <meta name="description" content="پیدا کردن نزدیک‌ترین بیمارستان‌ها به شما در بروجرد">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -12,9 +12,9 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-utensils"></i> رستوران‌های نزدیک من</h1>
+            <h1><i class="fas fa-hospital"></i> بیمارستان‌های نزدیک من</h1>
             <div class="search-box">
-                <input type="text" id="search-input" placeholder="جستجوی رستوران...">
+                <input type="text" id="search-input" placeholder="جستجوی بیمارستان...">
                 <button id="search-btn"><i class="fas fa-search"></i></button>
             </div>
         </header>
@@ -24,9 +24,9 @@
                 <div class="filter-section">
                     <h3><i class="fas fa-filter"></i> فیلترها</h3>
                     <div class="filter-group">
-                        <label><input type="checkbox" class="cuisine-filter" value="ایرانی"> ایرانی</label>
-                        <label><input type="checkbox" class="cuisine-filter" value="فست فود"> فست فود</label>
-                        <label><input type="checkbox" class="cuisine-filter" value="بین المللی"> بین‌المللی</label>
+                        <label><input type="checkbox" class="type-filter" value="عمومی"> عمومی</label>
+                        <label><input type="checkbox" class="type-filter" value="تخصصی"> تخصصی</label>
+                        <label><input type="checkbox" class="type-filter" value="کودکان"> کودکان</label>
                     </div>
                     <div class="filter-group">
                         <label>فاصله:
@@ -34,20 +34,22 @@
                                 <option value="1000">1 کیلومتر</option>
                                 <option value="2000" selected>2 کیلومتر</option>
                                 <option value="5000">5 کیلومتر</option>
+                                <option value="10000">10 کیلومتر</option>
                             </select>
                         </label>
                     </div>
                     <div class="filter-group">
-                        <label>رتبه‌بندی:
-                            <select id="rating-filter">
-                                <option value="0">همه</option>
-                                <option value="3">3+ ستاره</option>
-                                <option value="4">4+ ستاره</option>
+                        <label>خدمات:
+                            <select id="service-filter">
+                                <option value="همه">همه</option>
+                                <option value="اورژانس">اورژانس</option>
+                                <option value="تخصصی">بخش تخصصی</option>
+                                <option value="آزمایشگاه">آزمایشگاه</option>
                             </select>
                         </label>
                     </div>
                 </div>
-                <div id="restaurants-list"></div>
+                <div id="hospitals-list"></div>
             </div>
             <div id="map"></div>
         </div>

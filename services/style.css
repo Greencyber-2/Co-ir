@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #ff6b6b;
-    --secondary-color: #ff8e8e;
+    --primary-color: #2c7be5;
+    --secondary-color: #6c9ef1;
     --dark-color: #333;
     --light-color: #f8f9fa;
     --success-color: #28a745;
@@ -122,7 +122,7 @@ header h1 {
     border-radius: 4px;
 }
 
-.restaurant-item {
+.hospital-item {
     padding: 0.8rem;
     margin-bottom: 0.5rem;
     background-color: white;
@@ -132,25 +132,31 @@ header h1 {
     transition: all 0.3s;
 }
 
-.restaurant-item:hover {
+.hospital-item:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background-color: #f0f7ff;
 }
 
-.restaurant-item h4 {
+.hospital-item h4 {
     color: var(--primary-color);
     margin-bottom: 0.3rem;
 }
 
-.restaurant-item p {
+.hospital-item p {
     font-size: 0.9rem;
     color: #666;
     margin-bottom: 0.3rem;
 }
 
-.restaurant-rating {
-    color: var(--warning-color);
-    font-weight: bold;
+.hospital-type {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    background-color: #e1f0ff;
+    color: var(--primary-color);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
 }
 
 #map {
@@ -266,4 +272,14 @@ header h1 {
 .leaflet-control-locate a {
     font-size: 1.5rem;
     color: var(--primary-color);
+}
+
+/* Emergency badge */
+.emergency-badge {
+    background-color: var(--danger-color);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
 }

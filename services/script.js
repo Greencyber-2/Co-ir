@@ -43,16 +43,16 @@ const messageText = document.getElementById('message-text');
 const closeMessageBtn = document.getElementById('close-message');
 const loadingDiv = document.getElementById('loading');
 const sidebar = document.getElementById('sidebar');
-const restaurantsList = document.getElementById('restaurants-list');
+const hospitalsList = document.getElementById('hospitals-list');
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const distanceFilter = document.getElementById('distance-filter');
-const ratingFilter = document.getElementById('rating-filter');
-const cuisineFilters = document.querySelectorAll('.cuisine-filter');
+const serviceFilter = document.getElementById('service-filter');
+const typeFilters = document.querySelectorAll('.type-filter');
 
 // Variables
 let userLocation = null;
-let restaurants = [];
+let hospitals = [];
 let markers = [];
 
 // Show message function
@@ -99,30 +99,96 @@ const userIcon = L.divIcon({
     iconAnchor: [12, 12]
 });
 
-const restaurantIcon = L.divIcon({
-    html: '<i class="fas fa-utensils" style="color: #EA4335; font-size: 20px;"></i>',
-    className: 'custom-restaurant-icon',
+const hospitalIcon = L.divIcon({
+    html: '<i class="fas fa-hospital" style="color: #EA4335; font-size: 20px;"></i>',
+    className: 'custom-hospital-icon',
     iconSize: [20, 20],
     iconAnchor: [10, 10]
 });
 
-// Fetch restaurants data
-async function fetchRestaurants() {
+const emergencyIcon = L.divIcon({
+    html: '<i class="fas fa-ambulance" style="color: #DC3545; font-size: 20px;"></i>',
+    className: 'custom-emergency-icon',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+});
+
+// Sample hospitals data for Borujerd
+const sampleHospitals = [
+    {
+        id: 1,
+        name: "بیمارستان امام خمینی بروجرد",
+        lat: 33.8985,
+        lng: 48.7523,
+        type: "عمومی",
+        services: ["اورژانس", "تخصصی", "آزمایشگاه"],
+        phone: "06643210001",
+        address: "بلوار امام خمینی، جنب پارک شهر",
+        emergency: true
+    },
+    {
+        id: 2,
+        name: "بیمارستان تخصصی کودکان بروجرد",
+        lat: 33.8958,
+        lng: 48.7497,
+        type: "کودکان",
+        services: ["اورژانس", "تخصصی"],
+        phone: "06643210002",
+        address: "خیابان شهید بهشتی، کوچه 12",
+        emergency: true
+    },
+    {
+        id: 3,
+        name: "بیمارستان تخصصی قلب بروجرد",
+        lat: 33.9012,
+        lng: 48.7556,
+        type: "تخصصی",
+        services: ["تخصصی", "آزمایشگاه"],
+        phone: "06643210003",
+        address: "بلوار معلم، نبش خیابان 15",
+        emergency: false
+    },
+    {
+        id: 4,
+        name: "بیمارستان شهدای بروجرد",
+        lat: 33.8943,
+        lng: 48.7538,
+        type: "عمومی",
+        services: ["اورژانس", "آزمایشگاه"],
+        phone: "06643210004",
+        address: "خیابان شهدا، جنب دانشگاه",
+        emergency: true
+    },
+    {
+        id: 5,
+        name: "مرکز درمانی تخصصی نور",
+        lat: 33.9005,
+        lng: 48.7501,
+        type: "تخصصی",
+        services: ["تخصصی"],
+        phone: "06643210005",
+        address: "خیابان دکتر شریعتی، پلاک 45",
+        emergency: false
+    }
+];
+
+// Fetch hospitals data
+async function fetchHospitals() {
     try {
         showLoading();
-        const response = await fetch('restaurants.json');
         
-        if (!response.ok) {
-            throw new Error('خطا در دریافت اطلاعات رستوران‌ها');
-        }
+        // In a real app, you would fetch from an API
+        // const response = await fetch('hospitals.json');
+        // const data = await response.json();
         
-        const data = await response.json();
-        restaurants = data;
+        // For demo, we use sample data
+        hospitals = sampleHospitals;
+        
         hideLoading();
-        return data;
+        return hospitals;
     } catch (error) {
         hideLoading();
-        showMessage(error.message, 'error');
+        showMessage("خطا در دریافت اطلاعات بیمارستان‌ها: " + error.message, 'error');
         return [];
     }
 }
@@ -143,79 +209,84 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-// Display restaurants on map and list
-function displayRestaurants(userLatLng, filterOptions = {}) {
+// Display hospitals on map and list
+function displayHospitals(userLatLng, filterOptions = {}) {
     // Clear previous markers
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
-    restaurantsList.innerHTML = '';
+    hospitalsList.innerHTML = '';
     
-    const { maxDistance = 2000, minRating = 0, searchTerm = '', cuisines = [] } = filterOptions;
+    const { maxDistance = 2000, service = 'همه', searchTerm = '', types = [] } = filterOptions;
     let found = false;
     
-    restaurants.forEach(restaurant => {
+    hospitals.forEach(hospital => {
         // Calculate distance
         const distance = calculateDistance(
             userLatLng.lat, userLatLng.lng,
-            restaurant.lat, restaurant.lng
+            hospital.lat, hospital.lng
         );
         
         // Apply filters
         const matchesDistance = distance <= maxDistance;
-        const matchesRating = restaurant.rating >= minRating;
-        const matchesSearch = restaurant.name.includes(searchTerm) || 
-                             restaurant.description.includes(searchTerm) ||
-                             restaurant.cuisine.includes(searchTerm);
-        const matchesCuisine = cuisines.length === 0 || cuisines.includes(restaurant.cuisine);
+        const matchesService = service === 'همه' || hospital.services.includes(service);
+        const matchesSearch = hospital.name.includes(searchTerm) || 
+                             hospital.address.includes(searchTerm);
+        const matchesType = types.length === 0 || types.includes(hospital.type);
         
-        if (matchesDistance && matchesRating && matchesSearch && matchesCuisine) {
+        if (matchesDistance && matchesService && matchesSearch && matchesType) {
             found = true;
             
             // Create marker
-            const marker = L.marker([restaurant.lat, restaurant.lng], {
-                icon: restaurantIcon,
-                restaurantId: restaurant.id
+            const marker = L.marker([hospital.lat, hospital.lng], {
+                icon: hospital.emergency ? emergencyIcon : hospitalIcon,
+                hospitalId: hospital.id
             }).addTo(map);
             
             // Add popup
             marker.bindPopup(`
-                <h3>${restaurant.name}</h3>
-                <p>${restaurant.cuisine}</p>
+                <h3>${hospital.name}</h3>
+                <p><span class="hospital-type">${hospital.type}</span> ${hospital.emergency ? '<span class="emergency-badge">اورژانس</span>' : ''}</p>
                 <p>فاصله: ${Math.round(distance)} متر</p>
-                <p>رتبه: ${'★'.repeat(restaurant.rating)}${'☆'.repeat(5 - restaurant.rating)}</p>
-                ${restaurant.description ? `<p>${restaurant.description}</p>` : ''}
-                ${restaurant.phone ? `<p><i class="fas fa-phone"></i> ${restaurant.phone}</p>` : ''}
+                <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
+                <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+                <p>خدمات: ${hospital.services.join('، ')}</p>
             `);
             
             markers.push(marker);
             
             // Add to list
-            const restaurantItem = document.createElement('div');
-            restaurantItem.className = 'restaurant-item';
-            restaurantItem.dataset.id = restaurant.id;
-            restaurantItem.innerHTML = `
-                <h4>${restaurant.name}</h4>
-                <p>${restaurant.cuisine}</p>
-                <p class="restaurant-rating">${'★'.repeat(restaurant.rating)}${'☆'.repeat(5 - restaurant.rating)}</p>
+            const hospitalItem = document.createElement('div');
+            hospitalItem.className = 'hospital-item';
+            hospitalItem.dataset.id = hospital.id;
+            hospitalItem.innerHTML = `
+                <h4>${hospital.name} ${hospital.emergency ? '<span class="emergency-badge">اورژانس</span>' : ''}</h4>
+                <p><span class="hospital-type">${hospital.type}</span></p>
                 <p>فاصله: ${Math.round(distance)} متر</p>
+                <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
             `;
             
-            restaurantItem.addEventListener('click', () => {
-                map.setView([restaurant.lat, restaurant.lng], 16);
+            hospitalItem.addEventListener('click', () => {
+                map.setView([hospital.lat, hospital.lng], 16);
                 marker.openPopup();
+                
+                // Highlight the selected item
+                document.querySelectorAll('.hospital-item').forEach(item => {
+                    item.style.backgroundColor = 'white';
+                });
+                hospitalItem.style.backgroundColor = '#f0f7ff';
             });
             
-            restaurantsList.appendChild(restaurantItem);
+            hospitalsList.appendChild(hospitalItem);
         }
     });
     
     if (!found) {
-        showMessage('هیچ رستورانی با فیلترهای انتخاب شده یافت نشد.', 'info', 3000);
+        showMessage('هیچ بیمارستانی با فیلترهای انتخاب شده یافت نشد.', 'info', 3000);
     }
 }
 
-// Get current location and show nearby restaurants
-function getLocationAndShowRestaurants() {
+// Get current location and show nearby hospitals
+function getLocationAndShowHospitals() {
     if (navigator.geolocation) {
         showLoading();
         
@@ -234,17 +305,17 @@ function getLocationAndShowRestaurants() {
                 userMarker.bindPopup('موقعیت شما').openPopup();
                 map.setView([userLocation.lat, userLocation.lng], 15);
                 
-                // Load restaurants
-                await fetchRestaurants();
+                // Load hospitals
+                await fetchHospitals();
                 
-                // Display restaurants
-                displayRestaurants(userLocation, {
+                // Display hospitals
+                displayHospitals(userLocation, {
                     maxDistance: parseInt(distanceFilter.value),
-                    minRating: parseInt(ratingFilter.value)
+                    service: serviceFilter.value
                 });
                 
                 hideLoading();
-                showMessage('رستوران‌های نزدیک شما نمایش داده شدند.', 'success');
+                showMessage('بیمارستان‌های نزدیک شما نمایش داده شدند.', 'success');
             },
             error => {
                 hideLoading();
@@ -270,11 +341,11 @@ function getLocationAndShowRestaurants() {
                 userLocation = { lat: 33.8972, lng: 48.7516 };
                 map.setView([userLocation.lat, userLocation.lng], 14);
                 
-                // Still try to load restaurants
-                fetchRestaurants().then(() => {
-                    displayRestaurants(userLocation, {
+                // Still try to load hospitals
+                fetchHospitals().then(() => {
+                    displayHospitals(userLocation, {
                         maxDistance: parseInt(distanceFilter.value),
-                        minRating: parseInt(ratingFilter.value)
+                        service: serviceFilter.value
                     });
                 });
             },
@@ -291,36 +362,36 @@ function getLocationAndShowRestaurants() {
         userLocation = { lat: 33.8972, lng: 48.7516 };
         map.setView([userLocation.lat, userLocation.lng], 14);
         
-        // Still try to load restaurants
-        fetchRestaurants().then(() => {
-            displayRestaurants(userLocation, {
+        // Still try to load hospitals
+        fetchHospitals().then(() => {
+            displayHospitals(userLocation, {
                 maxDistance: parseInt(distanceFilter.value),
-                minRating: parseInt(ratingFilter.value)
+                service: serviceFilter.value
             });
         });
     }
 }
 
-// Filter restaurants based on user input
+// Filter hospitals based on user input
 function applyFilters() {
     if (!userLocation) return;
     
-    const selectedCuisines = Array.from(cuisineFilters)
+    const selectedTypes = Array.from(typeFilters)
         .filter(filter => filter.checked)
         .map(filter => filter.value);
     
-    displayRestaurants(userLocation, {
+    displayHospitals(userLocation, {
         maxDistance: parseInt(distanceFilter.value),
-        minRating: parseInt(ratingFilter.value),
+        service: serviceFilter.value,
         searchTerm: searchInput.value,
-        cuisines: selectedCuisines
+        types: selectedTypes
     });
 }
 
 // Event listeners
 distanceFilter.addEventListener('change', applyFilters);
-ratingFilter.addEventListener('change', applyFilters);
-cuisineFilters.forEach(filter => {
+serviceFilter.addEventListener('change', applyFilters);
+typeFilters.forEach(filter => {
     filter.addEventListener('change', applyFilters);
 });
 
@@ -331,7 +402,7 @@ searchInput.addEventListener('keypress', (e) => {
 
 // Toggle sidebar on mobile
 document.addEventListener('click', (e) => {
-    if (e.target.closest('.restaurant-item') || e.target.closest('.leaflet-popup')) {
+    if (e.target.closest('.hospital-item') || e.target.closest('.leaflet-popup')) {
         return;
     }
     
@@ -342,13 +413,13 @@ document.addEventListener('click', (e) => {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
-    getLocationAndShowRestaurants();
+    getLocationAndShowHospitals();
     
     // Add toggle button for sidebar on mobile
     if (window.innerWidth <= 768) {
         const toggleBtn = document.createElement('button');
         toggleBtn.id = 'sidebar-toggle';
-        toggleBtn.innerHTML = '<i class="fas fa-list"></i> لیست رستوران‌ها';
+        toggleBtn.innerHTML = '<i class="fas fa-list"></i> لیست بیمارستان‌ها';
         toggleBtn.style.position = 'fixed';
         toggleBtn.style.bottom = '20px';
         toggleBtn.style.right = '20px';

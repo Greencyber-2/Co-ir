@@ -5,27 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بروجرد، پاریس کوچولوی من</title>
     <meta name="theme-color" content="#4a6fa5">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>بروجرد | پاریس کوچولوی من</title>
+    <link rel="stylesheet" href="css/preloader.css">
+    <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/theme.js" defer></script>
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit-code.js" crossorigin="anonymous"></script>
 </head>
 <body class="light-mode">
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-logo">
+            <img src="images/logo.png" alt="بروجرد">
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
             <div class="header-content">
                 <div class="header-left">
-                    <div class="theme-toggle" id="themeToggle">
+                    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
                         <i class="fas fa-sun light-icon"></i>
                         <i class="fas fa-moon dark-icon"></i>
                     </div>
@@ -45,8 +45,6 @@
             </div>
         </header>
 
-
-        
         <!-- Notification Panel -->
         <div class="notification-panel">
             <div class="notification-header">
@@ -151,10 +149,11 @@
                     </div>
                     <div class="chat-input">
                         <input type="text" placeholder="پیام خود را بنویسید..." id="chat-input">
-                        <button class="send-btn">
+                        <button class="send-btn" id="send-btn">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
+                    <div class="chat-status" id="chat-status"></div>
                 </div>
             </section>
 
@@ -178,7 +177,7 @@
             <section id="about" class="content-section">
                 <div class="about-container">
                     <div class="about-header">
-                        <img src="images/icons/fava-logo.png" alt="فاوای بروجرد">
+                        <img src="images/logo.png" alt="فاوای بروجرد">
                         <h2>سازمان فناوری اطلاعات و ارتباطات شهرستان بروجرد</h2>
                     </div>
                     <div class="about-content">
@@ -344,6 +343,7 @@
         </div>
     </div>
 
+    <script src="js/preloader.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/app.js"></script>
     <script src="js/chat.js"></script>

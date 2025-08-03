@@ -31,7 +31,6 @@ body {
     z-index: 1000;
     border-bottom: 1px solid var(--border-color);
     transition: all 0.3s ease;
-    /* اضافه کردن این خط برای ثابت ماندن هنگام اسکرول */
     position: fixed;
     width: 100%;
 }
@@ -228,7 +227,6 @@ body {
     width: 100%;
     background-color: var(--bg-color);
     transition: background-color 0.3s ease;
-    /* اضافه کردن margin-top برای جبران فضای هدر ثابت */
     margin-top: 85px;
 }
 
@@ -1349,4 +1347,48 @@ h2 {
         height: 60px;
         font-size: 1.6rem;
     }
+}
+
+/* Chat Status */
+.chat-status {
+    padding: 8px 15px;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    text-align: center;
+    display: none;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius-sm);
+    margin: 0 15px 10px;
+}
+
+.message-content p {
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* Animation for new messages */
+@keyframes messageIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Loading dots animation */
+.typing-indicator::after {
+    content: '...';
+    display: inline-block;
+    width: 1em;
+    text-align: left;
+    animation: typingDots 1.5s infinite;
+}
+
+@keyframes typingDots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
 }

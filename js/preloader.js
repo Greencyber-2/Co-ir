@@ -1,229 +1,170 @@
-class UltraModernPreloader {
-    constructor() {
-        this.preloader = document.querySelector('.preloader');
-        this.progressFill = document.querySelector('.progress-fill');
-        this.circleProgress = document.querySelector('.circle-progress');
-        this.progressPercent = document.querySelector('.progress-percent');
-        this.progressStatus = document.querySelector('.progress-status');
-        this.currentMessage = document.querySelector('.current-message');
-        this.tipMessage = document.querySelector('.tip-message');
-        
-        this.assets = {
-            images: [],
-            fonts: [],
-            scripts: [],
-            stylesheets: [],
-            videos: []
-        };
-        
-        this.loadedCount = 0;
-        this.totalAssets = 0;
-        this.minDisplayTime = 2500;
-        this.startTime = performance.now();
-        
-        this.loadingMessages = [
-            "در حال بارگذاری منابع...",
-            "بهینه‌سازی عملکرد...",
-            "آماده‌سازی رابط کاربری...",
-            "تنظیمات نهایی...",
-            "آماده نمایش..."
-        ];
-        
-        this.tips = [
-            "بروجرد به پاریس کوچولو معروف است",
-            "مسجد جامع بروجرد یکی از قدیمی‌ترین مساجد ایران است",
-            "تالاب بیشه دالان از جاذبه‌های طبیعی بروجرد است",
-            "بروجرد مرکز تولید محصولات کشاورزی در استان لرستان است",
-            "امامزاده قاسم از زیارتگاه‌های مهم بروجرد است"
-        ];
-        
-        this.init();
-    }
+// Advanced Preloader System
+document.addEventListener('DOMContentLoaded', function() {
+    const preloader = document.querySelector('.preloader');
+    const loadingProgress = document.querySelector('.loading-progress');
+    const loadingPercentage = document.querySelector('.loading-percentage');
+    const loadingTips = document.querySelector('.loading-tips');
+    const preloaderLogo = document.querySelector('.preloader-logo img');
     
-    init() {
-        document.body.style.overflow = 'hidden';
-        this.detectAllAssets();
-        this.setupEventListeners();
-        this.startMessageRotation();
-        this.startTipRotation();
-        this.startInitialProgress();
-    }
+    // Tips to display during loading
+    const tips = [
+        "بروجرد به پاریس کوچولو معروف است...",
+        "مسجد جامع بروجرد یکی از قدیمی‌ترین مساجد ایران است",
+        "تالاب بیشه دالان از جاذبه‌های طبیعی بروجرد است",
+        "بروجرد مرکز تولید محصولات کشاورزی در استان لرستان است",
+        "امامزاده قاسم از زیارتگاه‌های مهم بروجرد است",
+        "صنایع دستی بروجرد شامل ورشو و چاقوسازی است",
+        "بروجرد دارای آب و هوای معتدل کوهستانی است",
+        "غذاهای محلی بروجرد شامل آش ترخینه و کله جوش هستند"
+    ];
     
-    detectAllAssets() {
-        this.assets.images = Array.from(document.querySelectorAll('img'));
-        this.assets.fonts = Array.from(document.fonts);
-        this.assets.scripts = Array.from(document.querySelectorAll('script[src]'));
-        this.assets.stylesheets = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
-        this.assets.videos = Array.from(document.querySelectorAll('video source'));
-        
-        this.totalAssets = 
-            this.assets.images.length +
-            this.assets.fonts.length +
-            this.assets.scripts.length +
-            this.assets.stylesheets.length +
-            this.assets.videos.length +
-            3; // +3 برای DOMContentLoaded, window.load و حاشیه امنیت
-        
-        if (this.totalAssets < 10) this.totalAssets = 10;
-    }
+    // Resources to load
+    const resources = [
+        'images/logo.png',
+        'images/stories/city-hall.jpg',
+        'images/stories/city-event.jpg',
+        'images/stories/tourism.jpg',
+        'images/stories/tourism-event.jpg',
+        'images/stories/art.jpg',
+        'images/stories/art-event.jpg',
+        'images/stories/sport.jpg',
+        'images/stories/sport-event.jpg',
+        'images/tourism/mosque.jpg',
+        'images/tourism/emamzade.jpg',
+        'images/tourism/bazaar.jpg',
+        'images/tourism/wetland.jpg',
+        'images/tourism/historic-house.jpg',
+        'images/tourism/waterfall.jpg',
+        'images/tourism/bath.jpg',
+        'images/service-icons/pharmacy.png',
+        'images/service-icons/hospital.png',
+        'images/service-icons/police.png',
+        'images/service-icons/gas-station.png',
+        'images/service-icons/supermarket.png',
+        'images/service-icons/restaurant.png',
+        'images/service-icons/atm.png',
+        'images/service-icons/bus-station.png'
+    ];
     
-    setupEventListeners() {
-        // ردیابی تصاویر
-        this.assets.images.forEach(img => {
-            if (img.complete) this.assetLoaded();
-            else {
-                img.addEventListener('load', () => this.assetLoaded());
-                img.addEventListener('error', () => this.assetLoaded());
-            }
-        });
-        
-        // ردیابی فونت‌ها
-        document.fonts.ready.then(() => {
-            this.assetLoaded('فونت‌ها بارگذاری شدند');
-        });
-        
-        // ردیابی DOM
-        document.addEventListener('DOMContentLoaded', () => {
-            this.assetLoaded('DOM آماده است');
-        });
-        
-        // ردیابی بارگذاری کامل
-        window.addEventListener('load', () => {
-            this.assetLoaded('بارگذاری کامل شد', true);
-        });
-        
-        // ردیابی اسکریپت‌ها و استایل‌شیت‌ها
-        this.assets.scripts.forEach(script => {
-            script.addEventListener('load', () => this.assetLoaded());
-            script.addEventListener('error', () => this.assetLoaded());
-        });
-        
-        this.assets.stylesheets.forEach(link => {
-            link.addEventListener('load', () => this.assetLoaded());
-            link.addEventListener('error', () => this.assetLoaded());
-        });
-    }
+    let loadedResources = 0;
+    let totalResources = resources.length;
+    let currentTipIndex = 0;
+    let lastProgress = 0;
+    let smoothProgress = 0;
     
-    assetLoaded(message = '', isFinal = false) {
-        this.loadedCount++;
-        const progress = Math.min(100, Math.round((this.loadedCount / this.totalAssets) * 100));
+    // Preload logo first
+    preloadImage('images/logo.png').then(() => {
+        // Start loading animation
+        animateLoading();
         
-        this.updateProgress(progress);
+        // Preload all other resources
+        preloadAllResources();
         
-        if (message) {
-            this.showStatusMessage(message);
-        }
+        // Change tips periodically
+        const tipInterval = setInterval(changeTip, 3000);
         
-        if (isFinal || progress >= 100) {
-            this.finishLoading();
-        }
-    }
-    
-    updateProgress(percent) {
-        // نوار پیشرفت خطی
-        this.progressFill.style.width = `${percent}%`;
-        
-        // نوار پیشرفت دایره‌ای
-        const circumference = 565; // 2 * π * r (r=90)
-        const offset = circumference - (percent / 100) * circumference;
-        this.circleProgress.style.strokeDashoffset = offset;
-        
-        // درصد عددی
-        this.progressPercent.textContent = `${percent}%`;
-        
-        // تغییر رنگ بر اساس پیشرفت
-        if (percent < 30) {
-            this.progressFill.style.background = 'linear-gradient(90deg, var(--warning), var(--accent))';
-            this.circleProgress.style.stroke = 'var(--warning)';
-        } else if (percent < 70) {
-            this.progressFill.style.background = 'linear-gradient(90deg, var(--accent), var(--primary))';
-            this.circleProgress.style.stroke = 'var(--accent)';
-        } else {
-            this.progressFill.style.background = 'linear-gradient(90deg, var(--primary), var(--success))';
-            this.circleProgress.style.stroke = 'var(--success)';
-        }
-    }
-    
-    showStatusMessage(message) {
-        this.progressStatus.textContent = message;
-        this.progressStatus.style.opacity = '1';
-        
-        setTimeout(() => {
-            this.progressStatus.style.opacity = '0.7';
-        }, 2000);
-    }
-    
-    startMessageRotation() {
-        let counter = 0;
-        setInterval(() => {
-            this.currentMessage.textContent = this.loadingMessages[counter % this.loadingMessages.length];
-            counter++;
-        }, 3000);
-    }
-    
-    startTipRotation() {
-        let counter = 0;
-        setInterval(() => {
-            this.tipMessage.textContent = this.tips[counter % this.tips.length];
-            counter++;
-        }, 5000);
-    }
-    
-    startInitialProgress() {
-        // پیشرفت اولیه برای بهبود UX
-        let fakeProgress = 0;
-        const interval = setInterval(() => {
-            fakeProgress += Math.random() * 5;
-            if (fakeProgress >= 20) {
-                clearInterval(interval);
-                return;
-            }
-            
-            const currentProgress = parseInt(this.progressPercent.textContent);
-            if (currentProgress < 20) {
-                this.updateProgress(fakeProgress);
-            }
-        }, 200);
-    }
-    
-    finishLoading() {
-        const elapsed = performance.now() - this.startTime;
-        const remaining = Math.max(0, this.minDisplayTime - elapsed);
-        
-        setTimeout(() => {
-            this.preloader.classList.add('fade-out');
+        function changeTip() {
+            currentTipIndex = (currentTipIndex + 1) % tips.length;
+            loadingTips.style.opacity = 0;
             
             setTimeout(() => {
-                this.preloader.style.display = 'none';
-                document.body.style.overflow = '';
-                this.showAppContent();
-            }, 800);
-        }, remaining);
+                loadingTips.textContent = tips[currentTipIndex];
+                loadingTips.style.opacity = 1;
+            }, 500);
+        }
+        
+        // Smooth progress animation
+        function animateLoading() {
+            const targetProgress = Math.min(100, (loadedResources / totalResources) * 100);
+            
+            // Add some randomness to make it feel more natural
+            const randomIncrement = Math.random() * 2;
+            smoothProgress = Math.min(smoothProgress + randomIncrement, targetProgress);
+            
+            // Update UI
+            loadingProgress.style.width = `${smoothProgress}%`;
+            loadingPercentage.textContent = `${Math.floor(smoothProgress)}%`;
+            
+            // Pulse animation for logo when progress is slow
+            if (smoothProgress < 30) {
+                const scale = 0.95 + (Math.sin(Date.now() / 300) * 0.05);
+                preloaderLogo.style.transform = `scale(${scale})`;
+            } else if (smoothProgress < 70) {
+                const scale = 0.97 + (Math.sin(Date.now() / 200) * 0.03);
+                preloaderLogo.style.transform = `scale(${scale})`;
+            } else {
+                const scale = 0.98 + (Math.sin(Date.now() / 100) * 0.02);
+                preloaderLogo.style.transform = `scale(${scale})`;
+            }
+            
+            // Check if loading is complete
+            if (smoothProgress >= 100) {
+                clearInterval(tipInterval);
+                completeLoading();
+            } else {
+                requestAnimationFrame(animateLoading);
+            }
+        }
+        
+        function completeLoading() {
+            // Add final animation before hiding
+            preloaderLogo.style.transform = 'scale(1.1)';
+            loadingProgress.style.width = '100%';
+            loadingPercentage.textContent = '100%';
+            
+            setTimeout(() => {
+                preloader.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    
+                    // Initialize app after preloader is hidden
+                    if (typeof init === 'function') {
+                        init();
+                    }
+                }, 800);
+            }, 500);
+        }
+    }).catch(error => {
+        console.error('Error loading logo:', error);
+        loadingTips.textContent = 'خطا در بارگذاری لوگو. لطفاً اتصال اینترنت را بررسی کنید.';
+        // Continue anyway after delay
+        setTimeout(() => {
+            preloader.style.display = 'none';
+            if (typeof init === 'function') init();
+        }, 3000);
+    });
+    
+    function preloadAllResources() {
+        resources.forEach(resource => {
+            preloadImage(resource)
+                .then(() => {
+                    loadedResources++;
+                })
+                .catch(error => {
+                    console.error('Error loading resource:', resource, error);
+                    loadedResources++; // Continue even if some resources fail
+                });
+        });
     }
     
-    showAppContent() {
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
-        
-        // انیمیشن ظاهر شدن محتوا
-        document.querySelector('.app-container').style.animation = 'appFadeIn 0.8s ease forwards';
-        
-        // ایجاد keyframe دینامیک
-        if (!document.querySelector('#app-fade-animation')) {
-            const style = document.createElement('style');
-            style.id = 'app-fade-animation';
-            style.textContent = `
-                @keyframes appFadeIn {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
+    function preloadImage(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+            img.onerror = reject;
+        });
     }
-}
-
-// راه‌اندازی پیش‌لودر
-document.addEventListener('DOMContentLoaded', () => {
-    new UltraModernPreloader();
+    
+    // Fallback timeout in case something goes wrong
+    setTimeout(() => {
+        if (preloader.style.display !== 'none') {
+            loadingTips.textContent = 'اتصال اینترنت ضعیف است. لطفاً منتظر بمانید...';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+                if (typeof init === 'function') init();
+            }, 2000);
+        }
+    }, 10000);
 });

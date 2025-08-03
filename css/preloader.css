@@ -1,295 +1,154 @@
-/* پیش‌لودر Ultra Modern */
-:root {
-    --primary: #4361ee;
-    --secondary: #3f37c9;
-    --accent: #4895ef;
-    --light: #f8f9fa;
-    --dark: #212529;
-    --success: #4cc9f0;
-    --warning: #f72585;
-}
-
 .preloader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999;
+    background-color: var(--bg-color);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Vazirmatn', sans-serif;
-    overflow: hidden;
-}
-
-.preloader-background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--dark), var(--primary));
-}
-
-.gradient-overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        45deg,
-        rgba(67, 97, 238, 0.8),
-        rgba(72, 149, 239, 0.6),
-        rgba(76, 201, 240, 0.4)
-    );
-    opacity: 0.9;
-    animation: gradientShift 12s ease infinite;
-    background-size: 200% 200%;
-}
-
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.particles-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.particles-container::before {
-    content: '';
-    position: absolute;
-    width: 300%;
-    height: 300%;
-    top: -100%;
-    left: -100%;
-    background-image: 
-        radial-gradient(circle at center, rgba(255,255,255,0.1) 1px, transparent 1px),
-        radial-gradient(circle at center, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 50px 50px, 80px 80px;
-    animation: particlesMove 60s linear infinite;
-}
-
-@keyframes particlesMove {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(50px, 50px); }
+    z-index: 9999;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 
 .preloader-content {
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-    padding: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 30px;
     text-align: center;
-    z-index: 2;
+    max-width: 90%;
+    padding: 20px;
 }
 
-/* لوگو با انیمیشن مدرن */
-.logo-wrapper {
-    margin-bottom: 40px;
-    position: relative;
-}
-
-.logo-circle {
+.preloader-logo {
     width: 150px;
     height: 150px;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: transform 0.3s ease;
 }
 
-.logo-circle-svg {
-    position: absolute;
+.preloader-logo img {
     width: 100%;
-    height: 100%;
-    transform: rotate(-90deg);
-}
-
-.circle-bg {
-    fill: none;
-    stroke: rgba(255,255,255,0.1);
-    stroke-width: 8;
-}
-
-.circle-progress {
-    fill: none;
-    stroke: var(--light);
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-dasharray: 565;
-    stroke-dashoffset: 565;
-    transition: stroke-dashoffset 0.5s ease;
-}
-
-.logo-img {
-    width: 80px;
-    height: 80px;
+    height: auto;
     object-fit: contain;
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
-    animation: logoFloat 3s ease-in-out infinite;
+    transition: transform 0.3s ease;
 }
 
-@keyframes logoFloat {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-15px) scale(1.05); }
+.preloader-text {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-/* نوار پیشرفت پیشرفته */
-.progress-container {
+.preloader-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    animation: fadeIn 1s ease;
+}
+
+.preloader-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    animation: fadeIn 1.5s ease;
+}
+
+.loading-bar {
     width: 100%;
-    margin: 30px 0;
-}
-
-.progress-track {
-    height: 10px;
-    background: rgba(255,255,255,0.1);
+    max-width: 300px;
+    height: 8px;
+    background-color: var(--light-gray);
     border-radius: 10px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.progress-fill {
+.loading-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, var(--accent), var(--success));
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
     border-radius: 10px;
-    transition: width 0.5s ease;
-    position: relative;
-    overflow: hidden;
+    transition: width 0.3s ease;
 }
 
-.progress-fill::after {
-    content: '';
+.loading-percentage {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 8px;
+    animation: fadeIn 2s ease;
+}
+
+.loading-tips {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-style: italic;
+    max-width: 300px;
+    opacity: 0.8;
+    transition: opacity 0.5s ease;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.preloader.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Loading wave effect */
+.loading-wave {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
     bottom: 0;
-    background: linear-gradient(
-        90deg,
-        rgba(255,255,255,0) 0%,
-        rgba(255,255,255,0.4) 50%,
-        rgba(255,255,255,0) 100%
-    );
-    animation: progressShine 2s infinite;
-}
-
-@keyframes progressShine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-.progress-dots {
-    position: absolute;
-    top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background-image: radial-gradient(
-        circle at center,
-        rgba(255,255,255,0.3) 1px,
-        transparent 1px
-    );
-    background-size: 15px 15px;
+    height: 100px;
+    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%234a6fa5"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="%234a6fa5"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%234a6fa5"/></svg>');
+    background-size: cover;
+    background-repeat: no-repeat;
+    animation: wave 3s linear infinite;
+    opacity: 0.3;
 }
 
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    color: var(--light);
-    font-size: 14px;
+@keyframes wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
-.progress-percent {
-    font-weight: bold;
-}
-
-/* پیام‌های هوشمند */
-.loading-messages {
-    margin-top: 20px;
-    color: var(--light);
-}
-
-.current-message {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    animation: textPulse 2s infinite;
-}
-
-.tip-message {
-    font-size: 13px;
-    opacity: 0.8;
-}
-
-@keyframes textPulse {
-    0%, 100% { opacity: 0.9; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.02); }
-}
-
-/* انیمیشن خروج */
-.preloader.fade-out {
-    animation: fadeOut 0.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-}
-
-@keyframes fadeOut {
-    0% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
-}
-
-/* ریسپانسیو */
+/* Responsive */
 @media (max-width: 768px) {
-    .preloader-content {
-        padding: 20px;
-    }
-    
-    .logo-circle {
+    .preloader-logo {
         width: 120px;
         height: 120px;
     }
     
-    .logo-img {
-        width: 70px;
-        height: 70px;
+    .preloader-title {
+        font-size: 1.3rem;
     }
     
-    .current-message {
-        font-size: 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .logo-circle {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .logo-img {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .progress-track {
-        height: 8px;
-    }
-    
-    .progress-info {
-        font-size: 12px;
-    }
-    
-    .current-message {
-        font-size: 15px;
-    }
-    
-    .tip-message {
-        font-size: 12px;
+    .loading-tips {
+        min-height: 60px;
     }
 }

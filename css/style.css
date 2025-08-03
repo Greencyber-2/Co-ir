@@ -502,9 +502,6 @@ h2 {
 }
 
 
-
-
-
 /* Chatbot Section */
 #chatbot {
     position: fixed;
@@ -629,11 +626,31 @@ h2 {
     z-index: 5;
 }
 
+.welcome-back-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 6;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 .welcome-content {
     max-width: 400px;
     width: 100%;
     text-align: center;
     animation: fadeIn 0.4s ease;
+    position: relative;
 }
 
 .welcome-avatar {
@@ -854,7 +871,7 @@ h2 {
     align-items: center;
     background-color: var(--input-bg);
     border-radius: 24px;
-    padding: 5px 15px 5px 5px;
+    padding: 8px 8px 8px 15px;
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     direction: rtl;
@@ -869,13 +886,13 @@ h2 {
     flex: 1;
     border: none;
     background: none;
-    padding: 10px 0;
+    padding: 8px 0;
     font-size: 0.95rem;
     color: var(--text-color);
     outline: none;
     direction: rtl;
     font-family: Vazirmatn, sans-serif;
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 #chatbot-input-field::placeholder {
@@ -896,6 +913,7 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .toggle-suggestions-btn:hover {
@@ -1047,6 +1065,11 @@ h2 {
     background-color: rgba(109, 143, 199, 0.2);
 }
 
+.dark-mode .welcome-back-btn {
+    color: var(--white);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Responsive Adjustments */
 @media (max-width: 480px) {
     .message {
@@ -1058,7 +1081,7 @@ h2 {
     }
     
     .input-container {
-        padding: 5px 10px 5px 5px;
+        padding: 6px 6px 6px 10px;
     }
     
     #send-message-btn {
@@ -1068,6 +1091,7 @@ h2 {
     
     .toggle-suggestions-btn {
         font-size: 1rem;
+        padding: 6px;
     }
     
     .chatbot-header {
@@ -1082,11 +1106,17 @@ h2 {
     .chatbot-details h3 {
         font-size: 0.9rem;
     }
+    
+    #chatbot-input-field {
+        margin: 0 5px;
+        padding: 6px 0;
+        font-size: 0.9rem;
+    }
 }
 
 @media (min-width: 768px) {
     .input-container {
-        padding: 5px 20px 5px 5px;
+        padding: 8px 8px 8px 15px;
     }
     
     #send-message-btn {
@@ -1098,7 +1128,6 @@ h2 {
         font-size: 1.2rem;
     }
 }
-
 
 
 /* Tourism Section */

@@ -1,19 +1,72 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <title>رستوران‌های نزدیک من | بروجرد</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <meta name="description" content="پیدا کردن بهترین رستوران‌های نزدیک شما در بروجرد">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-utensils"></i> رستوران‌های نزدیک من</h1>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="جستجوی رستوران...">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </header>
 
-<div id="map"></div>
-<div id="message">در حال دریافت موقعیت شما...</div>
+        <div class="main-content">
+            <div id="sidebar">
+                <div class="filter-section">
+                    <h3><i class="fas fa-filter"></i> فیلترها</h3>
+                    <div class="filter-group">
+                        <label><input type="checkbox" class="cuisine-filter" value="ایرانی"> ایرانی</label>
+                        <label><input type="checkbox" class="cuisine-filter" value="فست فود"> فست فود</label>
+                        <label><input type="checkbox" class="cuisine-filter" value="بین المللی"> بین‌المللی</label>
+                    </div>
+                    <div class="filter-group">
+                        <label>فاصله:
+                            <select id="distance-filter">
+                                <option value="1000">1 کیلومتر</option>
+                                <option value="2000" selected>2 کیلومتر</option>
+                                <option value="5000">5 کیلومتر</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="filter-group">
+                        <label>رتبه‌بندی:
+                            <select id="rating-filter">
+                                <option value="0">همه</option>
+                                <option value="3">3+ ستاره</option>
+                                <option value="4">4+ ستاره</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div id="restaurants-list"></div>
+            </div>
+            <div id="map"></div>
+        </div>
+    </div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="script.js"></script>
+    <div id="message">
+        <div class="message-content">
+            <span id="message-text"></span>
+            <button id="close-message"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
 
+    <div id="loading">
+        <div class="spinner"></div>
+        <span>در حال دریافت موقعیت...</span>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.76.1/dist/L.Control.Locate.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

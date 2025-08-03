@@ -213,6 +213,8 @@ function renderChatHistory() {
             const actionsElement = document.createElement('div');
             actionsElement.className = 'message-actions';
             actionsElement.style.justifyContent = 'flex-start';
+            actionsElement.style.marginRight = 'auto';
+            actionsElement.style.marginLeft = '0';
             
             const likeBtn = document.createElement('button');
             likeBtn.className = `like-btn ${msg.liked === true ? 'active' : ''}`;

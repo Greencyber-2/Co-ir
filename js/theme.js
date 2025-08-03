@@ -1,46 +1,39 @@
-// theme.js
-function toggleTheme() {
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleBtn = document.getElementById('themeToggle');
     const body = document.body;
-    const isDark = body.classList.contains('dark-mode');
-    
-    // حذف کلاس‌های قدیمی و اضافه کردن کلاس جدید
-    body.classList.remove(isDark ? 'dark-mode' : 'light-mode');
-    body.classList.add(isDark ? 'light-mode' : 'dark-mode');
-    
-    // ذخیره وضعیت تم در localStorage
-    localStorage.setItem('darkMode', !isDark);
-    
-    // به‌روزرسانی آیکون
-    updateThemeIcon(!isDark);
-}
-
-function updateThemeIcon(isDark) {
     const lightIcon = document.querySelector('.light-icon');
     const darkIcon = document.querySelector('.dark-icon');
-    
-    if (isDark) {
-        lightIcon.style.opacity = '0';
-        darkIcon.style.opacity = '1';
-    } else {
-        lightIcon.style.opacity = '1';
-        darkIcon.style.opacity = '0';
+
+    // Load Saved Theme
+    const savedTheme = localStorage.getItem('themeMode');
+    if (savedTheme) {
+        body.classList.remove('light-mode', 'dark-mode');
+        body.classList.add(savedTheme);
+        updateIcons(savedTheme);
     }
-}
 
-function initTheme() {
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-    const body = document.body;
-    
-    // تنظیم کلاس بر اساس مقدار ذخیره‌شده
-    body.classList.toggle('dark-mode', savedDarkMode);
-    body.classList.toggle('light-mode', !savedDarkMode);
-    
-    // به‌روزرسانی آیکون
-    updateThemeIcon(savedDarkMode);
-}
+    // Toggle Theme on Click
+    themeToggleBtn.addEventListener('click', () => {
+        if (body.classList.contains('dark-mode')) {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('themeMode', 'light-mode');
+            updateIcons('light-mode');
+        } else {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('themeMode', 'dark-mode');
+            updateIcons('dark-mode');
+        }
+    });
 
-// مقداردهی اولیه هنگام بارگذاری صفحه
-document.addEventListener('DOMContentLoaded', initTheme);
-
-// تابع را در scope جهانی قرار دهید
-window.toggleTheme = toggleTheme;
+    function updateIcons(mode) {
+        if (mode === 'dark-mode') {
+            lightIcon.style.display = 'none';
+            darkIcon.style.display = 'inline';
+        } else {
+            lightIcon.style.display = 'inline';
+            darkIcon.style.display = 'none';
+        }
+    }
+});

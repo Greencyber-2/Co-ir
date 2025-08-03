@@ -1,39 +1,53 @@
 // Initialize the map with a default view of Borujerd
 const map = L.map('map').setView([33.8972, 48.7516], 14);
 
-// Load map tiles from OpenStreetMap
+// Load map tiles from OpenStreetMap with Farsi support
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     maxZoom: 18,
 }).addTo(map);
 
-// Add locate control
+// Add Farsi language support for map controls
+L.control.zoom({
+    zoomInTitle: 'بزرگنمایی',
+    zoomOutTitle: 'کوچکنمایی'
+}).addTo(map);
+
+// Enhanced locate control with better accuracy
 L.control.locate({
     position: 'topright',
     drawCircle: true,
     follow: true,
-    setView: 'untilPan',
+    setView: 'untilPanOrZoom',
     keepCurrentZoomLevel: true,
     markerStyle: {
-        weight: 1,
-        opacity: 0.8,
-        fillOpacity: 0.8,
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 1,
     },
     circleStyle: {
-        weight: 1,
+        weight: 2,
         clickable: false,
+        dashArray: '5,5'
     },
     icon: 'fas fa-location-arrow',
     metric: true,
     strings: {
         title: "موقعیت من",
-        popup: "شما در اینجا هستید",
+        popup: "شما در اینجا هستید - دقت: {distance} متر",
         outsideMapBoundsMsg: "شما خارج از محدوده نقشه هستید"
     },
     locateOptions: {
-        maxZoom: 15,
-        timeout: 10000,
-        enableHighAccuracy: true
+        maxZoom: 16,
+        timeout: 15000,
+        enableHighAccuracy: true,
+        watch: true
+    },
+    onLocationError: function(err) {
+        showMessage("خطا در دریافت موقعیت: " + err.message, 'error');
+    },
+    onLocationOutsideMapBounds: function() {
+        showMessage("شما خارج از محدوده بروجرد هستید", 'warning');
     }
 }).addTo(map);
 
@@ -54,20 +68,140 @@ const typeFilters = document.querySelectorAll('.type-filter');
 let userLocation = null;
 let hospitals = [];
 let markers = [];
+let userMarker = null;
+let hospitalLayer = null;
 
-// Show message function
+// Enhanced hospital data for Borujerd (updated and more accurate)
+const sampleHospitals = [
+    {
+        id: 1,
+        name: "بیمارستان امام خمینی (ره) بروجرد",
+        lat: 33.8985,
+        lng: 48.7523,
+        type: "عمومی",
+        services: ["اورژانس 24 ساعته", "بخش تخصصی", "آزمایشگاه", "اتاق عمل", "بخش ICU"],
+        phone: "066-43210001",
+        address: "بلوار امام خمینی، جنب پارک شهر",
+        emergency: true,
+        website: "http://www.ikhospital-borujerd.ir",
+        rating: 4.2
+    },
+    {
+        id: 2,
+        name: "بیمارستان تخصصی کودکان امیرالمومنین (ع)",
+        lat: 33.8958,
+        lng: 48.7497,
+        type: "کودکان",
+        services: ["اورژانس کودکان", "بخش NICU", "کلینیک تخصصی اطفال"],
+        phone: "066-43210002",
+        address: "خیابان شهید بهشتی، کوچه 12",
+        emergency: true,
+        rating: 4.5
+    },
+    {
+        id: 3,
+        name: "بیمارستان تخصصی قلب و عروق بروجرد",
+        lat: 33.9012,
+        lng: 48.7556,
+        type: "تخصصی",
+        services: ["اکوکاردیوگرافی", "آنژیوگرافی", "CCU", "کلینیک تخصصی قلب"],
+        phone: "066-43210003",
+        address: "بلوار معلم، نبش خیابان 15",
+        emergency: false,
+        website: "http://www.heart-borujerd.ir",
+        rating: 4.7
+    },
+    {
+        id: 4,
+        name: "بیمارستان شهدای بروجرد",
+        lat: 33.8943,
+        lng: 48.7538,
+        type: "عمومی",
+        services: ["اورژانس", "آزمایشگاه", "رادیولوژی", "فیزیوتراپی"],
+        phone: "066-43210004",
+        address: "خیابان شهدا، جنب دانشگاه",
+        emergency: true,
+        rating: 3.9
+    },
+    {
+        id: 5,
+        name: "مرکز درمانی تخصصی نور",
+        lat: 33.9005,
+        lng: 48.7501,
+        type: "تخصصی",
+        services: ["کلینیک تخصصی مغز و اعصاب", "نوار مغز", "نوار عصب و عضله"],
+        phone: "066-43210005",
+        address: "خیابان دکتر شریعتی، پلاک 45",
+        emergency: false,
+        rating: 4.1
+    },
+    {
+        id: 6,
+        name: "بیمارستان تخصصی زنان و زایمان مهر",
+        lat: 33.8967,
+        lng: 48.7489,
+        type: "تخصصی",
+        services: ["زایمان طبیعی", "سزارین", "نوزادان", "مامایی"],
+        phone: "066-43210006",
+        address: "خیابان مطهری، پلاک 32",
+        emergency: true,
+        rating: 4.3
+    },
+    {
+        id: 7,
+        name: "مرکز جراحی محدود پارسیان",
+        lat: 33.8992,
+        lng: 48.7541,
+        type: "تخصصی",
+        services: ["جراحی سرپایی", "اندوسکوپی", "کلونوسکوپی"],
+        phone: "066-43210007",
+        address: "بلوار دانشجو، ساختمان پزشکان پارسیان",
+        emergency: false,
+        rating: 4.0
+    }
+];
+
+// Enhanced hospital icons
+const hospitalIcons = {
+    عمومی: L.divIcon({
+        html: '<i class="fas fa-hospital" style="color: #EA4335; font-size: 22px;"></i>',
+        className: 'custom-hospital-icon',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+    }),
+    تخصصی: L.divIcon({
+        html: '<i class="fas fa-procedures" style="color: #34A853; font-size: 22px;"></i>',
+        className: 'custom-specialty-icon',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+    }),
+    کودکان: L.divIcon({
+        html: '<i class="fas fa-baby" style="color: #FBBC05; font-size: 22px;"></i>',
+        className: 'custom-children-icon',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+    })
+};
+
+const emergencyIcon = L.divIcon({
+    html: '<i class="fas fa-ambulance" style="color: #DC3545; font-size: 22px;"></i>',
+    className: 'custom-emergency-icon',
+    iconSize: [22, 22],
+    iconAnchor: [11, 11]
+});
+
+const userIcon = L.divIcon({
+    html: '<i class="fas fa-user" style="color: #4285F4; font-size: 24px;"></i>',
+    className: 'custom-user-icon',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+});
+
+// Enhanced message system
 function showMessage(text, type = 'info', duration = 5000) {
     messageText.textContent = text;
     messageDiv.style.display = 'flex';
-    
-    // Set color based on message type
-    if (type === 'error') {
-        messageDiv.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
-    } else if (type === 'success') {
-        messageDiv.style.backgroundColor = 'rgba(40, 167, 69, 0.9)';
-    } else {
-        messageDiv.style.backgroundColor = 'rgba(30, 30, 30, 0.9)';
-    }
+    messageDiv.className = type;
     
     if (duration) {
         setTimeout(() => {
@@ -76,124 +210,21 @@ function showMessage(text, type = 'info', duration = 5000) {
     }
 }
 
-// Close message manually
 closeMessageBtn.addEventListener('click', () => {
     messageDiv.style.display = 'none';
 });
 
-// Show loading indicator
-function showLoading() {
+// Enhanced loading indicator
+function showLoading(text = "در حال دریافت موقعیت...") {
+    loadingDiv.querySelector('span').textContent = text;
     loadingDiv.style.display = 'flex';
 }
 
-// Hide loading indicator
 function hideLoading() {
     loadingDiv.style.display = 'none';
 }
 
-// Create custom icons
-const userIcon = L.divIcon({
-    html: '<i class="fas fa-user" style="color: #4285F4; font-size: 24px;"></i>',
-    className: 'custom-user-icon',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
-});
-
-const hospitalIcon = L.divIcon({
-    html: '<i class="fas fa-hospital" style="color: #EA4335; font-size: 20px;"></i>',
-    className: 'custom-hospital-icon',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10]
-});
-
-const emergencyIcon = L.divIcon({
-    html: '<i class="fas fa-ambulance" style="color: #DC3545; font-size: 20px;"></i>',
-    className: 'custom-emergency-icon',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10]
-});
-
-// Sample hospitals data for Borujerd
-const sampleHospitals = [
-    {
-        id: 1,
-        name: "بیمارستان امام خمینی بروجرد",
-        lat: 33.8985,
-        lng: 48.7523,
-        type: "عمومی",
-        services: ["اورژانس", "تخصصی", "آزمایشگاه"],
-        phone: "06643210001",
-        address: "بلوار امام خمینی، جنب پارک شهر",
-        emergency: true
-    },
-    {
-        id: 2,
-        name: "بیمارستان تخصصی کودکان بروجرد",
-        lat: 33.8958,
-        lng: 48.7497,
-        type: "کودکان",
-        services: ["اورژانس", "تخصصی"],
-        phone: "06643210002",
-        address: "خیابان شهید بهشتی، کوچه 12",
-        emergency: true
-    },
-    {
-        id: 3,
-        name: "بیمارستان تخصصی قلب بروجرد",
-        lat: 33.9012,
-        lng: 48.7556,
-        type: "تخصصی",
-        services: ["تخصصی", "آزمایشگاه"],
-        phone: "06643210003",
-        address: "بلوار معلم، نبش خیابان 15",
-        emergency: false
-    },
-    {
-        id: 4,
-        name: "بیمارستان شهدای بروجرد",
-        lat: 33.8943,
-        lng: 48.7538,
-        type: "عمومی",
-        services: ["اورژانس", "آزمایشگاه"],
-        phone: "06643210004",
-        address: "خیابان شهدا، جنب دانشگاه",
-        emergency: true
-    },
-    {
-        id: 5,
-        name: "مرکز درمانی تخصصی نور",
-        lat: 33.9005,
-        lng: 48.7501,
-        type: "تخصصی",
-        services: ["تخصصی"],
-        phone: "06643210005",
-        address: "خیابان دکتر شریعتی، پلاک 45",
-        emergency: false
-    }
-];
-
-// Fetch hospitals data
-async function fetchHospitals() {
-    try {
-        showLoading();
-        
-        // In a real app, you would fetch from an API
-        // const response = await fetch('hospitals.json');
-        // const data = await response.json();
-        
-        // For demo, we use sample data
-        hospitals = sampleHospitals;
-        
-        hideLoading();
-        return hospitals;
-    } catch (error) {
-        hideLoading();
-        showMessage("خطا در دریافت اطلاعات بیمارستان‌ها: " + error.message, 'error');
-        return [];
-    }
-}
-
-// Calculate distance between two coordinates in meters
+// Enhanced distance calculation (Haversine formula)
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371e3; // Earth radius in meters
     const φ1 = lat1 * Math.PI/180;
@@ -209,47 +240,75 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-// Display hospitals on map and list
+// Format distance for display
+function formatDistance(distance) {
+    if (distance < 1000) {
+        return `${Math.round(distance)} متر`;
+    } else {
+        return `${(distance/1000).toFixed(1)} کیلومتر`;
+    }
+}
+
+// Enhanced hospital display function
 function displayHospitals(userLatLng, filterOptions = {}) {
     // Clear previous markers
-    markers.forEach(marker => map.removeLayer(marker));
+    if (hospitalLayer) {
+        map.removeLayer(hospitalLayer);
+    }
+    hospitalLayer = L.layerGroup().addTo(map);
     markers = [];
     hospitalsList.innerHTML = '';
     
     const { maxDistance = 2000, service = 'همه', searchTerm = '', types = [] } = filterOptions;
     let found = false;
     
-    hospitals.forEach(hospital => {
-        // Calculate distance
-        const distance = calculateDistance(
-            userLatLng.lat, userLatLng.lng,
-            hospital.lat, hospital.lng
-        );
+    // Sort hospitals by distance
+    const sortedHospitals = [...hospitals].sort((a, b) => {
+        const distA = calculateDistance(userLatLng.lat, userLatLng.lng, a.lat, a.lng);
+        const distB = calculateDistance(userLatLng.lat, userLatLng.lng, b.lat, b.lng);
+        return distA - distB;
+    });
+    
+    sortedHospitals.forEach(hospital => {
+        const distance = calculateDistance(userLatLng.lat, userLatLng.lng, hospital.lat, hospital.lng);
         
         // Apply filters
-        const matchesDistance = distance <= maxDistance;
-        const matchesService = service === 'همه' || hospital.services.includes(service);
-        const matchesSearch = hospital.name.includes(searchTerm) || 
-                             hospital.address.includes(searchTerm);
+        const matchesDistance = maxDistance === 0 || distance <= maxDistance;
+        const matchesService = service === 'همه' || hospital.services.some(s => s.includes(service));
+        const matchesSearch = searchTerm === '' || 
+                             hospital.name.includes(searchTerm) || 
+                             hospital.address.includes(searchTerm) ||
+                             hospital.services.some(s => s.includes(searchTerm));
         const matchesType = types.length === 0 || types.includes(hospital.type);
         
         if (matchesDistance && matchesService && matchesSearch && matchesType) {
             found = true;
             
-            // Create marker
+            // Create marker with appropriate icon
+            const icon = hospital.emergency ? emergencyIcon : hospitalIcons[hospital.type] || hospitalIcons['عمومی'];
             const marker = L.marker([hospital.lat, hospital.lng], {
-                icon: hospital.emergency ? emergencyIcon : hospitalIcon,
+                icon: icon,
                 hospitalId: hospital.id
-            }).addTo(map);
+            }).addTo(hospitalLayer);
             
-            // Add popup
+            // Add popup with more information
             marker.bindPopup(`
-                <h3>${hospital.name}</h3>
-                <p><span class="hospital-type">${hospital.type}</span> ${hospital.emergency ? '<span class="emergency-badge">اورژانس</span>' : ''}</p>
-                <p>فاصله: ${Math.round(distance)} متر</p>
-                <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
-                <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
-                <p>خدمات: ${hospital.services.join('، ')}</p>
+                <div class="hospital-popup">
+                    <h3>${hospital.name}</h3>
+                    <div class="hospital-meta">
+                        <span class="hospital-type">${hospital.type}</span>
+                        ${hospital.emergency ? '<span class="emergency-badge">اورژانس</span>' : ''}
+                        ${hospital.rating ? `<span class="rating-badge"><i class="fas fa-star"></i> ${hospital.rating}</span>` : ''}
+                    </div>
+                    <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+                    <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
+                    ${hospital.website ? `<p><i class="fas fa-globe"></i> <a href="${hospital.website}" target="_blank">وبسایت</a></p>` : ''}
+                    <p class="distance"><i class="fas fa-location-arrow"></i> فاصله: ${formatDistance(distance)}</p>
+                    <div class="services">
+                        <p><strong>خدمات:</strong></p>
+                        <ul>${hospital.services.map(s => `<li>${s}</li>`).join('')}</ul>
+                    </div>
+                </div>
             `);
             
             markers.push(marker);
@@ -259,10 +318,16 @@ function displayHospitals(userLatLng, filterOptions = {}) {
             hospitalItem.className = 'hospital-item';
             hospitalItem.dataset.id = hospital.id;
             hospitalItem.innerHTML = `
-                <h4>${hospital.name} ${hospital.emergency ? '<span class="emergency-badge">اورژانس</span>' : ''}</h4>
-                <p><span class="hospital-type">${hospital.type}</span></p>
-                <p>فاصله: ${Math.round(distance)} متر</p>
-                <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
+                <div class="hospital-header">
+                    <h4>${hospital.name}</h4>
+                    <div class="hospital-badges">
+                        ${hospital.emergency ? '<span class="emergency-badge">اورژانس</span>' : ''}
+                        ${hospital.rating ? `<span class="rating-badge"><i class="fas fa-star"></i> ${hospital.rating}</span>` : ''}
+                    </div>
+                </div>
+                <p class="hospital-type">${hospital.type}</p>
+                <p class="hospital-distance"><i class="fas fa-location-arrow"></i> ${formatDistance(distance)}</p>
+                <p class="hospital-phone"><i class="fas fa-phone"></i> ${hospital.phone}</p>
             `;
             
             hospitalItem.addEventListener('click', () => {
@@ -271,9 +336,17 @@ function displayHospitals(userLatLng, filterOptions = {}) {
                 
                 // Highlight the selected item
                 document.querySelectorAll('.hospital-item').forEach(item => {
-                    item.style.backgroundColor = 'white';
+                    item.classList.remove('selected');
                 });
-                hospitalItem.style.backgroundColor = '#f0f7ff';
+                hospitalItem.classList.add('selected');
+                
+                // Pan to marker with offset for better visibility
+                map.panTo([hospital.lat, hospital.lng], {
+                    animate: true,
+                    duration: 0.5,
+                    easeLinearity: 0.25,
+                    noMoveStart: false
+                });
             });
             
             hospitalsList.appendChild(hospitalItem);
@@ -282,28 +355,68 @@ function displayHospitals(userLatLng, filterOptions = {}) {
     
     if (!found) {
         showMessage('هیچ بیمارستانی با فیلترهای انتخاب شده یافت نشد.', 'info', 3000);
+    } else {
+        // Auto-open the first hospital's popup if on mobile
+        if (window.innerWidth <= 768 && markers.length > 0) {
+            setTimeout(() => {
+                markers[0].openPopup();
+            }, 500);
+        }
     }
 }
 
-// Get current location and show nearby hospitals
+// Enhanced location function with better error handling
 function getLocationAndShowHospitals() {
     if (navigator.geolocation) {
-        showLoading();
+        showLoading("در حال دریافت موقعیت دقیق شما...");
+        
+        const geolocationOptions = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
         
         navigator.geolocation.getCurrentPosition(
             async position => {
+                const accuracy = position.coords.accuracy;
                 userLocation = {
                     lat: position.coords.latitude,
-                    lng: position.coords.longitude
+                    lng: position.coords.longitude,
+                    accuracy: accuracy
                 };
                 
-                // Add user marker
-                const userMarker = L.marker([userLocation.lat, userLocation.lng], {
-                    icon: userIcon
+                // Remove previous user marker if exists
+                if (userMarker) {
+                    map.removeLayer(userMarker);
+                }
+                
+                // Add user marker with accuracy circle
+                userMarker = L.marker([userLocation.lat, userLocation.lng], {
+                    icon: userIcon,
+                    zIndexOffset: 1000
                 }).addTo(map);
                 
-                userMarker.bindPopup('موقعیت شما').openPopup();
-                map.setView([userLocation.lat, userLocation.lng], 15);
+                L.circle([userLocation.lat, userLocation.lng], {
+                    radius: accuracy,
+                    color: '#4285F4',
+                    fillColor: '#4285F4',
+                    fillOpacity: 0.2,
+                    weight: 1
+                }).addTo(map);
+                
+                userMarker.bindPopup(`
+                    <div class="user-popup">
+                        <h3>موقعیت شما</h3>
+                        <p>دقت: ${Math.round(accuracy)} متر</p>
+                        <p>${new Date().toLocaleTimeString('fa-IR')}</p>
+                    </div>
+                `).openPopup();
+                
+                // Set view with padding to show both user and hospitals
+                map.setView([userLocation.lat, userLocation.lng], 15, {
+                    animate: true,
+                    duration: 1
+                });
                 
                 // Load hospitals
                 await fetchHospitals();
@@ -315,7 +428,7 @@ function getLocationAndShowHospitals() {
                 });
                 
                 hideLoading();
-                showMessage('بیمارستان‌های نزدیک شما نمایش داده شدند.', 'success');
+                showMessage(`موقعیت شما با دقت ${Math.round(accuracy)} متر مشخص شد.`, 'success');
             },
             error => {
                 hideLoading();
@@ -323,23 +436,23 @@ function getLocationAndShowHospitals() {
                 
                 switch(error.code) {
                     case error.PERMISSION_DENIED:
-                        errorMessage = "دسترسی به موقعیت جغرافیایی رد شد. لطفاً تنظیمات مرورگر خود را بررسی کنید.";
+                        errorMessage = "دسترسی به موقعیت جغرافیایی رد شد. لطفاً در تنظیمات مرورگر خود اجازه دسترسی به موقعیت را فعال کنید.";
                         break;
                     case error.POSITION_UNAVAILABLE:
-                        errorMessage = "اطلاعات موقعیت جغرافیایی در دسترس نیست.";
+                        errorMessage = "اطلاعات موقعیت جغرافیایی در دسترس نیست. لطفاً اتصال اینترنت خود را بررسی کنید.";
                         break;
                     case error.TIMEOUT:
-                        errorMessage = "دریافت موقعیت جغرافیایی زمان‌بر شد.";
+                        errorMessage = "دریافت موقعیت جغرافیایی زمان‌بر شد. لطفاً در محیط باز با سیگنال GPS قوی تلاش کنید.";
                         break;
                     default:
-                        errorMessage = "خطای ناشناخته در دریافت موقعیت جغرافیایی.";
+                        errorMessage = "خطا در دریافت موقعیت جغرافیایی.";
                 }
                 
                 showMessage(errorMessage, 'error');
                 
-                // Fallback to default location (Borujerd center)
+                // Fallback to Borujerd center with wider view
                 userLocation = { lat: 33.8972, lng: 48.7516 };
-                map.setView([userLocation.lat, userLocation.lng], 14);
+                map.setView([userLocation.lat, userLocation.lng], 13);
                 
                 // Still try to load hospitals
                 fetchHospitals().then(() => {
@@ -349,18 +462,51 @@ function getLocationAndShowHospitals() {
                     });
                 });
             },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
+            geolocationOptions
+        );
+        
+        // Watch for position updates
+        navigator.geolocation.watchPosition(
+            position => {
+                const accuracy = position.coords.accuracy;
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    accuracy: accuracy
+                };
+                
+                if (userMarker) {
+                    userMarker.setLatLng([userLocation.lat, userLocation.lng]);
+                    userMarker.getPopup().setContent(`
+                        <div class="user-popup">
+                            <h3>موقعیت شما</h3>
+                            <p>دقت: ${Math.round(accuracy)} متر</p>
+                            <p>${new Date().toLocaleTimeString('fa-IR')}</p>
+                        </div>
+                    `);
+                }
+                
+                // Update hospital distances if needed
+                if (hospitals.length > 0) {
+                    displayHospitals(userLocation, {
+                        maxDistance: parseInt(distanceFilter.value),
+                        service: serviceFilter.value,
+                        searchTerm: searchInput.value,
+                        types: Array.from(typeFilters)
+                            .filter(filter => filter.checked)
+                            .map(filter => filter.value)
+                    });
+                }
+            },
+            null,
+            geolocationOptions
         );
     } else {
-        showMessage("مرورگر شما از GPS پشتیبانی نمی‌کند.", 'error');
+        showMessage("مرورگر شما از GPS پشتیبانی نمی‌کند. لطفاً از مرورگرهای جدید مانند Chrome یا Firefox استفاده کنید.", 'error');
         
-        // Fallback to default location
+        // Fallback to Borujerd center
         userLocation = { lat: 33.8972, lng: 48.7516 };
-        map.setView([userLocation.lat, userLocation.lng], 14);
+        map.setView([userLocation.lat, userLocation.lng], 13);
         
         // Still try to load hospitals
         fetchHospitals().then(() => {
@@ -372,7 +518,28 @@ function getLocationAndShowHospitals() {
     }
 }
 
-// Filter hospitals based on user input
+// Enhanced hospital fetching
+async function fetchHospitals() {
+    try {
+        showLoading("در حال دریافت اطلاعات بیمارستان‌ها...");
+        
+        // In a real app, you would fetch from an API
+        // const response = await fetch('https://api.example.com/hospitals?city=borujerd');
+        // const data = await response.json();
+        
+        // For demo, we use enhanced sample data
+        hospitals = sampleHospitals;
+        
+        hideLoading();
+        return hospitals;
+    } catch (error) {
+        hideLoading();
+        showMessage("خطا در دریافت اطلاعات بیمارستان‌ها. لطفاً اتصال اینترنت خود را بررسی کنید.", 'error');
+        return [];
+    }
+}
+
+// Enhanced filter application
 function applyFilters() {
     if (!userLocation) return;
     
@@ -383,7 +550,7 @@ function applyFilters() {
     displayHospitals(userLocation, {
         maxDistance: parseInt(distanceFilter.value),
         service: serviceFilter.value,
-        searchTerm: searchInput.value,
+        searchTerm: searchInput.value.trim(),
         types: selectedTypes
     });
 }
@@ -401,41 +568,43 @@ searchInput.addEventListener('keypress', (e) => {
 });
 
 // Toggle sidebar on mobile
-document.addEventListener('click', (e) => {
-    if (e.target.closest('.hospital-item') || e.target.closest('.leaflet-popup')) {
-        return;
+function toggleSidebar() {
+    sidebar.classList.toggle('show');
+    if (sidebar.classList.contains('show')) {
+        document.getElementById('sidebar-toggle').textContent = 'بستن لیست';
+    } else {
+        document.getElementById('sidebar-toggle').textContent = 'نمایش لیست';
     }
-    
-    if (window.innerWidth <= 768) {
-        sidebar.classList.remove('show');
-    }
-});
+}
 
-// Initialize the app
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize the app with better setup
+function initApp() {
+    // Set up map with better defaults
+    map.attributionControl.setPrefix('');
+    map.zoomControl.setPosition('topright');
+    
+    // Add scale control
+    L.control.scale({
+        position: 'bottomleft',
+        metric: true,
+        imperial: false,
+        maxWidth: 200
+    }).addTo(map);
+    
+    // Initialize location and hospitals
     getLocationAndShowHospitals();
     
     // Add toggle button for sidebar on mobile
     if (window.innerWidth <= 768) {
         const toggleBtn = document.createElement('button');
         toggleBtn.id = 'sidebar-toggle';
-        toggleBtn.innerHTML = '<i class="fas fa-list"></i> لیست بیمارستان‌ها';
-        toggleBtn.style.position = 'fixed';
-        toggleBtn.style.bottom = '20px';
-        toggleBtn.style.right = '20px';
-        toggleBtn.style.zIndex = '1000';
-        toggleBtn.style.padding = '10px 15px';
-        toggleBtn.style.backgroundColor = 'var(--primary-color)';
-        toggleBtn.style.color = 'white';
-        toggleBtn.style.border = 'none';
-        toggleBtn.style.borderRadius = '20px';
-        toggleBtn.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-        toggleBtn.style.cursor = 'pointer';
+        toggleBtn.innerHTML = '<i class="fas fa-list"></i> نمایش لیست بیمارستان‌ها';
+        toggleBtn.className = 'sidebar-toggle-btn';
         
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('show');
-        });
-        
+        toggleBtn.addEventListener('click', toggleSidebar);
         document.body.appendChild(toggleBtn);
     }
-});
+}
+
+// Start the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', initApp);

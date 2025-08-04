@@ -56,7 +56,7 @@ body {
   height: 100vh;
 }
 
-/* هدر ثابت */
+/* هدر */
 .app-header {
   position: fixed;
   top: 0;
@@ -137,10 +137,8 @@ body {
   height: 100%;
 }
 
-/* پنل‌های کناری */
-.hospital-panel,
-.route-panel,
-.nearby-panel {
+/* پنل‌ها */
+.panel {
   position: fixed;
   bottom: -100%;
   left: 0;
@@ -155,9 +153,7 @@ body {
   flex-direction: column;
 }
 
-.hospital-panel.open,
-.route-panel.open,
-.nearby-panel.open {
+.panel.open {
   bottom: var(--footer-height);
 }
 
@@ -197,6 +193,7 @@ body {
   background-position: center;
   border-radius: 1rem;
   margin-bottom: 2rem;
+  box-shadow: var(--shadow);
 }
 
 .hospital-info {
@@ -581,6 +578,7 @@ body {
   bottom: 0;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 2000;
@@ -594,31 +592,26 @@ body {
   visibility: visible;
 }
 
-.loading-content {
-  background: var(--card-bg);
-  padding: 2rem 3rem;
-  border-radius: 1rem;
-  text-align: center;
-  color: var(--text-color);
-}
-
 .loading-spinner {
   width: 5rem;
   height: 5rem;
-  border: 5px solid rgba(24, 90, 157, 0.2);
+  border: 5px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: var(--primary-color);
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1.5rem;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1.5rem;
+}
+
+.loading-text {
+  color: white;
+  font-size: 1.6rem;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
-/* فوتر ثابت */
+/* فوتر */
 .app-footer {
   position: fixed;
   bottom: 0;
@@ -713,9 +706,7 @@ body {
 
 /* واکنشگرایی */
 @media (max-width: 768px) {
-  .hospital-panel,
-  .route-panel,
-  .nearby-panel {
+  .panel {
     width: 100%;
     max-height: 70vh;
   }
@@ -762,9 +753,7 @@ body {
     font-size: 1.5rem;
   }
 
-  .hospital-panel,
-  .route-panel,
-  .nearby-panel {
+  .panel {
     max-height: 60vh;
   }
   

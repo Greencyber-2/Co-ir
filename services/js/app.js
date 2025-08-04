@@ -162,56 +162,77 @@ function checkIfInBorujerd(lat, lng) {
   );
 }
 
-// تابع برای بارگذاری لایه نقشه
 function loadMapLayer() {
-  toggleLoading(true);
-  
-  // حذف لایه‌های قبلی
+  // حذف تمام لایه‌های موجود به جز مارکرها
   map.eachLayer(layer => {
     if (layer instanceof L.TileLayer || layer instanceof L.Control.Zoom) {
       map.removeLayer(layer);
     }
   });
 
-  // اضافه کردن لایه جدید بر اساس تم فعلی
-  const tileLayerUrl = currentTheme === 'dark' 
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  // اضافه کردن لایه جدید
+  const tileLayer = L.tileLayer(
+    currentTheme === 'dark' 
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    {
+      attribution: '&copy; OpenStreetMap'
+    }
+  ).addTo(map);
 
-  L.tileLayer(tileLayerUrl, {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-
-  // اضافه کردن کنترل زوم
-  L.control.zoom({
-    position: 'bottomright'
-  }).addTo(map);
-  
-  setTimeout(() => {
-    toggleLoading(false);
-  }, 500);
+  // فقط یک کنترل Zoom اضافه کنیم
+  if (!map._zoomControl) {
+    map._zoomControl = L.control.zoom({
+      position: 'bottomright'
+    }).addTo(map);
+  }
 }
-
-// تابع برای تغییر حالت تاریک/روشن
 function toggleDarkMode() {
   currentTheme = currentTheme === 'light' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', currentTheme);
   localStorage.setItem('theme', currentTheme);
   
-  btnDarkMode.innerHTML = currentTheme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+  // تغییر آیکون دکمه
+  btnDarkMode.innerHTML = currentTheme === 'light' 
+    ? '<i class="fas fa-moon"></i>' 
+    : '<i class="fas fa-sun"></i>';
   
-  // بارگذاری مجدد لایه نقشه
+  // بارگذاری مجدد لایه نقشه بدون ایجاد کنترل‌های تکراری
   loadMapLayer();
   
-  // به‌روزرسانی پاپ‌آپ‌ها
+  // به‌روزرسانی استایل پاپ‌آپ‌ها
   updatePopups();
 }
-
-// تابع برای به‌روزرسانی پاپ‌آپ‌ها
 function updatePopups() {
+  // حذف و بازسازی تمام پاپ‌آپ‌ها
   Object.values(hospitalMarkers).forEach(marker => {
+    const hospital = hospitals.find(h => h.id === marker.hospitalId);
+    if (!hospital) return;
+    
+    // بستن پاپ‌آپ فعلی
     marker.closePopup();
-    marker.openPopup();
+    
+    // ایجاد پاپ‌آپ جدید با تم فعلی
+    marker.bindPopup(`
+      <div class="popup-content">
+        <h4>${hospital.name}</h4>
+        <p><i class="fas fa-hospital"></i> ${hospital.type}</p>
+        <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+        <div class="popup-actions">
+          <button class="popup-btn popup-btn-primary" data-id="${hospital.id}" data-action="details">
+            <i class="fas fa-info-circle"></i> جزئیات
+          </button>
+          <button class="popup-btn popup-btn-secondary" data-action="route">
+            <i class="fas fa-route"></i> مسیر
+          </button>
+        </div>
+      </div>
+    `);
+    
+    // باز کردن پاپ‌آپ اگر قبلاً باز بود
+    if (marker._popup && marker._popup.isOpen()) {
+      marker.openPopup();
+    }
   });
 }
 

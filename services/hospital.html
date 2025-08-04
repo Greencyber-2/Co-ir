@@ -26,9 +26,6 @@
           <h1 class="app-title">نقشه بیمارستان‌های بروجرد</h1>
         </div>
         <div class="header-actions">
-          <button class="btn-locate" aria-label="موقعیت من">
-            <i class="fas fa-location-arrow"></i>
-          </button>
           <button class="btn-dark-mode" aria-label="حالت شب">
             <i class="fas fa-moon"></i>
           </button>
@@ -74,15 +71,6 @@
                 <option value="تأمین اجتماعی">تأمین اجتماعی</option>
               </select>
             </div>
-            <div class="filter-group">
-              <label for="distance-filter">فاصله از من:</label>
-              <select id="distance-filter">
-                <option value="all">همه</option>
-                <option value="3">تا ۳ کیلومتر</option>
-                <option value="5">تا ۵ کیلومتر</option>
-                <option value="10">تا ۱۰ کیلومتر</option>
-              </select>
-            </div>
           </div>
           
           <div class="results-container">
@@ -98,9 +86,8 @@
 
         <div class="tab-content" id="nearby-tab">
           <div class="location-info">
-            <i class="fas fa-info-circle"></i>
-            <p>برای مشاهده بیمارستان‌های نزدیک، موقعیت خود را مشخص کنید</p>
-            <button class="btn-locate-now">مشخص کردن موقعیت</button>
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>در حال دریافت موقعیت شما...</p>
           </div>
         </div>
 
@@ -149,7 +136,7 @@
     <!-- فوتر ثابت -->
     <footer class="app-footer">
       <div class="footer-content">
-        <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۳.۰</p>
+        <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۴.۰</p>
       </div>
     </footer>
   </div>

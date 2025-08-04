@@ -19,17 +19,16 @@ let routingControl = null;
 let currentTheme = 'light';
 let favorites = JSON.parse(localStorage.getItem('hospitalFavorites')) || [];
 let currentTransportMode = 'walk';
+let isInBorujerd = false;
 
 // عناصر DOM
 const sidebar = document.getElementById('sidebar');
 const searchInput = document.getElementById('search-input');
 const typeFilter = document.getElementById('type-filter');
-const distanceFilter = document.getElementById('distance-filter');
 const hospitalList = document.getElementById('hospital-list');
 const resultsCount = document.getElementById('results-count');
 const btnOpenSearch = document.getElementById('btn-open-search');
 const btnCloseSidebar = document.querySelector('.btn-close-sidebar');
-const btnLocate = document.querySelector('.btn-locate');
 const btnRouting = document.getElementById('btn-routing');
 const btnDarkMode = document.querySelector('.btn-dark-mode');
 const tabBtns = document.querySelectorAll('.tab-btn');
@@ -55,7 +54,7 @@ const userIcon = L.icon({
   popupAnchor: [0, -36]
 });
 
-// داده بیمارستان‌ها
+// داده بیمارستان‌های بروجرد (به‌روزرسانی شده)
 const hospitals = [
   {
     id: 1,
@@ -100,11 +99,50 @@ const hospitals = [
     emergency: true,
     specialties: ["اورژانس", "اطفال", "زنان", "جراحی"],
     photo: "images/hospital-photos/kowsar.jpg"
+  },
+  {
+    id: 5,
+    name: "بیمارستان تخصصی شفا",
+    coords: [33.8934, 48.7521],
+    address: "بروجرد، خیابان شریعتی، کوچه شهید مطهری",
+    phone: "066-43250000",
+    type: "خصوصی",
+    emergency: true,
+    specialties: ["اورژانس", "جراحی", "ارتوپدی"],
+    photo: "images/hospital-photos/shafa.jpg"
+  },
+  {
+    id: 6,
+    name: "بیمارستان کودکان امید",
+    coords: [33.8892, 48.7487],
+    address: "بروجرد، بلوار معلم، جنب پارک شهر",
+    phone: "066-43260000",
+    type: "خصوصی",
+    emergency: true,
+    specialties: ["اطفال", "نوزادان"],
+    photo: "images/hospital-photos/omid.jpg"
   }
 ];
 
 // مارکرهای بیمارستان‌ها
 const hospitalMarkers = {};
+
+// تابع برای بررسی اینکه آیا کاربر در محدوده بروجرد است
+function checkIfInBorujerd(lat, lng) {
+  const borujerdBounds = {
+    north: 34.00,
+    south: 33.75,
+    west: 48.60,
+    east: 48.90
+  };
+  
+  return (
+    lat >= borujerdBounds.south &&
+    lat <= borujerdBounds.north &&
+    lng >= borujerdBounds.west &&
+    lng <= borujerdBounds.east
+  );
+}
 
 // تابع برای بارگذاری لایه نقشه مناسب بر اساس تم
 function loadMapLayer() {
@@ -123,20 +161,6 @@ function loadMapLayer() {
   L.tileLayer(tileLayerUrl, {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
-
-  // اضافه کردن کنترل جستجو
-  L.Control.geocoder({
-    defaultMarkGeocode: false,
-    position: 'topleft',
-    placeholder: 'جستجوی آدرس...',
-    errorMessage: 'آدرس یافت نشد',
-    showResultIcons: true,
-    collapsed: true
-  })
-  .on('markgeocode', function(e) {
-    map.fitBounds(e.geocode.bbox);
-  })
-  .addTo(map);
 
   // اضافه کردن کنترل زوم
   L.control.zoom({
@@ -159,88 +183,34 @@ function toggleDarkMode() {
   updateMarkers();
 }
 
-// تابع برای بروزرسانی مارکرها پس از تغییر تم
-function updateMarkers() {
-  // حذف تمام مارکرهای موجود
-  Object.values(hospitalMarkers).forEach(marker => {
-    map.removeLayer(marker);
-  });
-
-  // ایجاد مجدد مارکرها
-  hospitals.forEach(hospital => {
-    const marker = L.marker(hospital.coords, {
-      icon: hospitalIcon,
-      riseOnHover: true
-    }).addTo(map);
-    
-    const specialtiesList = hospital.specialties.map(spec => `<li>${spec}</li>`).join('');
-    
-    marker.bindPopup(`
-      <div class="popup-content">
-        <h4>${hospital.name}</h4>
-        <div class="hospital-type ${hospital.type.replace(/\s+/g, '-')}">
-          <i class="fas fa-hospital"></i> ${hospital.type}
-          ${hospital.emergency ? '<span class="emergency-badge"><i class="fas fa-ambulance"></i> اورژانس</span>' : ''}
-        </div>
-        <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
-        <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
-        <div class="hospital-specialties">
-          <h5>تخصص‌ها:</h5>
-          <ul>${specialtiesList}</ul>
-        </div>
-        <div class="popup-actions">
-          <button class="btn-route" data-id="${hospital.id}">
-            <i class="fas fa-route"></i> مسیریابی
-          </button>
-          <button class="btn-favorite" data-id="${hospital.id}">
-            <i class="far fa-heart"></i> ذخیره
-          </button>
-        </div>
-      </div>
-    `);
-    
-    marker.on('popupopen', () => {
-      document.querySelector(`.popup-actions .btn-route[data-id="${hospital.id}"]`)
-        .addEventListener('click', () => {
-          if (userLocation) {
-            calculateRoute(hospital.coords);
-          } else {
-            alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
-          }
-        });
-        
-      document.querySelector(`.popup-actions .btn-favorite[data-id="${hospital.id}"]`)
-        .addEventListener('click', () => {
-          toggleFavorite(hospital.id);
-        });
-    });
-    
-    hospitalMarkers[hospital.id] = marker;
-  });
-
-  // بروزرسانی مارکر کاربر اگر وجود دارد
-  if (userMarker) {
-    const userLatLng = userMarker.getLatLng();
-    map.removeLayer(userMarker);
-    
-    userMarker = L.marker([userLatLng.lat, userLatLng.lng], {
-      icon: userIcon
-    }).addTo(map);
-    userMarker.bindPopup('شما اینجا هستید');
-  }
-}
-
 // تابع برای یافتن موقعیت کاربر
 function locateUser() {
   if (navigator.geolocation) {
-    btnLocate.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    nearbyTab.innerHTML = `
+      <div class="location-info">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>در حال دریافت موقعیت شما...</p>
+      </div>
+    `;
     
     navigator.geolocation.getCurrentPosition(
       position => {
-        userLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        isInBorujerd = checkIfInBorujerd(lat, lng);
+        
+        if (!isInBorujerd) {
+          nearbyTab.innerHTML = `
+            <div class="location-info">
+              <i class="fas fa-exclamation-triangle"></i>
+              <p>شما در محدوده بروجرد نیستید</p>
+            </div>
+          `;
+          return;
+        }
+        
+        userLocation = { lat, lng };
         
         // حذف مارکر قبلی اگر وجود داشت
         if (userMarker) {
@@ -257,17 +227,21 @@ function locateUser() {
         // مرکزیت نقشه روی کاربر
         map.setView([userLocation.lat, userLocation.lng], 15);
         
-        // آپدیت دکمه
-        btnLocate.innerHTML = '<i class="fas fa-location-arrow"></i>';
-        
         // فیلتر بیمارستان‌ها
         filterHospitals();
         showNearbyHospitals();
       },
       error => {
         console.error('خطا در دریافت موقعیت:', error);
-        alert('خطا در دریافت موقعیت مکانی');
-        btnLocate.innerHTML = '<i class="fas fa-location-arrow"></i>';
+        nearbyTab.innerHTML = `
+          <div class="location-info">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>خطا در دریافت موقعیت مکانی</p>
+            <button class="btn-locate-now">تلاش مجدد</button>
+          </div>
+        `;
+        
+        nearbyTab.querySelector('.btn-locate-now').addEventListener('click', locateUser);
       },
       {
         enableHighAccuracy: true,
@@ -276,7 +250,12 @@ function locateUser() {
       }
     );
   } else {
-    alert('مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند');
+    nearbyTab.innerHTML = `
+      <div class="location-info">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند</p>
+      </div>
+    `;
   }
 }
 
@@ -284,7 +263,6 @@ function locateUser() {
 function filterHospitals() {
   const searchTerm = searchInput.value.toLowerCase();
   const typeFilterValue = typeFilter.value;
-  const distanceFilterValue = distanceFilter.value;
   
   let filteredHospitals = hospitals.filter(hospital => {
     const matchesSearch = hospital.name.toLowerCase().includes(searchTerm) || 
@@ -294,17 +272,6 @@ function filterHospitals() {
     
     if (typeFilterValue !== 'all' && hospital.type !== typeFilterValue) {
       return false;
-    }
-    
-    if (distanceFilterValue !== 'all' && userLocation) {
-      const distance = getDistance(
-        userLocation.lat, 
-        userLocation.lng,
-        hospital.coords[0],
-        hospital.coords[1]
-      ) / 1000; // تبدیل به کیلومتر
-      
-      return distance <= parseInt(distanceFilterValue);
     }
     
     return true;
@@ -330,7 +297,7 @@ function updateHospitalList(filteredHospitals) {
     
     // محاسبه فاصله اگر موقعیت کاربر مشخص باشد
     let distanceHtml = '';
-    if (userLocation) {
+    if (userLocation && isInBorujerd) {
       const distance = getDistance(
         userLocation.lat, 
         userLocation.lng,
@@ -406,7 +373,7 @@ function showHospitalOnMap(hospitalId) {
 
 // تابع برای محاسبه مسیر
 function calculateRoute(destination) {
-  if (!userLocation) return;
+  if (!userLocation || !isInBorujerd) return;
   
   if (routingControl) {
     map.removeControl(routingControl);
@@ -473,16 +440,8 @@ function getDistance(lat1, lon1, lat2, lon2) {
 
 // تابع برای نمایش بیمارستان‌های نزدیک
 function showNearbyHospitals() {
-  if (!userLocation) {
-    nearbyTab.innerHTML = `
-      <div class="location-info">
-        <i class="fas fa-info-circle"></i>
-        <p>برای مشاهده بیمارستان‌های نزدیک، موقعیت خود را مشخص کنید</p>
-        <button class="btn-locate-now">مشخص کردن موقعیت</button>
-      </div>
-    `;
-    
-    nearbyTab.querySelector('.btn-locate-now').addEventListener('click', locateUser);
+  if (!userLocation || !isInBorujerd) {
+    locateUser();
     return;
   }
   
@@ -629,6 +588,7 @@ function init() {
     
     marker.bindPopup(`
       <div class="popup-content">
+        <div class="hospital-image" style="background-image: url('${hospital.photo}')"></div>
         <h4>${hospital.name}</h4>
         <div class="hospital-type ${hospital.type.replace(/\s+/g, '-')}">
           <i class="fas fa-hospital"></i> ${hospital.type}
@@ -654,10 +614,10 @@ function init() {
     marker.on('popupopen', () => {
       document.querySelector(`.popup-actions .btn-route[data-id="${hospital.id}"]`)
         .addEventListener('click', () => {
-          if (userLocation) {
+          if (userLocation && isInBorujerd) {
             calculateRoute(hospital.coords);
           } else {
-            alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
+            alert('لطفاً ابتدا موقعیت خود را مشخص کنید و مطمئن شوید در بروجرد هستید');
           }
         });
         
@@ -680,11 +640,9 @@ function init() {
     sidebar.classList.remove('open');
   });
 
-  btnLocate.addEventListener('click', locateUser);
-
   btnRouting.addEventListener('click', () => {
-    if (!userLocation) {
-      alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
+    if (!userLocation || !isInBorujerd) {
+      alert('لطفاً ابتدا موقعیت خود را مشخص کنید و مطمئن شوید در بروجرد هستید');
       return;
     }
     
@@ -753,7 +711,6 @@ function init() {
 
   searchInput.addEventListener('input', filterHospitals);
   typeFilter.addEventListener('change', filterHospitals);
-  distanceFilter.addEventListener('change', filterHospitals);
   
   // بارگذاری اولیه داده‌ها
   filterHospitals();
@@ -762,4 +719,4 @@ function init() {
 }
 
 // شروع برنامه
-init();
+document.addEventListener('DOMContentLoaded', init);

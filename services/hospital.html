@@ -17,7 +17,7 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- هدر ثابت -->
+    <!-- هدر -->
     <header class="app-header">
       <div class="header-content">
         <div class="logo-title">
@@ -41,7 +41,7 @@
       <div id="map" class="map-container"></div>
 
       <!-- پنل اطلاعات بیمارستان -->
-      <div id="hospital-panel" class="hospital-panel">
+      <div id="hospital-panel" class="panel">
         <div class="panel-header">
           <h3 id="hospital-name">نام بیمارستان</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -87,7 +87,7 @@
       </div>
 
       <!-- پنل مسیریابی -->
-      <div id="route-panel" class="route-panel">
+      <div id="route-panel" class="panel">
         <div class="panel-header">
           <h3>مسیریابی</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -125,7 +125,7 @@
       </div>
 
       <!-- پنل بیمارستان‌های نزدیک -->
-      <div id="nearby-panel" class="nearby-panel">
+      <div id="nearby-panel" class="panel">
         <div class="panel-header">
           <h3>بیمارستان‌های نزدیک</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -171,9 +171,15 @@
           <span id="notification-message"></span>
         </div>
       </div>
+
+      <!-- لودینگ -->
+      <div id="loading" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">در حال بارگذاری...</p>
+      </div>
     </main>
 
-    <!-- فوتر ثابت -->
+    <!-- فوتر -->
     <footer class="app-footer">
       <div class="footer-content">
         <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۵.۱</p>
@@ -184,6 +190,6 @@
   <!-- اسکریپت‌ها -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

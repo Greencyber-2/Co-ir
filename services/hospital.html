@@ -17,7 +17,6 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- هدر -->
     <header class="app-header">
       <div class="header-content">
         <div class="logo-title">
@@ -35,12 +34,9 @@
       </div>
     </header>
 
-    <!-- محتوای اصلی -->
     <main class="app-main">
-      <!-- نقشه -->
       <div id="map" class="map-container"></div>
 
-      <!-- پنل اطلاعات بیمارستان -->
       <div id="hospital-panel" class="panel">
         <div class="panel-header">
           <h3 id="hospital-name">نام بیمارستان</h3>
@@ -79,14 +75,10 @@
             <button class="btn-action btn-call" id="btn-call-hospital">
               <i class="fas fa-phone"></i> تماس
             </button>
-            <button class="btn-action btn-favorite" id="btn-favorite">
-              <i class="far fa-heart"></i> ذخیره
-            </button>
           </div>
         </div>
       </div>
 
-      <!-- پنل مسیریابی -->
       <div id="route-panel" class="panel">
         <div class="panel-header">
           <h3>مسیریابی</h3>
@@ -124,7 +116,6 @@
         </div>
       </div>
 
-      <!-- پنل بیمارستان‌های نزدیک -->
       <div id="nearby-panel" class="panel">
         <div class="panel-header">
           <h3>بیمارستان‌های نزدیک</h3>
@@ -133,61 +124,35 @@
           </button>
         </div>
         <div class="panel-content">
-          <div class="nearby-list" id="nearby-list">
-            <!-- لیست بیمارستان‌های نزدیک اینجا قرار می‌گیرد -->
-          </div>
+          <div class="nearby-list" id="nearby-list"></div>
         </div>
       </div>
 
-      <!-- دکمه‌های شناور -->
       <div class="floating-buttons">
         <button id="btn-show-nearby" class="floating-action-btn primary" aria-label="نزدیک‌ترین‌ها">
           <i class="fas fa-map-marker-alt"></i>
         </button>
-        <button id="btn-show-menu" class="floating-action-btn" aria-label="منو">
-          <i class="fas fa-bars"></i>
-        </button>
       </div>
 
-      <!-- منوی سریع -->
-      <div id="quick-menu" class="quick-menu">
-        <button class="menu-item" id="menu-search">
-          <i class="fas fa-search"></i>
-          <span>جستجو</span>
-        </button>
-        <button class="menu-item" id="menu-nearby">
-          <i class="fas fa-location-arrow"></i>
-          <span>اطراف من</span>
-        </button>
-        <button class="menu-item" id="menu-favorites">
-          <i class="fas fa-heart"></i>
-          <span>موردعلاقه‌ها</span>
-        </button>
-      </div>
-
-      <!-- اعلانات -->
       <div id="notification" class="notification">
         <div class="notification-content">
           <span id="notification-message"></span>
         </div>
       </div>
 
-      <!-- لودینگ -->
       <div id="loading" class="loading-overlay">
         <div class="loading-spinner"></div>
         <p class="loading-text">در حال بارگذاری...</p>
       </div>
     </main>
 
-    <!-- فوتر -->
     <footer class="app-footer">
       <div class="footer-content">
-        <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۵.۱</p>
+        <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۶.۰</p>
       </div>
     </footer>
   </div>
 
-  <!-- اسکریپت‌ها -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
   <script src="js/app.js"></script>

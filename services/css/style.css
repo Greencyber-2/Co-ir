@@ -26,6 +26,7 @@
   --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* Reset و پایه */
 * {
   margin: 0;
   padding: 0;
@@ -55,6 +56,7 @@ body {
   height: 100vh;
 }
 
+/* هدر */
 .app-header {
   position: fixed;
   top: 0;
@@ -119,6 +121,7 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* محتوای اصلی */
 .app-main {
   flex: 1;
   position: relative;
@@ -134,6 +137,7 @@ body {
   height: 100%;
 }
 
+/* پنل‌ها */
 .panel {
   position: fixed;
   bottom: -100%;
@@ -181,6 +185,7 @@ body {
   padding: 2rem;
 }
 
+/* پنل بیمارستان */
 .hospital-image {
   width: 100%;
   height: 18rem;
@@ -272,6 +277,7 @@ body {
   background: #ff5252;
 }
 
+/* پنل مسیریابی */
 .route-summary {
   display: flex;
   justify-content: space-between;
@@ -365,6 +371,7 @@ body {
   background: var(--primary-light);
 }
 
+/* پنل بیمارستان‌های نزدیک */
 .nearby-list {
   list-style: none;
 }
@@ -445,6 +452,7 @@ body {
   background: var(--primary-light);
 }
 
+/* دکمه‌های شناور */
 .floating-buttons {
   position: fixed;
   bottom: calc(var(--footer-height) + 2rem);
@@ -481,6 +489,7 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
+/* اعلانات */
 .notification {
   position: fixed;
   top: -100px;
@@ -507,6 +516,7 @@ body {
   gap: 1rem;
 }
 
+/* لودینگ */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -548,6 +558,7 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* فوتر */
 .app-footer {
   position: fixed;
   bottom: 0;
@@ -575,6 +586,7 @@ body {
   color: var(--text-light);
 }
 
+/* پاپ‌آپ نقشه */
 .leaflet-popup-content {
   min-width: 25rem;
   font-family: 'Vazirmatn', sans-serif;
@@ -639,6 +651,7 @@ body {
   color: var(--text-color);
 }
 
+/* واکنشگرایی */
 @media (max-width: 768px) {
   .panel {
     width: 100%;

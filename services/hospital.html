@@ -17,7 +17,7 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- هدر -->
+    <!-- هدر ثابت -->
     <header class="app-header">
       <div class="header-content">
         <div class="logo-title">
@@ -41,7 +41,7 @@
       <div id="map" class="map-container"></div>
 
       <!-- پنل اطلاعات بیمارستان -->
-      <div id="hospital-panel" class="panel">
+      <div id="hospital-panel" class="hospital-panel">
         <div class="panel-header">
           <h3 id="hospital-name">نام بیمارستان</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -87,7 +87,7 @@
       </div>
 
       <!-- پنل مسیریابی -->
-      <div id="route-panel" class="panel">
+      <div id="route-panel" class="route-panel">
         <div class="panel-header">
           <h3>مسیریابی</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -125,7 +125,7 @@
       </div>
 
       <!-- پنل بیمارستان‌های نزدیک -->
-      <div id="nearby-panel" class="panel">
+      <div id="nearby-panel" class="nearby-panel">
         <div class="panel-header">
           <h3>بیمارستان‌های نزدیک</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -174,12 +174,14 @@
 
       <!-- لودینگ -->
       <div id="loading" class="loading-overlay">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">در حال بارگذاری...</p>
+        <div class="loading-content">
+          <div class="loading-spinner"></div>
+          <p>در حال بارگذاری...</p>
+        </div>
       </div>
     </main>
 
-    <!-- فوتر -->
+    <!-- فوتر ثابت -->
     <footer class="app-footer">
       <div class="footer-content">
         <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۵.۱</p>

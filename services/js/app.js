@@ -194,11 +194,54 @@ function toggleDarkMode() {
     ? '<i class="fas fa-moon"></i>' 
     : '<i class="fas fa-sun"></i>';
   
-  // بارگذاری مجدد لایه نقشه بدون ایجاد کنترل‌های تکراری
+  // بارگذاری مجدد لایه نقشه
   loadMapLayer();
   
   // به‌روزرسانی استایل پاپ‌آپ‌ها
-  updatePopups();
+  updatePopupsStyle();
+  
+  // اگر پنلی باز است، آن را به‌روزرسانی کنیم
+  if (selectedHospital) {
+    if (hospitalPanel.classList.contains('open')) {
+      showHospitalDetails(selectedHospital.id);
+    } else if (routePanel.classList.contains('open')) {
+      showRoutePanel(selectedHospital.id);
+    }
+  }
+}
+
+// تابع جدید برای به‌روزرسانی استایل پاپ‌آپ‌ها
+function updatePopupsStyle() {
+  Object.values(hospitalMarkers).forEach(marker => {
+    if (marker.isPopupOpen()) {
+      const popup = marker.getPopup();
+      popup.setContent(createPopupContent(marker.hospital));
+      marker.openPopup();
+    }
+  });
+  
+  if (userMarker && userMarker.isPopupOpen()) {
+    userMarker.openPopup();
+  }
+}
+
+// تابع جدید برای ایجاد محتوای پاپ‌آپ
+function createPopupContent(hospital) {
+  return `
+    <div class="popup-content">
+      <h4>${hospital.name}</h4>
+      <p><i class="fas fa-hospital"></i> ${hospital.type}</p>
+      <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+      <div class="popup-actions">
+        <button class="popup-btn popup-btn-primary" data-id="${hospital.id}" data-action="details">
+          <i class="fas fa-info-circle"></i> جزئیات
+        </button>
+        <button class="popup-btn popup-btn-secondary" data-id="${hospital.id}" data-action="route">
+          <i class="fas fa-route"></i> مسیر
+        </button>
+      </div>
+    </div>
+  `;
 }
 
 // تابع برای به‌روزرسانی پاپ‌آپ‌ها

@@ -20,6 +20,9 @@ let currentTheme = 'light';
 let favorites = JSON.parse(localStorage.getItem('hospitalFavorites')) || [];
 let currentTransportMode = 'walk';
 let isInBorujerd = false;
+// متغیرهای جدید برای کنترل‌ها
+let zoomControl = null;
+let geocoderControl = null;
 
 // عناصر DOM
 const sidebar = document.getElementById('sidebar');
@@ -144,14 +147,24 @@ function checkIfInBorujerd(lat, lng) {
   );
 }
 
-// تابع برای بارگذاری لایه نقشه مناسب بر اساس تم
 function loadMapLayer() {
-  // حذف لایه‌های قبلی
+  // حذف لایه‌های قبلی و کنترل‌ها
   map.eachLayer(layer => {
     if (layer instanceof L.TileLayer) {
       map.removeLayer(layer);
     }
   });
+
+  // حذف کنترل‌های قبلی اگر وجود دارند
+  if (zoomControl) {
+    map.removeControl(zoomControl);
+    zoomControl = null;
+  }
+  
+  if (geocoderControl) {
+    map.removeControl(geocoderControl);
+    geocoderControl = null;
+  }
 
   // اضافه کردن لایه جدید بر اساس تم فعلی
   const tileLayerUrl = currentTheme === 'dark' 
@@ -162,13 +175,13 @@ function loadMapLayer() {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  // اضافه کردن کنترل زوم
-  L.control.zoom({
+  // اضافه کردن کنترل زوم جدید
+  zoomControl = L.control.zoom({
     position: 'bottomright'
   }).addTo(map);
+
 }
 
-// تابع برای تغییر تم
 function toggleDarkMode() {
   currentTheme = currentTheme === 'light' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', currentTheme);

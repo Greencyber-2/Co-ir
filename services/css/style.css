@@ -586,70 +586,168 @@ body {
   color: var(--text-light);
 }
 
-/* پاپ‌آپ نقشه */
-.leaflet-popup-content {
-  min-width: 25rem;
-  font-family: 'Vazirmatn', sans-serif;
-  margin: 1rem;
-  background: var(--card-bg);
-  color: var(--text-color);
+
+
+
+
+
+/* پاپ‌آپ نقشه - نسخه بهینه‌شده */
+.leaflet-popup {
+  direction: rtl;
 }
 
 .leaflet-popup-content-wrapper {
   background: var(--card-bg);
   color: var(--text-color);
   box-shadow: var(--shadow);
-  border-radius: 0.5rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--border-color);
+  text-align: right;
+  direction: rtl;
+  padding: 1.2rem;
+  transition: var(--transition);
+}
+
+.leaflet-popup-content {
+  min-width: 25rem;
+  font-family: 'Vazirmatn', sans-serif;
+  margin: 0;
+  text-align: right;
+  direction: rtl;
+  padding-left: 2.2rem; /* فضای مناسب برای دکمه بستن */
+}
+
+.leaflet-popup-tip-container {
+  direction: rtl;
 }
 
 .leaflet-popup-tip {
   background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-left: none;
+}
+
+.leaflet-popup-close-button {
+  right: auto !important;
+  left: 10px !important;
+  top: 10px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 1.8rem !important;
+  color: var(--text-light) !important;
+  background: none !important;
+  border: none !important;
+  transition: var(--transition);
+  width: auto !important;
+  height: auto !important;
+  line-height: 1 !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: var(--accent-color) !important;
+  transform: scale(1.1);
+}
+
+.leaflet-popup-scrolled {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .leaflet-popup-content h4 {
   color: var(--primary-color);
-  margin-bottom: 1rem;
+  margin: 0 0 1.2rem 0;
   font-size: 1.6rem;
+  font-weight: 700;
+  text-align: right;
 }
 
 .leaflet-popup-content p {
-  margin-bottom: 0.8rem;
+  margin: 0 0 1rem 0;
   font-size: 1.3rem;
+  color: var(--text-color);
+  text-align: right;
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.leaflet-popup-content p i {
+  color: var(--primary-light);
+  margin-top: 0.2rem;
 }
 
 .popup-actions {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  direction: rtl;
 }
 
 .popup-btn {
   flex: 1;
-  padding: 0.8rem;
-  border-radius: 0.5rem;
+  padding: 0.9rem;
+  border-radius: 0.6rem;
   border: none;
   font-family: 'Vazirmatn', sans-serif;
   font-size: 1.3rem;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  transition: var(--transition);
+  direction: rtl;
+  text-align: right;
 }
 
 .popup-btn-primary {
   background: var(--primary-color);
   color: white;
+  box-shadow: 0 2px 6px rgba(24, 90, 157, 0.3);
 }
 
 .popup-btn-primary:hover {
   background: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(24, 90, 157, 0.4);
 }
 
 .popup-btn-secondary {
   background: var(--bg-color);
   color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
+
+.popup-btn-secondary:hover {
+  background: var(--border-color);
+  transform: translateY(-2px);
+}
+
+/* بهبود نمایش در حالت موبایل */
+@media (max-width: 480px) {
+  .leaflet-popup-content {
+    min-width: 20rem;
+    padding-left: 1.8rem;
+  }
+  
+  .leaflet-popup-close-button {
+    left: 8px !important;
+    top: 8px !important;
+    font-size: 1.6rem !important;
+  }
+  
+  .popup-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}
+
+
+
+
 
 /* واکنشگرایی */
 @media (max-width: 768px) {

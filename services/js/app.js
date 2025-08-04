@@ -228,22 +228,21 @@ function updatePopupsStyle() {
 // تابع جدید برای ایجاد محتوای پاپ‌آپ
 function createPopupContent(hospital) {
   return `
-    <div class="popup-content">
-      <h4>${hospital.name}</h4>
-      <p><i class="fas fa-hospital"></i> ${hospital.type}</p>
-      <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
-      <div class="popup-actions">
-        <button class="popup-btn popup-btn-primary" data-id="${hospital.id}" data-action="details">
+    <div class="popup-content" style="text-align: right; direction: rtl;">
+      <h4 style="text-align: right;">${hospital.name}</h4>
+      <p style="text-align: right;"><i class="fas fa-hospital"></i> ${hospital.type}</p>
+      <p style="text-align: right;"><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+      <div class="popup-actions" style="direction: rtl;">
+        <button class="popup-btn popup-btn-primary" data-id="${hospital.id}" data-action="details" style="direction: rtl;">
           <i class="fas fa-info-circle"></i> جزئیات
         </button>
-        <button class="popup-btn popup-btn-secondary" data-id="${hospital.id}" data-action="route">
+        <button class="popup-btn popup-btn-secondary" data-id="${hospital.id}" data-action="route" style="direction: rtl;">
           <i class="fas fa-route"></i> مسیر
         </button>
       </div>
     </div>
   `;
 }
-
 // تابع برای به‌روزرسانی پاپ‌آپ‌ها
 function updatePopups() {
   Object.values(hospitalMarkers).forEach(marker => {

@@ -9,7 +9,6 @@
   <title>نقشه هوشمند بیمارستان‌های بروجرد</title>
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="manifest" href="manifest.json" />
@@ -26,6 +25,9 @@
           <h1 class="app-title">نقشه بیمارستان‌های بروجرد</h1>
         </div>
         <div class="header-actions">
+          <button class="btn-locate" aria-label="موقعیت من">
+            <i class="fas fa-location-arrow"></i>
+          </button>
           <button class="btn-dark-mode" aria-label="حالت شب">
             <i class="fas fa-moon"></i>
           </button>
@@ -38,113 +40,135 @@
       <!-- نقشه -->
       <div id="map" class="map-container"></div>
 
-      <!-- پنل کناری -->
-      <aside id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-          <h2><i class="fas fa-hospital-alt"></i> بیمارستان‌های بروجرد</h2>
-          <button class="btn-close-sidebar" aria-label="بستن پنل">
+      <!-- پنل اطلاعات بیمارستان -->
+      <div id="hospital-panel" class="hospital-panel">
+        <div class="panel-header">
+          <h3 id="hospital-name">نام بیمارستان</h3>
+          <button class="btn-close-panel" aria-label="بستن پنل">
             <i class="fas fa-times"></i>
           </button>
         </div>
-
-        <div class="sidebar-tabs">
-          <button class="tab-btn active" data-tab="search"><i class="fas fa-search"></i> جستجو</button>
-          <button class="tab-btn" data-tab="nearby"><i class="fas fa-map-marker-alt"></i> اطراف من</button>
-          <button class="tab-btn" data-tab="favorites"><i class="fas fa-heart"></i> موردعلاقه‌ها</button>
-        </div>
-
-        <div class="tab-content active" id="search-tab">
-          <div class="search-container">
-            <div class="search-box">
-              <input type="text" id="search-input" placeholder="نام بیمارستان یا آدرس..." />
-              <i class="fas fa-search search-icon"></i>
+        <div class="panel-content">
+          <div class="hospital-image" id="hospital-image"></div>
+          <div class="hospital-info">
+            <div class="info-row">
+              <i class="fas fa-map-marker-alt"></i>
+              <span id="hospital-address">آدرس بیمارستان</span>
+            </div>
+            <div class="info-row">
+              <i class="fas fa-phone"></i>
+              <span id="hospital-phone">شماره تماس</span>
+            </div>
+            <div class="info-row">
+              <i class="fas fa-hospital"></i>
+              <span id="hospital-type">نوع بیمارستان</span>
+            </div>
+            <div class="info-row" id="emergency-row">
+              <i class="fas fa-ambulance"></i>
+              <span>دارای بخش اورژانس</span>
+            </div>
+            <div class="specialties" id="hospital-specialties">
+              <h4>تخصص‌ها:</h4>
+              <ul></ul>
             </div>
           </div>
-
-          <div class="filter-section">
-            <div class="filter-group">
-              <label for="type-filter">نوع بیمارستان:</label>
-              <select id="type-filter">
-                <option value="all">همه</option>
-                <option value="عمومی">عمومی</option>
-                <option value="خصوصی">خصوصی</option>
-                <option value="تأمین اجتماعی">تأمین اجتماعی</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="results-container">
-            <div class="results-header">
-              <h3><i class="fas fa-hospital"></i> نتایج</h3>
-              <span id="results-count" class="badge">0</span>
-            </div>
-            <div class="hospital-list-container">
-              <ul id="hospital-list" class="hospital-list"></ul>
-            </div>
+          <div class="panel-actions">
+            <button class="btn-action btn-route" id="btn-show-route">
+              <i class="fas fa-route"></i> مسیریابی
+            </button>
+            <button class="btn-action btn-call" id="btn-call-hospital">
+              <i class="fas fa-phone"></i> تماس
+            </button>
+            <button class="btn-action btn-favorite" id="btn-favorite">
+              <i class="far fa-heart"></i> ذخیره
+            </button>
           </div>
         </div>
+      </div>
 
-        <div class="tab-content" id="nearby-tab">
-          <div class="location-info">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>در حال دریافت موقعیت شما...</p>
+      <!-- پنل مسیریابی -->
+      <div id="route-panel" class="route-panel">
+        <div class="panel-header">
+          <h3>مسیریابی</h3>
+          <button class="btn-close-panel" aria-label="بستن پنل">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="panel-content">
+          <div class="route-summary">
+            <div class="route-info">
+              <i class="fas fa-road"></i>
+              <span id="route-distance">-- کیلومتر</span>
+            </div>
+            <div class="route-info">
+              <i class="fas fa-clock"></i>
+              <span id="route-time">-- دقیقه</span>
+            </div>
+            <div class="route-info">
+              <i class="fas fa-walking" id="route-mode-icon"></i>
+              <span id="route-mode">پیاده</span>
+            </div>
+          </div>
+          <div class="transport-modes">
+            <button class="transport-btn active" data-mode="walk">
+              <i class="fas fa-walking"></i> پیاده
+            </button>
+            <button class="transport-btn" data-mode="car">
+              <i class="fas fa-car"></i> ماشین
+            </button>
+          </div>
+          <div id="route-instructions" class="route-instructions"></div>
+          <button class="btn-primary" id="btn-start-route">
+            شروع مسیریابی
+          </button>
+        </div>
+      </div>
+
+      <!-- پنل بیمارستان‌های نزدیک -->
+      <div id="nearby-panel" class="nearby-panel">
+        <div class="panel-header">
+          <h3>بیمارستان‌های نزدیک</h3>
+          <button class="btn-close-panel" aria-label="بستن پنل">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="panel-content">
+          <div class="nearby-list" id="nearby-list">
+            <!-- لیست بیمارستان‌های نزدیک اینجا قرار می‌گیرد -->
           </div>
         </div>
-
-        <div class="tab-content" id="favorites-tab">
-          <div class="empty-state">
-            <i class="fas fa-heart"></i>
-            <p>هنوز بیمارستانی به موردعلاقه‌ها اضافه نکرده‌اید</p>
-          </div>
-        </div>
-      </aside>
+      </div>
 
       <!-- دکمه‌های شناور -->
       <div class="floating-buttons">
-        <button id="btn-routing" class="floating-action-btn primary" aria-label="مسیریابی">
-          <i class="fas fa-route"></i>
+        <button id="btn-show-nearby" class="floating-action-btn primary" aria-label="نزدیک‌ترین‌ها">
+          <i class="fas fa-map-marker-alt"></i>
         </button>
-        <button id="btn-open-search" class="floating-action-btn" aria-label="جستجو">
+        <button id="btn-show-menu" class="floating-action-btn" aria-label="منو">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <!-- منوی سریع -->
+      <div id="quick-menu" class="quick-menu">
+        <button class="menu-item" id="menu-search">
           <i class="fas fa-search"></i>
+          <span>جستجو</span>
+        </button>
+        <button class="menu-item" id="menu-nearby">
+          <i class="fas fa-location-arrow"></i>
+          <span>اطراف من</span>
+        </button>
+        <button class="menu-item" id="menu-favorites">
+          <i class="fas fa-heart"></i>
+          <span>موردعلاقه‌ها</span>
         </button>
       </div>
-      
-      <!-- پنل مسیریابی -->
-      <div id="route-panel" class="route-panel">
-        <div class="route-header">
-          <h3><i class="fas fa-route"></i> مسیریابی</h3>
-          <button class="btn-close-route" aria-label="بستن مسیریابی">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="route-content">
-          <div class="route-instruction">
-            <i class="fas fa-info-circle"></i>
-            <p>لطفاً بیمارستان مقصد را انتخاب کنید</p>
-          </div>
-          <div class="route-options">
-            <div class="transport-modes">
-              <button class="transport-btn active" data-mode="walk"><i class="fas fa-walking"></i> پیاده</button>
-              <button class="transport-btn" data-mode="car"><i class="fas fa-car"></i> ماشین</button>
-            </div>
-          </div>
-          <ul id="route-hospitals" class="route-hospitals"></ul>
-        </div>
-      </div>
-      
-      <!-- پنل جزیات بیمارستان -->
-      <div id="hospital-details" class="hospital-details-panel">
-        <div class="details-header">
-          <h3><i class="fas fa-info-circle"></i> جزیات بیمارستان</h3>
-          <button class="btn-close-details" aria-label="بستن جزیات">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="details-content">
-          <div class="loading-details">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>در حال دریافت اطلاعات...</p>
-          </div>
+
+      <!-- اعلانات -->
+      <div id="notification" class="notification">
+        <div class="notification-content">
+          <span id="notification-message"></span>
         </div>
       </div>
     </main>
@@ -152,31 +176,14 @@
     <!-- فوتر ثابت -->
     <footer class="app-footer">
       <div class="footer-content">
-        <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۵.۰</p>
+        <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۵.۱</p>
       </div>
     </footer>
-    
-    <!-- اعلانات -->
-    <div id="notification" class="notification">
-      <div class="notification-content">
-        <i class="fas fa-info-circle"></i>
-        <p class="notification-text"></p>
-      </div>
-    </div>
-    
-    <!-- لودینگ -->
-    <div id="loading-overlay" class="loading-overlay">
-      <div class="loading-content">
-        <div class="spinner"></div>
-        <p>در حال بارگذاری...</p>
-      </div>
-    </div>
   </div>
 
   <!-- اسکریپت‌ها -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
-  <script src="js/main.js" type="module"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

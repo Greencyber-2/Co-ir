@@ -364,7 +364,6 @@ function showNearbyHospitals() {
           <i class="fas fa-map-marked-alt"></i> نمایش روی نقشه
         </button>
         <button class="nearby-btn" data-id="${hospital.id}" data-action="details">
-          <i class="fas fa-info-circle"></i> جزئیات
         </button>
       </div>
     `;

@@ -3,96 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نقشه نشان</title>
+    <title>نمایش نقشه شهر اصفهان - پلتفرم نشان</title>
     <!-- بارگذاری کتابخانه Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- استایل‌های پایه -->
     <style>
-        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
-        #map { height: 600px; width: 100%; }
-        #search-container { position: absolute; top: 10px; left: 10px; z-index: 1000; }
-        #search-input { padding: 10px; width: 300px; font-size: 16px; }
-        #search-button { padding: 10px; font-size: 16px; }
+        body {
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <!-- بخش جستجو -->
-    <div id="search-container">
-        <input type="text" id="search-input" placeholder="جستجوی مکان...">
-        <button id="search-button">جستجو</button>
-    </div>
-    <!-- کانتینر نقشه -->
     <div id="map"></div>
-
     <script>
-        // کلید API دریافت‌شده از پنل نشان
-        const apiKey = 'web.b2294aca62a944449ea607f29a245508'; // اینجا کلید API خود را وارد کنید
+        // تنظیم API Key دریافت‌شده از پلتفرم نشان
+        const apiKey = 'web.b2294aca62a944449ea607f29a245508'; // کلید API خود را اینجا وارد کنید
 
-        // مقداردهی اولیه نقشه
-        const map = L.map('map').setView([35.699739, 51.338097], 12); // مختصات تهران
+        // ایجاد نقشه با مختصات مرکزی شهر اصفهان
+        const map = L.map('map').setView([32.6546, 51.6680], 12);
 
-        // اضافه کردن لایه نقشه نشان
-        L.tileLayer(`https://map.ir/tile/standard/{z}/{x}/{y}.png?x-api-key=${apiKey}`, {
-            attribution: '© Neshan Maps',
-            maxZoom: 21,
-            tileSize: 256
+        // افزودن لایه نقشه نشان
+        L.tileLayer(`https://map1.neshan.org/map/tile/{z}/{x}/{y}.png?key=${apiKey}`, {
+            attribution: '© Neshan Maps Platform'
         }).addTo(map);
 
-        // اضافه کردن نشانگر برای موقعیت کاربر
-        let userMarker;
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    userMarker = L.marker([latitude, longitude]).addTo(map)
-                        .bindPopup('موقعیت شما').openPopup();
-                    map.setView([latitude, longitude], 15);
-                },
-                (error) => {
-                    console.error('خطا در دریافت موقعیت: ', error);
-                    alert('نمی‌توان موقعیت شما را پیدا کرد. لطفاً دسترسی به مکان را فعال کنید.');
-                }
-            );
-        } else {
-            alert('مرورگر شما از موقعیت‌یابی پشتیبانی نمی‌کند.');
-        }
-
-        // تابع جستجوی مکان با استفاده از Geo-Based Search API
-        async function searchLocation(query) {
-            try {
-                const response = await fetch(`https://api.neshan.org/v1/search?term=${encodeURIComponent(query)}&lat=35.699739&lng=51.338097`, {
-                    headers: {
-                        'Api-Key': apiKey
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error(`خطا: ${response.status}`);
-                }
-                const data = await response.json();
-                if (data.items && data.items.length > 0) {
-                    const { lat, lng } = data.items[0].location;
-                    map.setView([lat, lng], 15);
-                    L.marker([lat, lng]).addTo(map)
-                        .bindPopup(data.items[0].title).openPopup();
-                } else {
-                    alert('مکانی یافت نشد.');
-                }
-            } catch (error) {
-                console.error('خطا در جستجو: ', error);
-                alert('خطایی در جستجو رخ داد.');
-            }
-        }
-
-        // رویداد کلیک برای دکمه جستجو
-        document.getElementById('search-button').addEventListener('click', () => {
-            const query = document.getElementById('search-input').value;
-            if (query) {
-                searchLocation(query);
-            } else {
-                alert('لطفاً یک عبارت جستجو وارد کنید.');
-            }
-        });
+        // افزودن مارکر برای مرکز شهر اصفهان
+        L.marker([32.6546, 51.6680]).addTo(map)
+            .bindPopup('مرکز شهر اصفهان')
+            .openPopup();
     </script>
 </body>
 </html>

@@ -1,99 +1,66 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>نقشه حرفه‌ای بروجرد</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    crossorigin=""
-  />
-  <style>
-    /* کل صفحه */
-    html, body, #map {
-      height: 100%;
-      margin: 0; padding: 0;
-      direction: rtl;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: white;
-    }
-    #map {
-      width: 100vw;
-      height: 100vh;
-      user-select: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نقشه بیمارستان‌های بروجرد</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="map"></div>
+    <div class="container-fluid p-0">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-hospital me-2"></i> بیمارستان‌های بروجرد
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <button id="locateBtn" class="btn btn-outline-light">
+                                <i class="fas fa-location-arrow me-1"></i> نزدیک‌ترین بیمارستان به من
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
-  <script>
-    // مختصات تقریبی محدوده بروجرد (lat,lng)
-    const broudPolygon = [
-      [33.81, 48.62],
-      [33.82, 48.75],
-      [33.89, 48.83],
-      [33.93, 48.87],
-      [33.98, 48.85],
-      [33.99, 48.70],
-      [33.92, 48.60],
-      [33.85, 48.58],
-      [33.81, 48.62]
-    ];
+        <div class="row g-0">
+            <div class="col-lg-3 col-md-4 d-none d-md-block sidebar">
+                <div class="p-3">
+                    <h5 class="text-center mb-3">لیست بیمارستان‌ها</h5>
+                    <div class="list-group hospital-list" id="hospitalList">
+                        <!-- بیمارستان‌ها از طریق JS اضافه می‌شوند -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-9 col-md-8 col-12">
+                <div id="map"></div>
+            </div>
+        </div>
 
-    // چندضلعی بزرگ (کل جهان) برای ماسک
-    const outer = [
-      [-90, -180],
-      [-90, 180],
-      [90, 180],
-      [90, -180]
-    ];
+        <div class="position-fixed bottom-0 end-0 p-3">
+            <div id="locationInfo" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">موقعیت شما</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <div id="locationDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // ساخت نقشه با مرکز بروجرد و زوم مناسب
-    const map = L.map("map", {
-      center: [33.8942, 48.7670],
-      zoom: 14,
-      minZoom: 13,
-      maxZoom: 16,
-      zoomControl: true,
-      scrollWheelZoom: true,
-      attributionControl: true
-    });
-
-    // افزودن لایه کاشی ساده و روشن CartoDB Positron (بدون POI اضافی)
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        maxZoom: 20
-      }
-    ).addTo(map);
-
-    // ماسک سفید: بیرون محدوده بروجرد خالی و سفید باشه
-    L.polygon([outer, broudPolygon], {
-      color: "#ffffff",
-      fillColor: "#ffffff",
-      fillOpacity: 1,
-      stroke: false,
-      interactive: false
-    }).addTo(map);
-
-    // خط مرز آبی رنگ و خط چین بروجرد
-    L.polygon(broudPolygon, {
-      color: "#007bff",
-      weight: 2,
-      fillOpacity: 0,
-      dashArray: "6,6"
-    }).addTo(map);
-
-    // محدود کردن حرکت و زوم به محدوده اطراف بروجرد
-    map.setMaxBounds([
-      [33.75, 48.50],
-      [34.05, 48.95]
-    ]);
-  </script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

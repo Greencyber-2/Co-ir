@@ -12,29 +12,33 @@ const map = L.map('map', {
   maxBoundsViscosity: 0.5
 });
 
-// لایه پس‌زمینه
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+// متغیرهای وضعیت
+let userLocation = null;
+let userMarker = null;
+let routingControl = null;
+let currentTheme = 'light';
+let favorites = JSON.parse(localStorage.getItem('hospitalFavorites')) || [];
+let currentTransportMode = 'walk';
 
-// کنترل‌های نقشه
-L.control.zoom({
-  position: 'bottomright'
-}).addTo(map);
-
-// جستجوی آدرس
-L.Control.geocoder({
-  defaultMarkGeocode: false,
-  position: 'topleft',
-  placeholder: 'جستجوی آدرس...',
-  errorMessage: 'آدرس یافت نشد',
-  showResultIcons: true,
-  collapsed: true
-})
-.on('markgeocode', function(e) {
-  map.fitBounds(e.geocode.bbox);
-})
-.addTo(map);
+// عناصر DOM
+const sidebar = document.getElementById('sidebar');
+const searchInput = document.getElementById('search-input');
+const typeFilter = document.getElementById('type-filter');
+const distanceFilter = document.getElementById('distance-filter');
+const hospitalList = document.getElementById('hospital-list');
+const resultsCount = document.getElementById('results-count');
+const btnOpenSearch = document.getElementById('btn-open-search');
+const btnCloseSidebar = document.querySelector('.btn-close-sidebar');
+const btnLocate = document.querySelector('.btn-locate');
+const btnRouting = document.getElementById('btn-routing');
+const btnDarkMode = document.querySelector('.btn-dark-mode');
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+const nearbyTab = document.getElementById('nearby-tab');
+const routePanel = document.getElementById('route-panel');
+const btnCloseRoute = document.querySelector('.btn-close-route');
+const routeHospitals = document.getElementById('route-hospitals');
+const transportBtns = document.querySelectorAll('.transport-btn');
 
 // آیکون‌های سفارشی
 const hospitalIcon = L.icon({
@@ -101,174 +105,132 @@ const hospitals = [
 
 // مارکرهای بیمارستان‌ها
 const hospitalMarkers = {};
-hospitals.forEach(hospital => {
-  const marker = L.marker(hospital.coords, {
-    icon: hospitalIcon,
-    riseOnHover: true
+
+// تابع برای بارگذاری لایه نقشه مناسب بر اساس تم
+function loadMapLayer() {
+  // حذف لایه‌های قبلی
+  map.eachLayer(layer => {
+    if (layer instanceof L.TileLayer) {
+      map.removeLayer(layer);
+    }
+  });
+
+  // اضافه کردن لایه جدید بر اساس تم فعلی
+  const tileLayerUrl = currentTheme === 'dark' 
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+  L.tileLayer(tileLayerUrl, {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
+
+  // اضافه کردن کنترل جستجو
+  L.Control.geocoder({
+    defaultMarkGeocode: false,
+    position: 'topleft',
+    placeholder: 'جستجوی آدرس...',
+    errorMessage: 'آدرس یافت نشد',
+    showResultIcons: true,
+    collapsed: true
+  })
+  .on('markgeocode', function(e) {
+    map.fitBounds(e.geocode.bbox);
+  })
+  .addTo(map);
+
+  // اضافه کردن کنترل زوم
+  L.control.zoom({
+    position: 'bottomright'
+  }).addTo(map);
+}
+
+// تابع برای تغییر تم
+function toggleDarkMode() {
+  currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  localStorage.setItem('theme', currentTheme);
   
-  const specialtiesList = hospital.specialties.map(spec => `<li>${spec}</li>`).join('');
+  btnDarkMode.innerHTML = currentTheme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
   
-  marker.bindPopup(`
-    <div class="popup-content">
-      <h4>${hospital.name}</h4>
-      <div class="hospital-type ${hospital.type.replace(/\s+/g, '-')}">
-        <i class="fas fa-hospital"></i> ${hospital.type}
-        ${hospital.emergency ? '<span class="emergency-badge"><i class="fas fa-ambulance"></i> اورژانس</span>' : ''}
-      </div>
-      <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
-      <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
-      <div class="hospital-specialties">
-        <h5>تخصص‌ها:</h5>
-        <ul>${specialtiesList}</ul>
-      </div>
-      <div class="popup-actions">
-        <button class="btn-route" data-id="${hospital.id}">
-          <i class="fas fa-route"></i> مسیریابی
-        </button>
-        <button class="btn-favorite" data-id="${hospital.id}">
-          <i class="far fa-heart"></i> ذخیره
-        </button>
-      </div>
-    </div>
-  `);
+  // بارگذاری لایه نقشه جدید بر اساس تم
+  loadMapLayer();
   
-  marker.on('popupopen', () => {
-    document.querySelector(`.popup-actions .btn-route[data-id="${hospital.id}"]`)
-      .addEventListener('click', () => {
-        if (userLocation) {
-          calculateRoute(hospital.coords);
-        } else {
-          alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
-        }
-      });
-      
-    document.querySelector(`.popup-actions .btn-favorite[data-id="${hospital.id}"]`)
-      .addEventListener('click', () => {
-        toggleFavorite(hospital.id);
-      });
+  // بروزرسانی مارکرها
+  updateMarkers();
+}
+
+// تابع برای بروزرسانی مارکرها پس از تغییر تم
+function updateMarkers() {
+  // حذف تمام مارکرهای موجود
+  Object.values(hospitalMarkers).forEach(marker => {
+    map.removeLayer(marker);
   });
-  
-  hospitalMarkers[hospital.id] = marker;
-});
 
-// متغیرهای وضعیت
-let userLocation = null;
-let userMarker = null;
-let routingControl = null;
-let currentTheme = 'light';
-let favorites = JSON.parse(localStorage.getItem('hospitalFavorites')) || [];
-let currentTransportMode = 'walk'; // حالت پیش‌فرض: پیاده
-
-// عناصر DOM
-const sidebar = document.getElementById('sidebar');
-const searchInput = document.getElementById('search-input');
-const typeFilter = document.getElementById('type-filter');
-const distanceFilter = document.getElementById('distance-filter');
-const hospitalList = document.getElementById('hospital-list');
-const resultsCount = document.getElementById('results-count');
-const btnOpenSearch = document.getElementById('btn-open-search');
-const btnCloseSidebar = document.querySelector('.btn-close-sidebar');
-const btnLocate = document.querySelector('.btn-locate');
-const btnRouting = document.getElementById('btn-routing');
-const btnDarkMode = document.querySelector('.btn-dark-mode');
-const tabBtns = document.querySelectorAll('.tab-btn');
-const tabContents = document.querySelectorAll('.tab-content');
-const nearbyTab = document.getElementById('nearby-tab');
-const routePanel = document.getElementById('route-panel');
-const btnCloseRoute = document.querySelector('.btn-close-route');
-const routeHospitals = document.getElementById('route-hospitals');
-const transportBtns = document.querySelectorAll('.transport-btn');
-
-// رویدادها
-btnOpenSearch.addEventListener('click', () => {
-  sidebar.classList.add('open');
-  document.querySelector('[data-tab="search"]').click();
-});
-
-btnCloseSidebar.addEventListener('click', () => {
-  sidebar.classList.remove('open');
-});
-
-btnLocate.addEventListener('click', locateUser);
-
-btnRouting.addEventListener('click', () => {
-  if (!userLocation) {
-    alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
-    return;
-  }
-  
-  if (routingControl) {
-    map.removeControl(routingControl);
-    routingControl = null;
-    btnRouting.innerHTML = '<i class="fas fa-route"></i>';
-    routePanel.classList.remove('open');
-    return;
-  }
-  
-  routePanel.classList.add('open');
-  updateRouteHospitalsList();
-});
-
-btnCloseRoute.addEventListener('click', () => {
-  if (routingControl) {
-    map.removeControl(routingControl);
-    routingControl = null;
-    btnRouting.innerHTML = '<i class="fas fa-route"></i>';
-  }
-  routePanel.classList.remove('open');
-});
-
-btnDarkMode.addEventListener('click', toggleDarkMode);
-
-tabBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    // حذف کلاس active از همه دکمه‌ها و محتواها
-    tabBtns.forEach(b => b.classList.remove('active'));
-    tabContents.forEach(c => c.classList.remove('active'));
+  // ایجاد مجدد مارکرها
+  hospitals.forEach(hospital => {
+    const marker = L.marker(hospital.coords, {
+      icon: hospitalIcon,
+      riseOnHover: true
+    }).addTo(map);
     
-    // اضافه کردن کلاس active به دکمه و محتوای انتخاب شده
-    btn.classList.add('active');
-    const tabId = btn.getAttribute('data-tab');
-    document.getElementById(`${tabId}-tab`).classList.add('active');
+    const specialtiesList = hospital.specialties.map(spec => `<li>${spec}</li>`).join('');
     
-    // بروزرسانی محتوا بر اساس تب انتخاب شده
-    switch(tabId) {
-      case 'search':
-        filterHospitals();
-        break;
-      case 'nearby':
-        showNearbyHospitals();
-        break;
-      case 'favorites':
-        showFavoriteHospitals();
-        break;
-    }
+    marker.bindPopup(`
+      <div class="popup-content">
+        <h4>${hospital.name}</h4>
+        <div class="hospital-type ${hospital.type.replace(/\s+/g, '-')}">
+          <i class="fas fa-hospital"></i> ${hospital.type}
+          ${hospital.emergency ? '<span class="emergency-badge"><i class="fas fa-ambulance"></i> اورژانس</span>' : ''}
+        </div>
+        <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+        <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
+        <div class="hospital-specialties">
+          <h5>تخصص‌ها:</h5>
+          <ul>${specialtiesList}</ul>
+        </div>
+        <div class="popup-actions">
+          <button class="btn-route" data-id="${hospital.id}">
+            <i class="fas fa-route"></i> مسیریابی
+          </button>
+          <button class="btn-favorite" data-id="${hospital.id}">
+            <i class="far fa-heart"></i> ذخیره
+          </button>
+        </div>
+      </div>
+    `);
+    
+    marker.on('popupopen', () => {
+      document.querySelector(`.popup-actions .btn-route[data-id="${hospital.id}"]`)
+        .addEventListener('click', () => {
+          if (userLocation) {
+            calculateRoute(hospital.coords);
+          } else {
+            alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
+          }
+        });
+        
+      document.querySelector(`.popup-actions .btn-favorite[data-id="${hospital.id}"]`)
+        .addEventListener('click', () => {
+          toggleFavorite(hospital.id);
+        });
+    });
+    
+    hospitalMarkers[hospital.id] = marker;
   });
-});
 
-// رویدادهای حالت‌های حمل و نقل
-transportBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    transportBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentTransportMode = btn.getAttribute('data-mode');
+  // بروزرسانی مارکر کاربر اگر وجود دارد
+  if (userMarker) {
+    const userLatLng = userMarker.getLatLng();
+    map.removeLayer(userMarker);
     
-    // اگر مسیری فعال است، دوباره محاسبه کن
-    if (routingControl) {
-      const currentWaypoints = routingControl.getWaypoints();
-      if (currentWaypoints.length >= 2) {
-        calculateRoute(currentWaypoints[1].latLng);
-      }
-    }
-  });
-});
+    userMarker = L.marker([userLatLng.lat, userLatLng.lng], {
+      icon: userIcon
+    }).addTo(map);
+    userMarker.bindPopup('شما اینجا هستید');
+  }
+}
 
-searchInput.addEventListener('input', filterHospitals);
-typeFilter.addEventListener('change', filterHospitals);
-distanceFilter.addEventListener('change', filterHospitals);
-
-// توابع
+// تابع برای یافتن موقعیت کاربر
 function locateUser() {
   if (navigator.geolocation) {
     btnLocate.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -318,6 +280,7 @@ function locateUser() {
   }
 }
 
+// تابع برای فیلتر بیمارستان‌ها
 function filterHospitals() {
   const searchTerm = searchInput.value.toLowerCase();
   const typeFilterValue = typeFilter.value;
@@ -350,6 +313,7 @@ function filterHospitals() {
   updateHospitalList(filteredHospitals);
 }
 
+// تابع برای به‌روزرسانی لیست بیمارستان‌ها
 function updateHospitalList(filteredHospitals) {
   hospitalList.innerHTML = '';
   
@@ -427,47 +391,7 @@ function updateHospitalList(filteredHospitals) {
   });
 }
 
-function updateRouteHospitalsList() {
-  routeHospitals.innerHTML = '';
-  
-  hospitals.forEach(hospital => {
-    const li = document.createElement('li');
-    
-    let distanceHtml = '';
-    if (userLocation) {
-      const distance = getDistance(
-        userLocation.lat, 
-        userLocation.lng,
-        hospital.coords[0],
-        hospital.coords[1]
-      ) / 1000; // تبدیل به کیلومتر
-      
-      distanceHtml = `
-        <div class="distance">
-          <i class="fas fa-map-marker-alt"></i>
-          ${distance.toFixed(2)} کیلومتر
-        </div>
-      `;
-    }
-    
-    li.innerHTML = `
-      <h4>${hospital.name}</h4>
-      <p>${hospital.address}</p>
-      ${distanceHtml}
-      <button class="btn-select-route" data-id="${hospital.id}">
-        <i class="fas fa-route"></i> مسیریابی
-      </button>
-    `;
-    
-    li.querySelector('.btn-select-route').addEventListener('click', () => {
-      calculateRoute(hospital.coords);
-      routePanel.classList.remove('open');
-    });
-    
-    routeHospitals.appendChild(li);
-  });
-}
-
+// تابع برای نمایش بیمارستان روی نقشه
 function showHospitalOnMap(hospitalId) {
   const marker = hospitalMarkers[hospitalId];
   if (marker) {
@@ -480,6 +404,7 @@ function showHospitalOnMap(hospitalId) {
   }
 }
 
+// تابع برای محاسبه مسیر
 function calculateRoute(destination) {
   if (!userLocation) return;
   
@@ -530,6 +455,7 @@ function calculateRoute(destination) {
   btnRouting.innerHTML = '<i class="fas fa-times"></i>';
 }
 
+// تابع برای محاسبه فاصله
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3; // شعاع زمین بر حسب متر
   const φ1 = lat1 * Math.PI / 180;
@@ -545,6 +471,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+// تابع برای نمایش بیمارستان‌های نزدیک
 function showNearbyHospitals() {
   if (!userLocation) {
     nearbyTab.innerHTML = `
@@ -639,6 +566,7 @@ function showNearbyHospitals() {
   });
 }
 
+// تابع برای نمایش بیمارستان‌های موردعلاقه
 function showFavoriteHospitals() {
   if (favorites.length === 0) {
     document.getElementById('favorites-tab').innerHTML = `
@@ -654,6 +582,7 @@ function showFavoriteHospitals() {
   updateHospitalList(favoriteHospitals);
 }
 
+// تابع برای اضافه/حذف بیمارستان از موردعلاقه‌ها
 function toggleFavorite(hospitalId) {
   const index = favorites.indexOf(hospitalId);
   if (index === -1) {
@@ -678,14 +607,6 @@ function toggleFavorite(hospitalId) {
   }
 }
 
-function toggleDarkMode() {
-  currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', currentTheme);
-  localStorage.setItem('theme', currentTheme);
-  
-  btnDarkMode.innerHTML = currentTheme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-}
-
 // مقداردهی اولیه
 function init() {
   // بارگذاری تم ذخیره شده
@@ -694,10 +615,151 @@ function init() {
   document.documentElement.setAttribute('data-theme', currentTheme);
   btnDarkMode.innerHTML = currentTheme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
   
+  // بارگذاری لایه نقشه
+  loadMapLayer();
+  
+  // ایجاد مارکرهای بیمارستان‌ها
+  hospitals.forEach(hospital => {
+    const marker = L.marker(hospital.coords, {
+      icon: hospitalIcon,
+      riseOnHover: true
+    }).addTo(map);
+    
+    const specialtiesList = hospital.specialties.map(spec => `<li>${spec}</li>`).join('');
+    
+    marker.bindPopup(`
+      <div class="popup-content">
+        <h4>${hospital.name}</h4>
+        <div class="hospital-type ${hospital.type.replace(/\s+/g, '-')}">
+          <i class="fas fa-hospital"></i> ${hospital.type}
+          ${hospital.emergency ? '<span class="emergency-badge"><i class="fas fa-ambulance"></i> اورژانس</span>' : ''}
+        </div>
+        <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+        <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
+        <div class="hospital-specialties">
+          <h5>تخصص‌ها:</h5>
+          <ul>${specialtiesList}</ul>
+        </div>
+        <div class="popup-actions">
+          <button class="btn-route" data-id="${hospital.id}">
+            <i class="fas fa-route"></i> مسیریابی
+          </button>
+          <button class="btn-favorite" data-id="${hospital.id}">
+            <i class="far fa-heart"></i> ذخیره
+          </button>
+        </div>
+      </div>
+    `);
+    
+    marker.on('popupopen', () => {
+      document.querySelector(`.popup-actions .btn-route[data-id="${hospital.id}"]`)
+        .addEventListener('click', () => {
+          if (userLocation) {
+            calculateRoute(hospital.coords);
+          } else {
+            alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
+          }
+        });
+        
+      document.querySelector(`.popup-actions .btn-favorite[data-id="${hospital.id}"]`)
+        .addEventListener('click', () => {
+          toggleFavorite(hospital.id);
+        });
+    });
+    
+    hospitalMarkers[hospital.id] = marker;
+  });
+  
+  // رویدادها
+  btnOpenSearch.addEventListener('click', () => {
+    sidebar.classList.add('open');
+    document.querySelector('[data-tab="search"]').click();
+  });
+
+  btnCloseSidebar.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+  });
+
+  btnLocate.addEventListener('click', locateUser);
+
+  btnRouting.addEventListener('click', () => {
+    if (!userLocation) {
+      alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
+      return;
+    }
+    
+    if (routingControl) {
+      map.removeControl(routingControl);
+      routingControl = null;
+      btnRouting.innerHTML = '<i class="fas fa-route"></i>';
+      routePanel.classList.remove('open');
+      return;
+    }
+    
+    routePanel.classList.add('open');
+    updateRouteHospitalsList();
+  });
+
+  btnCloseRoute.addEventListener('click', () => {
+    if (routingControl) {
+      map.removeControl(routingControl);
+      routingControl = null;
+      btnRouting.innerHTML = '<i class="fas fa-route"></i>';
+    }
+    routePanel.classList.remove('open');
+  });
+
+  btnDarkMode.addEventListener('click', toggleDarkMode);
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+      
+      btn.classList.add('active');
+      const tabId = btn.getAttribute('data-tab');
+      document.getElementById(`${tabId}-tab`).classList.add('active');
+      
+      switch(tabId) {
+        case 'search':
+          filterHospitals();
+          break;
+        case 'nearby':
+          showNearbyHospitals();
+          break;
+        case 'favorites':
+          showFavoriteHospitals();
+          break;
+      }
+    });
+  });
+
+  // رویدادهای حالت‌های حمل و نقل
+  transportBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      transportBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTransportMode = btn.getAttribute('data-mode');
+      
+      // اگر مسیری فعال است، دوباره محاسبه کن
+      if (routingControl) {
+        const currentWaypoints = routingControl.getWaypoints();
+        if (currentWaypoints.length >= 2) {
+          calculateRoute(currentWaypoints[1].latLng);
+        }
+      }
+    });
+  });
+
+  searchInput.addEventListener('input', filterHospitals);
+  typeFilter.addEventListener('change', filterHospitals);
+  distanceFilter.addEventListener('change', filterHospitals);
+  
   // بارگذاری اولیه داده‌ها
   filterHospitals();
   showNearbyHospitals();
   showFavoriteHospitals();
 }
 
+// شروع برنامه
 init();

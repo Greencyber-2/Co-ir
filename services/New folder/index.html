@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نقشه کامل بروجرد</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { height: 100%; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    const MAPTILER_API_KEY = 'Li76AqiVjwjtBs2Bpdbv';  // <-- API Key خودت رو اینجا بزن
+
+    const map = L.map('map', {
+      center: [33.8971, 48.7516], // مرکز بروجرد
+      zoom: 14,
+      minZoom: 13,
+      maxZoom: 18,
+      attributionControl: false
+    });
+
+    // Tile Layer از MapTiler (می‌تونی استایل‌های دیگه بزاری مثل satellite)
+    L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`, {
+      tileSize: 512,
+      zoomOffset: -1,
+    }).addTo(map);
+
+    // محدود کردن محدوده حرکت کاربر فقط به محدوده بروجرد
+    const bounds = L.latLngBounds(
+      [33.83, 48.70],  // جنوب غربی بروجرد
+      [33.95, 48.81]   // شمال شرقی بروجرد
+    );
+    map.setMaxBounds(bounds);
+
+    // جلوگیری از رفتن کاربر خارج از بروجرد
+    map.on('drag', function() {
+      map.panInsideBounds(bounds, { animate: false });
+    });
+
+  </script>
+
+</body>
+</html>

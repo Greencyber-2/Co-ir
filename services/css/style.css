@@ -11,7 +11,7 @@
   --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
   --header-height: 6rem;
-  --footer-height: 6rem;
+  --footer-height: 5rem;
 }
 
 [data-theme="dark"] {
@@ -70,7 +70,6 @@ body {
   z-index: 1000;
   display: flex;
   align-items: center;
-  transition: var(--transition);
 }
 
 .header-content {
@@ -85,29 +84,23 @@ body {
 .logo-title {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .logo {
-  width: 4rem;
-  height: 4rem;
+  width: 3.5rem;
+  height: 3.5rem;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .app-title {
   font-size: 1.8rem;
   font-weight: 700;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: white;
 }
 
-.header-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.btn-locate {
+.btn-menu {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -119,12 +112,11 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.btn-locate:hover {
+.btn-menu:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
+  transform: rotate(90deg);
 }
 
 /* محتوای اصلی */
@@ -153,8 +145,8 @@ body {
   border-radius: 2rem 2rem 0 0;
   box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
   z-index: 1002;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  max-height: 80vh;
+  transition: var(--transition);
+  max-height: 70vh;
   display: flex;
   flex-direction: column;
   touch-action: pan-y;
@@ -165,9 +157,9 @@ body {
 }
 
 .panel.fullscreen {
-  bottom: 0;
-  border-radius: 0;
   max-height: calc(100vh - var(--header-height));
+  border-radius: 0;
+  bottom: 0;
 }
 
 .panel-header {
@@ -176,14 +168,18 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
+  cursor: grab;
+  touch-action: none;
+}
+
+.panel-header:active {
+  cursor: grabbing;
 }
 
 .panel-header h3 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   color: var(--primary-color);
   margin: 0;
-  font-weight: 700;
 }
 
 .btn-close-panel {
@@ -197,6 +193,7 @@ body {
 
 .btn-close-panel:hover {
   color: var(--accent-color);
+  transform: rotate(90deg);
 }
 
 .panel-content {
@@ -206,10 +203,47 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* پنل منو */
+.menu-panel {
+  max-height: 50vh;
+}
+
+.menu-item {
+  width: 100%;
+  padding: 1.5rem;
+  background: none;
+  border: none;
+  border-radius: 0.8rem;
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 1rem;
+}
+
+.menu-item:last-child {
+  margin-bottom: 0;
+}
+
+.menu-item:hover {
+  background: rgba(24, 90, 157, 0.1);
+}
+
+.menu-item i {
+  width: 2.5rem;
+  text-align: center;
+  color: var(--primary-color);
+}
+
 /* پنل بیمارستان */
 .hospital-image {
   width: 100%;
-  height: 20rem;
+  height: 18rem;
   background-size: cover;
   background-position: center;
   border-radius: 1rem;
@@ -225,9 +259,9 @@ body {
 .info-row {
   display: flex;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .info-row i {
@@ -238,62 +272,49 @@ body {
 }
 
 .specialties {
-  margin-top: 2.5rem;
+  margin-top: 2rem;
 }
 
 .specialties h4 {
-  font-size: 1.6rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
   color: var(--primary-color);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.specialties h4::before {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border-color);
 }
 
 .specialties ul {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .specialties li {
   background: rgba(24, 90, 157, 0.1);
   color: var(--primary-color);
-  padding: 0.8rem 1.2rem;
-  border-radius: 0.8rem;
-  font-size: 1.3rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
 }
 
 .panel-actions {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 2.5rem;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 .btn-action {
   flex: 1;
-  padding: 1.5rem;
-  border-radius: 1rem;
+  padding: 1.2rem;
+  border-radius: 0.5rem;
   border: none;
   font-family: 'Vazirmatn', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1.4rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem;
   transition: var(--transition);
-  box-shadow: var(--shadow);
 }
 
 .btn-show-on-map {
@@ -303,7 +324,6 @@ body {
 
 .btn-show-on-map:hover {
   background: var(--primary-light);
-  transform: translateY(-2px);
 }
 
 .btn-call {
@@ -313,14 +333,13 @@ body {
 
 .btn-call:hover {
   background: #ff5252;
-  transform: translateY(-2px);
 }
 
 /* پنل مسیریابی */
 .route-summary {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid var(--border-color);
 }
@@ -329,27 +348,27 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
-  font-size: 1.4rem;
+  gap: 0.5rem;
+  font-size: 1.3rem;
 }
 
 .route-info i {
-  font-size: 2.2rem;
+  font-size: 2rem;
   color: var(--primary-color);
 }
 
 .transport-modes {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .transport-btn {
   flex: 1;
-  padding: 1.2rem;
+  padding: 1rem;
   background: var(--bg-color);
   border: 1px solid var(--border-color);
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   color: var(--text-light);
   font-family: 'Vazirmatn', sans-serif;
   cursor: pointer;
@@ -357,31 +376,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  font-size: 1.4rem;
+  gap: 0.5rem;
 }
 
 .transport-btn.active {
   background: var(--primary-color);
   color: white;
   border-color: var(--primary-color);
-  box-shadow: 0 2px 8px rgba(24, 90, 157, 0.3);
 }
 
 .route-instructions {
   background: var(--bg-color);
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
   font-size: 1.4rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .route-instruction-item {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 0;
+  gap: 1rem;
+  padding: 0.8rem 0;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -391,9 +407,26 @@ body {
 
 .route-instruction-icon {
   color: var(--primary-color);
-  font-size: 1.8rem;
-  width: 2.5rem;
+  font-size: 1.6rem;
+  width: 2rem;
   text-align: center;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
 }
 
 /* پنل بیمارستان‌های نزدیک */
@@ -402,9 +435,8 @@ body {
 }
 
 .nearby-item {
-  padding: 1.8rem 0;
+  padding: 1.5rem 0;
   border-bottom: 1px solid var(--border-color);
-  transition: var(--transition);
 }
 
 .nearby-item:last-child {
@@ -415,61 +447,58 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem;
 }
 
 .nearby-item h4 {
-  font-size: 1.7rem;
+  font-size: 1.6rem;
   color: var(--primary-color);
 }
 
 .nearby-item p {
   font-size: 1.4rem;
   color: var(--text-light);
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
 .distance {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  font-size: 1.4rem;
+  gap: 0.5rem;
+  font-size: 1.3rem;
   color: var(--secondary-color);
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
 .hospital-type {
   background: rgba(24, 90, 157, 0.1);
   color: var(--primary-color);
-  padding: 0.5rem 1.2rem;
-  border-radius: 0.8rem;
-  font-size: 1.3rem;
+  padding: 0.3rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .nearby-actions {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .nearby-btn {
   flex: 1;
-  padding: 1.2rem;
-  border-radius: 0.8rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
   border: none;
   font-family: 'Vazirmatn', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
-  transition: var(--transition);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  gap: 0.5rem;
 }
 
 .nearby-btn-primary {
@@ -479,7 +508,6 @@ body {
 
 .nearby-btn-primary:hover {
   background: var(--primary-light);
-  transform: translateY(-2px);
 }
 
 .nearby-btn-secondary {
@@ -488,84 +516,7 @@ body {
 }
 
 .nearby-btn-secondary:hover {
-  background: #6dd8b8;
-  transform: translateY(-2px);
-}
-
-/* پنل تنظیمات */
-.settings-option {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.settings-option:last-child {
-  border-bottom: none;
-}
-
-.settings-option i {
-  color: var(--primary-color);
-  font-size: 1.8rem;
-  width: 3rem;
-  text-align: center;
-}
-
-.settings-option span {
-  flex: 1;
-  font-size: 1.5rem;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 5rem;
-  height: 2.8rem;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--border-color);
-  transition: var(--transition);
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 2.2rem;
-  width: 2.2rem;
-  left: 0.3rem;
-  bottom: 0.3rem;
-  background-color: white;
-  transition: var(--transition);
-}
-
-input:checked + .slider {
-  background-color: var(--primary-color);
-}
-
-input:checked + .slider:before {
-  transform: translateX(2.2rem);
-}
-
-.slider.round {
-  border-radius: 3.4rem;
-}
-
-.slider.round:before {
-  border-radius: 50%;
+  background: var(--primary-light);
 }
 
 /* دکمه‌های شناور */
@@ -575,24 +526,24 @@ input:checked + .slider:before {
   left: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   z-index: 1000;
 }
 
 .floating-action-btn {
-  width: 6rem;
-  height: 6rem;
+  width: 5.5rem;
+  height: 5.5rem;
   border-radius: 50%;
   background: var(--card-bg);
   color: var(--primary-color);
   border: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  font-size: 2.2rem;
+  transition: var(--transition);
+  font-size: 2rem;
 }
 
 .floating-action-btn.primary {
@@ -600,14 +551,9 @@ input:checked + .slider:before {
   color: white;
 }
 
-.floating-action-btn.secondary {
-  background: var(--secondary-color);
-  color: white;
-}
-
 .floating-action-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 /* اعلانات */
@@ -618,18 +564,17 @@ input:checked + .slider:before {
   transform: translateX(-50%);
   background: var(--card-bg);
   color: var(--text-color);
-  padding: 1.5rem 2.5rem;
-  border-radius: 0.8rem;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
   box-shadow: var(--shadow);
   z-index: 1100;
   transition: var(--transition);
   max-width: 90%;
   text-align: center;
-  border-left: 5px solid var(--primary-color);
 }
 
 .notification.show {
-  top: calc(var(--header-height) + 1.5rem);
+  top: calc(var(--header-height) + 1rem);
 }
 
 .notification-content {
@@ -645,7 +590,7 @@ input:checked + .slider:before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -662,18 +607,18 @@ input:checked + .slider:before {
 }
 
 .loading-spinner {
-  width: 6rem;
-  height: 6rem;
+  width: 5rem;
+  height: 5rem;
   border: 5px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: var(--primary-color);
   animation: spin 1s ease-in-out infinite;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .loading-text {
   color: white;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 
 @keyframes spin {
@@ -689,34 +634,31 @@ input:checked + .slider:before {
   height: var(--footer-height);
   background: var(--card-bg);
   color: var(--text-color);
-  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  transition: var(--transition);
-  border-top: 1px solid var(--border-color);
+  padding: 1rem 0;
 }
 
 .footer-content {
   width: 100%;
   max-width: 1200px;
-  padding: 0 2rem;
   margin: 0 auto;
+  padding: 0 2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
 }
 
 .footer-links {
   display: flex;
-  justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .footer-link {
   color: var(--text-light);
-  font-size: 1.3rem;
   text-decoration: none;
+  font-size: 1.2rem;
   transition: var(--transition);
 }
 
@@ -725,12 +667,12 @@ input:checked + .slider:before {
 }
 
 .copyright {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--text-light);
   text-align: center;
 }
 
-/* پاپ‌آپ نقشه - نسخه بهینه‌شده */
+/* پاپ‌آپ نقشه - نسخه جدید */
 .leaflet-popup {
   direction: rtl;
 }
@@ -743,17 +685,17 @@ input:checked + .slider:before {
   border: 1px solid var(--border-color);
   text-align: right;
   direction: rtl;
-  padding: 1.5rem;
+  padding: 1.2rem;
   transition: var(--transition);
 }
 
 .leaflet-popup-content {
-  min-width: 28rem;
+  min-width: 25rem;
   font-family: 'Vazirmatn', sans-serif;
   margin: 0;
   text-align: right;
   direction: rtl;
-  padding-left: 2.5rem;
+  padding-left: 2.2rem;
 }
 
 .leaflet-popup-tip-container {
@@ -773,7 +715,7 @@ input:checked + .slider:before {
   top: 10px !important;
   padding: 0 !important;
   margin: 0 !important;
-  font-size: 2rem !important;
+  font-size: 1.8rem !important;
   color: var(--text-light) !important;
   background: none !important;
   border: none !important;
@@ -795,21 +737,21 @@ input:checked + .slider:before {
 
 .leaflet-popup-content h4 {
   color: var(--primary-color);
-  margin: 0 0 1.5rem 0;
-  font-size: 1.8rem;
+  margin: 0 0 1.2rem 0;
+  font-size: 1.6rem;
   font-weight: 700;
   text-align: right;
 }
 
 .leaflet-popup-content p {
-  margin: 0 0 1.2rem 0;
-  font-size: 1.4rem;
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
   color: var(--text-color);
   text-align: right;
   line-height: 1.6;
   display: flex;
   align-items: flex-start;
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
 .leaflet-popup-content p i {
@@ -819,38 +761,39 @@ input:checked + .slider:before {
 
 .popup-actions {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 1.8rem;
+  gap: 1rem;
+  margin-top: 1.5rem;
   direction: rtl;
 }
 
 .popup-btn {
   flex: 1;
-  padding: 1rem;
-  border-radius: 0.8rem;
+  padding: 0.9rem;
+  border-radius: 0.6rem;
   border: none;
   font-family: 'Vazirmatn', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
+  gap: 0.6rem;
   transition: var(--transition);
   direction: rtl;
   text-align: right;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .popup-btn-primary {
   background: var(--primary-color);
   color: white;
+  box-shadow: 0 2px 6px rgba(24, 90, 157, 0.3);
 }
 
 .popup-btn-primary:hover {
   background: var(--primary-light);
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(24, 90, 157, 0.4);
 }
 
 .popup-btn-secondary {
@@ -864,57 +807,81 @@ input:checked + .slider:before {
   transform: translateY(-2px);
 }
 
-/* کشیدن پنل برای فول‌اسکرین */
-.panel-handle {
-  width: 4rem;
-  height: 0.5rem;
-  background: var(--border-color);
-  border-radius: 0.5rem;
-  margin: 0 auto;
-  margin-bottom: 1rem;
-  cursor: ns-resize;
-}
-
 /* بهبود نمایش در حالت موبایل */
 @media (max-width: 768px) {
+  .panel {
+    width: 100%;
+    max-height: 70vh;
+  }
+
+  .floating-buttons {
+    bottom: calc(var(--footer-height) + 1rem);
+    left: 1rem;
+  }
+
+  .floating-action-btn {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.8rem;
+  }
+  
+  .panel-actions {
+    flex-direction: column;
+  }
+  
+  .btn-action {
+    width: 100%;
+  }
+  
+  .nearby-actions {
+    flex-direction: column;
+  }
+  
+  .nearby-btn {
+    width: 100%;
+  }
+  
+  .leaflet-popup-content {
+    min-width: 20rem;
+    padding-left: 1.8rem;
+  }
+  
+  .leaflet-popup-close-button {
+    left: 8px !important;
+    top: 8px !important;
+    font-size: 1.6rem !important;
+  }
+  
+  .popup-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
   :root {
     --header-height: 5.5rem;
-    --footer-height: 5.5rem;
+    --footer-height: 4.5rem;
   }
   
   .app-title {
     font-size: 1.6rem;
   }
 
+  .panel-header h3 {
+    font-size: 1.5rem;
+  }
+
   .panel {
-    max-height: 70vh;
-  }
-
-  .floating-buttons {
-    bottom: calc(var(--footer-height) + 1.5rem);
-    left: 1.5rem;
-  }
-
-  .floating-action-btn {
-    width: 5.5rem;
-    height: 5.5rem;
-    font-size: 2rem;
-  }
-  
-  .panel-actions, .nearby-actions {
-    flex-direction: column;
-  }
-  
-  .btn-action, .nearby-btn {
-    width: 100%;
+    max-height: 60vh;
   }
   
   .hospital-image {
-    height: 16rem;
+    height: 15rem;
   }
   
   .info-row {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
   
   .notification {
@@ -922,67 +889,15 @@ input:checked + .slider:before {
     font-size: 1.4rem;
   }
   
-  .leaflet-popup-content {
-    min-width: 22rem;
-  }
-}
-
-@media (max-width: 480px) {
-  :root {
-    --header-height: 5rem;
-    --footer-height: 5rem;
-  }
-  
-  .logo {
-    width: 3.5rem;
-    height: 3.5rem;
-  }
-  
-  .app-title {
-    font-size: 1.5rem;
-  }
-
-  .panel {
-    max-height: 65vh;
-  }
-  
-  .hospital-image {
-    height: 14rem;
-  }
-  
-  .panel-header h3 {
-    font-size: 1.6rem;
-  }
-  
-  .info-row {
-    font-size: 1.3rem;
-  }
-  
   .footer-links {
-    gap: 1.5rem;
+    gap: 1rem;
   }
   
   .footer-link {
-    font-size: 1.2rem;
-  }
-  
-  .copyright {
     font-size: 1.1rem;
   }
   
-  .leaflet-popup-content {
-    min-width: 18rem;
-    padding-left: 2rem;
-  }
-  
-  .leaflet-popup-close-button {
-    left: 8px !important;
-    top: 8px !important;
-    font-size: 1.8rem !important;
-  }
-  
-  .popup-actions {
-    flex-direction: column;
-    gap: 0.8rem;
+  .copyright {
+    font-size: 1rem;
   }
 }

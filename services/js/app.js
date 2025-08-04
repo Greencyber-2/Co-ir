@@ -20,23 +20,23 @@ let isInBorujerd = false;
 let selectedHospital = null;
 let routingControl = null;
 let currentTransportMode = 'walk';
-let startY = 0;
-let currentY = 0;
-let panelStartHeight = 0;
+let panelDragStartY = 0;
+let panelDragCurrentY = 0;
+let isDraggingPanel = false;
 
 // عناصر DOM
 const hospitalPanel = document.getElementById('hospital-panel');
 const routePanel = document.getElementById('route-panel');
 const nearbyPanel = document.getElementById('nearby-panel');
-const settingsPanel = document.getElementById('settings-panel');
+const menuPanel = document.getElementById('menu-panel');
 const notification = document.getElementById('notification');
 const loadingOverlay = document.getElementById('loading');
-const btnLocate = document.querySelector('.btn-locate');
+const btnMenu = document.getElementById('btn-menu');
 const btnShowNearby = document.getElementById('btn-show-nearby');
-const btnShowSettings = document.getElementById('btn-show-settings');
 const btnClosePanels = document.querySelectorAll('.btn-close-panel');
 const transportBtns = document.querySelectorAll('.transport-btn');
-const darkModeToggle = document.getElementById('dark-mode-toggle');
+const menuDarkMode = document.getElementById('menu-dark-mode');
+const menuLocate = document.getElementById('menu-locate');
 
 // آیکون‌ها
 const hospitalIcon = L.icon({
@@ -63,9 +63,8 @@ const hospitals = [
     phone: "066-43210000",
     type: "عمومی",
     emergency: true,
-    specialties: ["اورژانس", "اطفال", "زنان", "جراحی", "داخلی", "ارتوپدی", "اورولوژی"],
-    photo: "assets/img/hospitals/chamran.jpg",
-    description: "بیمارستان شهید چمران یکی از بیمارستان‌های اصلی شهر بروجرد است که خدمات درمانی عمومی ارائه می‌دهد."
+    specialties: ["اورژانس", "اطفال", "زنان", "جراحی", "داخلی", "ارتوپدی"],
+    photo: "assets/img/hospitals/chamran.jpg"
   },
   {
     id: 2,
@@ -75,9 +74,8 @@ const hospitals = [
     phone: "066-43220000",
     type: "عمومی",
     emergency: true,
-    specialties: ["اورژانس", "اطفال", "زنان", "جراحی", "قلب", "گوارش", "پوست"],
-    photo: "assets/img/hospitals/emam.jpg",
-    description: "بیمارستان امام خمینی یکی از مراکز درمانی مهم شهر بروجرد با بخش‌های تخصصی مختلف است."
+    specialties: ["اورژانس", "اطفال", "زنان", "جراحی", "قلب", "مغز و اعصاب"],
+    photo: "assets/img/hospitals/emam.jpg"
   },
   {
     id: 3,
@@ -87,9 +85,8 @@ const hospitals = [
     phone: "066-43230000",
     type: "خصوصی",
     emergency: false,
-    specialties: ["زنان", "اطفال", "چشم پزشکی", "دندانپزشکی"],
-    photo: "assets/img/hospitals/behbood.jpg",
-    description: "بیمارستان بهبود یک مرکز درمانی خصوصی با امکانات مدرن و کادر مجرب است."
+    specialties: ["زنان", "اطفال", "چشم پزشکی", "داخلی"],
+    photo: "assets/img/hospitals/behbood.jpg"
   },
   {
     id: 4,
@@ -99,9 +96,8 @@ const hospitals = [
     phone: "066-43240000",
     type: "تأمین اجتماعی",
     emergency: true,
-    specialties: ["اورژانس", "اطفال", "زنان", "جراحی", "رادیولوژی"],
-    photo: "assets/img/hospitals/kowsar.jpg",
-    description: "بیمارستان کوثری مرکز درمانی وابسته به سازمان تأمین اجتماعی است."
+    specialties: ["اورژانس", "اطفال", "زنان", "جراحی", "داخلی"],
+    photo: "assets/img/hospitals/kowsar.jpg"
   },
   {
     id: 5,
@@ -111,9 +107,8 @@ const hospitals = [
     phone: "066-43250000",
     type: "خصوصی",
     emergency: true,
-    specialties: ["اورژانس", "جراحی", "ارتوپدی", "فیزیوتراپی"],
-    photo: "assets/img/hospitals/shafa.jpg",
-    description: "بیمارستان شفا یک مرکز تخصصی با تجهیزات پیشرفته جراحی است."
+    specialties: ["اورژانس", "جراحی", "ارتوپدی", "داخلی"],
+    photo: "assets/img/hospitals/shafa.jpg"
   },
   {
     id: 6,
@@ -123,33 +118,30 @@ const hospitals = [
     phone: "066-43260000",
     type: "خصوصی",
     emergency: true,
-    specialties: ["اطفال", "نوزادان", "واکسیناسیون"],
-    photo: "assets/img/hospitals/omid.jpg",
-    description: "بیمارستان امید تنها مرکز تخصصی کودکان در شهر بروجرد است."
+    specialties: ["اطفال", "نوزادان"],
+    photo: "assets/img/hospitals/omid.jpg"
   },
   {
     id: 7,
-    name: "بیمارستان قلب بروجرد",
-    coords: [33.8905, 48.7583],
-    address: "بروجرد، بلوار معلم، جنب پارک لاله",
+    name: "بیمارستان تخصصی قلب بروجرد",
+    coords: [33.8951, 48.7583],
+    address: "بروجرد، خیابان شریعتی، جنب بیمارستان شفا",
     phone: "066-43270000",
     type: "تخصصی",
     emergency: true,
-    specialties: ["قلب", "اکوکاردیوگرافی", "آنژیوگرافی"],
-    photo: "assets/img/hospitals/heart.jpg",
-    description: "بیمارستان تخصصی قلب بروجرد مجهز به پیشرفته‌ترین دستگاه‌های تشخیصی و درمانی است."
+    specialties: ["قلب", "اورژانس قلبی"],
+    photo: "assets/img/hospitals/heart.jpg"
   },
   {
     id: 8,
-    name: "بیمارستان روانپزشکی مهر",
-    coords: [33.8832, 48.7421],
-    address: "بروجرد، خیابان شهید بهشتی، کوچه مهر",
+    name: "بیمارستان تخصصی چشم پزشکی نور",
+    coords: [33.8905, 48.7532],
+    address: "بروجرد، بلوار معلم، جنب بیمارستان امید",
     phone: "066-43280000",
     type: "تخصصی",
     emergency: false,
-    specialties: ["روانپزشکی", "اعصاب و روان", "مشاوره"],
-    photo: "assets/img/hospitals/mehr.jpg",
-    description: "بیمارستان مهر مرکز تخصصی درمان بیماری‌های روانپزشکی است."
+    specialties: ["چشم پزشکی", "لیزر چشم"],
+    photo: "assets/img/hospitals/noor.jpg"
   }
 ];
 
@@ -224,6 +216,11 @@ function toggleDarkMode() {
   document.documentElement.setAttribute('data-theme', currentTheme);
   localStorage.setItem('theme', currentTheme);
   
+  // تغییر آیکون دکمه
+  menuDarkMode.innerHTML = currentTheme === 'light' 
+    ? '<i class="fas fa-moon"></i><span>حالت شب</span>' 
+    : '<i class="fas fa-sun"></i><span>حالت روز</span>';
+  
   // بارگذاری مجدد لایه نقشه
   loadMapLayer();
   
@@ -240,7 +237,7 @@ function toggleDarkMode() {
   }
 }
 
-// تابع برای به‌روزرسانی استایل پاپ‌آپ‌ها
+// تابع جدید برای به‌روزرسانی استایل پاپ‌آپ‌ها
 function updatePopupsStyle() {
   Object.values(hospitalMarkers).forEach(marker => {
     if (marker.isPopupOpen()) {
@@ -255,17 +252,17 @@ function updatePopupsStyle() {
   }
 }
 
-// تابع برای ایجاد محتوای پاپ‌آپ
+// تابع جدید برای ایجاد محتوای پاپ‌آپ
 function createPopupContent(hospital) {
   return `
-    <div class="popup-content">
-      <h4>${hospital.name}</h4>
-      <p><i class="fas fa-hospital"></i> ${hospital.type}</p>
-      <div class="popup-actions">
-        <button class="popup-btn popup-btn-primary" data-id="${hospital.id}" data-action="details">
+    <div class="popup-content" style="text-align: right; direction: rtl;">
+      <h4 style="text-align: right;">${hospital.name}</h4>
+      <p style="text-align: right;"><i class="fas fa-hospital"></i> ${hospital.type}</p>
+      <div class="popup-actions" style="direction: rtl;">
+        <button class="popup-btn popup-btn-primary" data-id="${hospital.id}" data-action="details" style="direction: rtl;">
           <i class="fas fa-info-circle"></i> جزئیات
         </button>
-        <button class="popup-btn popup-btn-secondary" data-id="${hospital.id}" data-action="route">
+        <button class="popup-btn popup-btn-secondary" data-id="${hospital.id}" data-action="route" style="direction: rtl;">
           <i class="fas fa-route"></i> مسیر
         </button>
       </div>
@@ -587,7 +584,7 @@ function closeAllPanels() {
   hospitalPanel.classList.remove('open');
   routePanel.classList.remove('open');
   nearbyPanel.classList.remove('open');
-  settingsPanel.classList.remove('open');
+  menuPanel.classList.remove('open');
   
   // حذف مسیر اگر وجود داشت
   if (routingControl) {
@@ -596,71 +593,60 @@ function closeAllPanels() {
   }
 }
 
-// تابع برای مدیریت کشیدن پنل
+// تابع برای مدیریت کشیدن پنل‌ها
 function setupPanelDrag(panel) {
   const panelHeader = panel.querySelector('.panel-header');
   
-  panelHeader.addEventListener('touchstart', handleTouchStart, { passive: false });
-  panelHeader.addEventListener('touchmove', handleTouchMove, { passive: false });
-  panelHeader.addEventListener('touchend', handleTouchEnd);
+  panelHeader.addEventListener('touchstart', (e) => {
+    panelDragStartY = e.touches[0].clientY;
+    panelDragCurrentY = panelDragStartY;
+    isDraggingPanel = true;
+    panel.style.transition = 'none';
+  });
   
-  panelHeader.addEventListener('mousedown', handleMouseDown);
-  
-  function handleTouchStart(e) {
-    startY = e.touches[0].clientY;
-    currentY = startY;
-    panelStartHeight = panel.offsetHeight;
+  document.addEventListener('touchmove', (e) => {
+    if (!isDraggingPanel) return;
     e.preventDefault();
-  }
-  
-  function handleTouchMove(e) {
-    currentY = e.touches[0].clientY;
-    const diff = startY - currentY;
     
-    if (diff > 0) { // کشیدن به بالا
-      panel.style.height = `${panelStartHeight + diff}px`;
+    const y = e.touches[0].clientY;
+    const deltaY = y - panelDragCurrentY;
+    panelDragCurrentY = y;
+    
+    const currentBottom = parseInt(panel.style.bottom) || parseInt(getComputedStyle(panel).bottom);
+    const newBottom = currentBottom - deltaY;
+    
+    // محدود کردن حرکت به بالا و پایین
+    const maxBottom = window.innerHeight - panel.offsetHeight;
+    const minBottom = 0;
+    
+    if (newBottom >= minBottom && newBottom <= maxBottom) {
+      panel.style.bottom = `${newBottom}px`;
     }
-    e.preventDefault();
-  }
+  });
   
-  function handleTouchEnd() {
-    if (currentY < startY - 50) { // اگر به اندازه کافی کشیده شده
+  document.addEventListener('touchend', () => {
+    if (!isDraggingPanel) return;
+    isDraggingPanel = false;
+    panel.style.transition = 'var(--transition)';
+    
+    // تصمیم‌گیری برای باز یا بسته شدن پنل بر اساس موقعیت
+    const panelHeight = panel.offsetHeight;
+    const currentBottom = parseInt(panel.style.bottom) || parseInt(getComputedStyle(panel).bottom);
+    const threshold = panelHeight * 0.3;
+    
+    if (currentBottom < threshold) {
+      // تبدیل به تمام صفحه
       panel.classList.add('fullscreen');
+      panel.style.bottom = '0';
+    } else if (currentBottom > panelHeight * 0.7) {
+      // بستن پنل
+      closeAllPanels();
     } else {
-      panel.style.height = '';
+      // بازگشت به حالت نیمه صفحه
+      panel.classList.remove('fullscreen');
+      panel.style.bottom = `${parseInt(getComputedStyle(document.documentElement).getPropertyValue('--footer-height'))}px`;
     }
-  }
-  
-  function handleMouseDown(e) {
-    if (e.button !== 0) return; // فقط کلیک چپ
-    
-    startY = e.clientY;
-    currentY = startY;
-    panelStartHeight = panel.offsetHeight;
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }
-  
-  function handleMouseMove(e) {
-    currentY = e.clientY;
-    const diff = startY - currentY;
-    
-    if (diff > 0) { // کشیدن به بالا
-      panel.style.height = `${panelStartHeight + diff}px`;
-    }
-  }
-  
-  function handleMouseUp() {
-    if (currentY < startY - 50) { // اگر به اندازه کافی کشیده شده
-      panel.classList.add('fullscreen');
-    } else {
-      panel.style.height = '';
-    }
-    
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
-  }
+  });
 }
 
 // تابع برای مقداردهی اولیه
@@ -669,7 +655,9 @@ function init() {
   const savedTheme = localStorage.getItem('theme') || 'light';
   currentTheme = savedTheme;
   document.documentElement.setAttribute('data-theme', currentTheme);
-  darkModeToggle.checked = currentTheme === 'dark';
+  menuDarkMode.innerHTML = currentTheme === 'light' 
+    ? '<i class="fas fa-moon"></i><span>حالت شب</span>' 
+    : '<i class="fas fa-sun"></i><span>حالت روز</span>';
   
   // بارگذاری لایه نقشه
   loadMapLayer();
@@ -680,8 +668,6 @@ function init() {
       icon: hospitalIcon,
       riseOnHover: true
     }).addTo(map);
-    
-    marker.hospital = hospital;
     
     marker.bindPopup(createPopupContent(hospital));
     
@@ -697,16 +683,24 @@ function init() {
       });
     });
     
+    marker.hospital = hospital;
     hospitalMarkers[hospital.id] = marker;
   });
   
+  // تنظیم کشیدن پنل‌ها
+  setupPanelDrag(hospitalPanel);
+  setupPanelDrag(routePanel);
+  setupPanelDrag(nearbyPanel);
+  
   // رویدادها
-  btnLocate.addEventListener('click', locateUser);
-  btnShowNearby.addEventListener('click', showNearbyHospitals);
-  btnShowSettings.addEventListener('click', () => {
+  btnMenu.addEventListener('click', () => {
     closeAllPanels();
-    settingsPanel.classList.add('open');
+    menuPanel.classList.add('open');
   });
+  
+  menuDarkMode.addEventListener('click', toggleDarkMode);
+  menuLocate.addEventListener('click', locateUser);
+  btnShowNearby.addEventListener('click', showNearbyHospitals);
   
   btnClosePanels.forEach(btn => {
     btn.addEventListener('click', closeAllPanels);
@@ -736,15 +730,9 @@ function init() {
     });
   });
   
-  darkModeToggle.addEventListener('change', () => {
-    toggleDarkMode();
+  document.getElementById('btn-start-route').addEventListener('click', () => {
+    showNotification('سیستم مسیریابی در حال توسعه است و به زودی فعال خواهد شد');
   });
-  
-  // تنظیم کشیدن پنل‌ها
-  setupPanelDrag(hospitalPanel);
-  setupPanelDrag(routePanel);
-  setupPanelDrag(nearbyPanel);
-  setupPanelDrag(settingsPanel);
   
   // بستن پنل‌ها با کلیک خارج از آنها
   document.addEventListener('click', (e) => {
@@ -761,8 +749,8 @@ function init() {
     if (!nearbyPanel.contains(e.target) && !btnShowNearby.contains(e.target)) {
       nearbyPanel.classList.remove('open');
     }
-    if (!settingsPanel.contains(e.target) && !btnShowSettings.contains(e.target)) {
-      settingsPanel.classList.remove('open');
+    if (!menuPanel.contains(e.target) && !btnMenu.contains(e.target)) {
+      menuPanel.classList.remove('open');
     }
   });
 }

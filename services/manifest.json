@@ -6,16 +6,19 @@
   "background_color": "#185a9d",
   "description": "نقشه هوشمند بیمارستان‌های شهر بروجرد",
   "theme_color": "#185a9d",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icons/medical-cross.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icons/medical-cross.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

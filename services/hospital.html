@@ -17,19 +17,16 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- هدر ثابت -->
+    <!-- هدر جدید -->
     <header class="app-header">
       <div class="header-content">
         <div class="logo-title">
           <img src="assets/img/icons/medical-cross.png" alt="لوگو" class="logo" />
-          <h1 class="app-title">نقشه بیمارستان‌های بروجرد</h1>
+          <h1 class="app-title">بیمارستان‌های بروجرد</h1>
         </div>
         <div class="header-actions">
           <button class="btn-locate" aria-label="موقعیت من">
             <i class="fas fa-location-arrow"></i>
-          </button>
-          <button class="btn-dark-mode" aria-label="حالت شب">
-            <i class="fas fa-moon"></i>
           </button>
         </div>
       </div>
@@ -73,8 +70,8 @@
             </div>
           </div>
           <div class="panel-actions">
-            <button class="btn-action btn-route" id="btn-show-route">
-              <i class="fas fa-route"></i> مسیریابی
+            <button class="btn-action btn-show-on-map" id="btn-show-on-map">
+              <i class="fas fa-map-marked-alt"></i> نمایش روی نقشه
             </button>
             <button class="btn-action btn-call" id="btn-call-hospital">
               <i class="fas fa-phone"></i> تماس
@@ -115,9 +112,6 @@
             </button>
           </div>
           <div id="route-instructions" class="route-instructions"></div>
-          <button class="btn-primary" id="btn-start-route">
-            شروع مسیریابی
-          </button>
         </div>
       </div>
 
@@ -136,10 +130,41 @@
         </div>
       </div>
 
+      <!-- منوی تنظیمات -->
+      <div id="settings-panel" class="panel settings-panel">
+        <div class="panel-header">
+          <h3>تنظیمات</h3>
+          <button class="btn-close-panel" aria-label="بستن پنل">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="panel-content">
+          <div class="settings-option">
+            <i class="fas fa-moon"></i>
+            <span>حالت شب</span>
+            <label class="switch">
+              <input type="checkbox" id="dark-mode-toggle">
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="settings-option">
+            <i class="fas fa-bell"></i>
+            <span>اعلانات</span>
+            <label class="switch">
+              <input type="checkbox" id="notifications-toggle" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <!-- دکمه‌های شناور -->
       <div class="floating-buttons">
         <button id="btn-show-nearby" class="floating-action-btn primary" aria-label="نزدیک‌ترین‌ها">
           <i class="fas fa-map-marker-alt"></i>
+        </button>
+        <button id="btn-show-settings" class="floating-action-btn secondary" aria-label="تنظیمات">
+          <i class="fas fa-bars"></i>
         </button>
       </div>
 
@@ -157,10 +182,15 @@
       </div>
     </main>
 
-    <!-- فوتر ثابت -->
+    <!-- فوتر جدید -->
     <footer class="app-footer">
       <div class="footer-content">
-        <p>© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۶.۰</p>
+        <div class="footer-links">
+          <a href="#" class="footer-link">درباره ما</a>
+          <a href="#" class="footer-link">تماس با ما</a>
+          <a href="#" class="footer-link">حریم خصوصی</a>
+        </div>
+        <p class="copyright">© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۷.۰</p>
       </div>
     </footer>
   </div>

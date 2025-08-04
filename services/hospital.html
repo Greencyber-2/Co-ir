@@ -1,43 +1,99 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نمایش نقشه شهر اصفهان - پلتفرم نشان</title>
-    <!-- بارگذاری کتابخانه Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            direction: rtl;
-            font-family: Arial, sans-serif;
-        }
-        #map {
-            height: 100vh;
-            width: 100%;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>نقشه حرفه‌ای بروجرد</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    crossorigin=""
+  />
+  <style>
+    /* کل صفحه */
+    html, body, #map {
+      height: 100%;
+      margin: 0; padding: 0;
+      direction: rtl;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: white;
+    }
+    #map {
+      width: 100vw;
+      height: 100vh;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
-    <div id="map"></div>
-    <script>
-        // تنظیم API Key دریافت‌شده از پلتفرم نشان
-        const apiKey = 'web.b2294aca62a944449ea607f29a245508'; // کلید API خود را اینجا وارد کنید
+  <div id="map"></div>
 
-        // ایجاد نقشه با مختصات مرکزی شهر اصفهان
-        const map = L.map('map').setView([32.6546, 51.6680], 12);
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    // مختصات تقریبی محدوده بروجرد (lat,lng)
+    const broudPolygon = [
+      [33.81, 48.62],
+      [33.82, 48.75],
+      [33.89, 48.83],
+      [33.93, 48.87],
+      [33.98, 48.85],
+      [33.99, 48.70],
+      [33.92, 48.60],
+      [33.85, 48.58],
+      [33.81, 48.62]
+    ];
 
-        // افزودن لایه نقشه نشان
-        L.tileLayer(`https://map.neshan.org/map/tile/{z}/{x}/{y}.png?key=${apiKey}`, {
-            attribution: '© Neshan Maps Platform'
-        }).addTo(map);
+    // چندضلعی بزرگ (کل جهان) برای ماسک
+    const outer = [
+      [-90, -180],
+      [-90, 180],
+      [90, 180],
+      [90, -180]
+    ];
 
-        // افزودن مارکر برای مرکز شهر اصفهان
-        L.marker([32.6546, 51.6680]).addTo(map)
-            .bindPopup('مرکز شهر اصفهان')
-            .openPopup();
-    </script>
+    // ساخت نقشه با مرکز بروجرد و زوم مناسب
+    const map = L.map("map", {
+      center: [33.8942, 48.7670],
+      zoom: 14,
+      minZoom: 13,
+      maxZoom: 16,
+      zoomControl: true,
+      scrollWheelZoom: true,
+      attributionControl: true
+    });
+
+    // افزودن لایه کاشی ساده و روشن CartoDB Positron (بدون POI اضافی)
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 20
+      }
+    ).addTo(map);
+
+    // ماسک سفید: بیرون محدوده بروجرد خالی و سفید باشه
+    L.polygon([outer, broudPolygon], {
+      color: "#ffffff",
+      fillColor: "#ffffff",
+      fillOpacity: 1,
+      stroke: false,
+      interactive: false
+    }).addTo(map);
+
+    // خط مرز آبی رنگ و خط چین بروجرد
+    L.polygon(broudPolygon, {
+      color: "#007bff",
+      weight: 2,
+      fillOpacity: 0,
+      dashArray: "6,6"
+    }).addTo(map);
+
+    // محدود کردن حرکت و زوم به محدوده اطراف بروجرد
+    map.setMaxBounds([
+      [33.75, 48.50],
+      [34.05, 48.95]
+    ]);
+  </script>
 </body>
 </html>

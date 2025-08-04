@@ -22,8 +22,8 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <button id="locateBtn" class="btn btn-outline-light">
-                                <i class="fas fa-location-arrow me-1"></i> نزدیک‌ترین بیمارستان به من
+                            <button id="findHospitals" class="btn btn-light">
+                                <i class="fas fa-location-arrow me-1"></i> بیمارستان‌های نزدیک من
                             </button>
                         </li>
                     </ul>
@@ -32,28 +32,46 @@
         </nav>
 
         <div class="row g-0">
-            <div class="col-lg-3 col-md-4 d-none d-md-block sidebar">
-                <div class="p-3">
-                    <h5 class="text-center mb-3">لیست بیمارستان‌ها</h5>
-                    <div class="list-group hospital-list" id="hospitalList">
-                        <!-- بیمارستان‌ها از طریق JS اضافه می‌شوند -->
+            <div class="col-lg-8">
+                <div id="map"></div>
+            </div>
+            <div class="col-lg-4">
+                <div class="sidebar">
+                    <div class="sidebar-header">
+                        <h4><i class="fas fa-info-circle me-2"></i>اطلاعات بیمارستان‌ها</h4>
+                    </div>
+                    <div class="sidebar-content">
+                        <div class="list-group" id="hospitalList">
+                            <!-- بیمارستان‌ها اینجا نمایش داده می‌شوند -->
+                        </div>
+                    </div>
+                    <div class="sidebar-footer">
+                        <div class="alert alert-info">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            <span id="locationStatus">برای یافتن نزدیک‌ترین بیمارستان، روی دکمه بالا کلیک کنید</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-lg-9 col-md-8 col-12">
-                <div id="map"></div>
-            </div>
         </div>
+    </div>
 
-        <div class="position-fixed bottom-0 end-0 p-3">
-            <div id="locationInfo" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <strong class="me-auto">موقعیت شما</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <!-- Modal برای نمایش اطلاعات بیمارستان -->
+    <div class="modal fade" id="hospitalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">عنوان بیمارستان</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="toast-body">
-                    <div id="locationDetails"></div>
+                <div class="modal-body" id="modalBody">
+                    <!-- محتوای مدال -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <a id="directionsBtn" href="#" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-directions me-1"></i> مسیریابی
+                    </a>
                 </div>
             </div>
         </div>
@@ -61,6 +79,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

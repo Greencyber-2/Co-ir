@@ -1,4 +1,4 @@
-// بیمارستان‌های بروجرد
+// اطلاعات بیمارستان‌های بروجرد
 const hospitals = [
     {
         id: 1,
@@ -9,47 +9,49 @@ const hospitals = [
         services: "بیمارستان عمومی با بخش آزمایشگاه، اورژانس و خدمات پایه درمانی",
         lat: 33.9011,
         lng: 48.7475,
-        type: "general"
+        type: "عمومی",
+        icon: "hospital",
+        iconColor: "red"
     },
     {
         id: 2,
         name: "بیمارستان آیت‌الله بروجردی",
         address: "بروجرد، بلوار شهید فخری‌زاده، شهرک مهرگان",
         phone: "۰۶۶۴۲۳۴۷۶۰۳",
-        hours: "شبانه‌روزی",
-        services: "بیمارستان فوق تخصصی با ICU، آنکولوژی، گوارش و ...",
+        hours: "۷ صبح تا ۱۰ شب",
+        services: "بیمارستان فوق تخصصی با بخش‌های ICU، آنکولوژی، گوارش و ...",
         lat: 33.93,
         lng: 48.73,
-        type: "specialized"
+        type: "فوق تخصصی",
+        icon: "hospital-alt",
+        iconColor: "blue"
     },
     {
         id: 3,
         name: "بیمارستان تامین اجتماعی کوثر",
         address: "بروجرد، میدان امام خمینی، محله امام خمینی",
         phone: "۰۶۶۴۲۴۴۹۹۷۵",
-        hours: "۷ صبح تا ۱۰ شب",
-        services: "بیمارستان عمومی با بخش‌های داخلی و جراحی",
+        hours: "۸ صبح تا ۸ شب",
+        services: "بیمارستان عمومی با بخش‌های داخلی، جراحی و اورژانس",
         lat: 33.90,
         lng: 48.75,
-        type: "general"
+        type: "عمومی",
+        icon: "hospital",
+        iconColor: "green"
     },
     {
         id: 4,
         name: "بیمارستان شهید دکتر چمران",
         address: "بروجرد، خیابان دکتر فاطمی، میدان پرستار",
-        phone: "۰۶۶۴۲۵۱۴۰۰۱ - ۰۶۶۴۲۵۱۴۰۰۵",
+        phone: "۰۶۶۴۲۵۱۴۰۰۱–۵",
         hours: "شبانه‌روزی",
         services: "بیمارستان دولتی با بخش‌های کامل شامل ICU، NICU، قلب و عروق و ...",
         lat: 33.933,
         lng: 48.747,
-        type: "general"
+        type: "دولتی",
+        icon: "hospital",
+        iconColor: "purple"
     }
-];
-
-// محدوده بروجرد
-const borujerdBounds = [
-    [33.75, 48.50],  // جنوب غربی
-    [34.05, 48.95]   // شمال شرقی
 ];
 
 // تنظیمات اولیه نقشه
@@ -58,95 +60,110 @@ const map = L.map('map', {
     zoom: 13,
     minZoom: 12,
     maxZoom: 18,
-    maxBounds: borujerdBounds,
+    maxBounds: [
+        [33.75, 48.50],
+        [34.05, 48.95]
+    ],
     maxBoundsViscosity: 1.0
 });
 
-// اضافه کردن لایه نقشه خام
+// استفاده از نقشه پایه ساده
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     maxZoom: 20
 }).addTo(map);
 
-// آیکون‌های سفارشی برای بیمارستان‌ها
-const hospitalIcons = {
-    general: L.divIcon({
-        className: 'custom-marker',
-        html: '<i class="fas fa-hospital"></i>',
-        iconSize: [24, 24]
-    }),
-    specialized: L.divIcon({
-        className: 'custom-marker',
-        html: '<i class="fas fa-star-of-life"></i>',
-        iconSize: [24, 24],
-        iconAnchor: [12, 12]
-    })
-};
+// گروه برای نشانگرهای بیمارستان‌ها
+const hospitalMarkers = L.layerGroup().addTo(map);
 
 // اضافه کردن بیمارستان‌ها به نقشه
-const hospitalMarkers = [];
-hospitals.forEach(hospital => {
-    const marker = L.marker([hospital.lat, hospital.lng], {
-        icon: hospitalIcons[hospital.type]
-    }).addTo(map);
-    
-    marker.bindPopup(`
-        <h3>${hospital.name}</h3>
-        <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
-        <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
-        <p><i class="fas fa-clock"></i> ${hospital.hours}</p>
-        <p><i class="fas fa-info-circle"></i> ${hospital.services}</p>
-    `);
-    
-    marker.hospitalData = hospital;
-    hospitalMarkers.push(marker);
-});
-
-// اضافه کردن بیمارستان‌ها به لیست سایدبار
-const hospitalList = document.getElementById('hospitalList');
-hospitals.forEach(hospital => {
-    const item = document.createElement('a');
-    item.href = '#';
-    item.className = 'list-group-item list-group-item-action';
-    item.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center">
-            <span>${hospital.name}</span>
-            <i class="fas fa-${hospital.type === 'general' ? 'hospital' : 'star-of-life'}"></i>
-        </div>
-    `;
-    
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        const marker = hospitalMarkers.find(m => m.hospitalData.id === hospital.id);
-        map.setView([hospital.lat, hospital.lng], 15);
-        marker.openPopup();
-        
-        // هایلایت کردن آیتم انتخاب شده
-        document.querySelectorAll('#hospitalList a').forEach(el => el.classList.remove('active'));
-        item.classList.add('active');
-    });
-    
-    hospitalList.appendChild(item);
-});
-
-// یافتن نزدیک‌ترین بیمارستان به موقعیت کاربر
-function findNearestHospital(lat, lng) {
-    let nearest = null;
-    let minDistance = Infinity;
+function addHospitalsToMap() {
+    hospitalMarkers.clearLayers();
     
     hospitals.forEach(hospital => {
-        const distance = getDistance(lat, lng, hospital.lat, hospital.lng);
-        if (distance < minDistance) {
-            minDistance = distance;
-            nearest = hospital;
-        }
+        const icon = L.divIcon({
+            html: `<i class="fas fa-${hospital.icon}" style="color: ${hospital.iconColor}; font-size: 20px;"></i>`,
+            className: 'hospital-marker',
+            iconSize: [30, 30]
+        });
+        
+        const marker = L.marker([hospital.lat, hospital.lng], { icon: icon })
+            .addTo(hospitalMarkers)
+            .bindPopup(`
+                <h6>${hospital.name}</h6>
+                <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+                <p><i class="fas fa-phone"></i> ${hospital.phone}</p>
+                <button class="btn btn-sm btn-primary more-info-btn" data-id="${hospital.id}">
+                    اطلاعات بیشتر
+                </button>
+            `);
+        
+        marker.hospitalId = hospital.id;
     });
+}
+
+// نمایش لیست بیمارستان‌ها در سایدبار
+function renderHospitalList(userLocation = null) {
+    const hospitalList = document.getElementById('hospitalList');
+    hospitalList.innerHTML = '';
     
-    return {hospital: nearest, distance: minDistance};
+    // اگر موقعیت کاربر مشخص است، فاصله‌ها را محاسبه کنیم
+    let hospitalsWithDistance = [...hospitals];
+    if (userLocation) {
+        hospitalsWithDistance = hospitals.map(hospital => {
+            const distance = calculateDistance(
+                userLocation.lat,
+                userLocation.lng,
+                hospital.lat,
+                hospital.lng
+            );
+            return { ...hospital, distance };
+        }).sort((a, b) => a.distance - b.distance);
+    }
+    
+    hospitalsWithDistance.forEach(hospital => {
+        const item = document.createElement('a');
+        item.className = 'list-group-item list-group-item-action hospital-item';
+        item.innerHTML = `
+            <div class="d-flex align-items-center">
+                <div class="hospital-icon" style="background-color: ${getColorForType(hospital.type)}">
+                    <i class="fas fa-${hospital.icon}"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1">${hospital.name}</h6>
+                    <small class="text-muted">${hospital.type}</small>
+                    ${hospital.distance ? `<div class="hospital-distance"><i class="fas fa-map-marker-alt"></i> ${hospital.distance.toFixed(1)} کیلومتر</div>` : ''}
+                </div>
+                <i class="fas fa-chevron-left text-muted"></i>
+            </div>
+        `;
+        
+        item.addEventListener('click', () => {
+            // حذف کلاس active از همه آیتم‌ها
+            document.querySelectorAll('.hospital-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // اضافه کردن کلاس active به آیتم انتخاب شده
+            item.classList.add('active');
+            
+            // نمایش بیمارستان روی نقشه
+            map.setView([hospital.lat, hospital.lng], 15);
+            
+            // باز کردن پاپاپ نشانگر
+            hospitalMarkers.getLayers().forEach(layer => {
+                if (layer.hospitalId === hospital.id) {
+                    layer.openPopup();
+                }
+            });
+        });
+        
+        hospitalList.appendChild(item);
+    });
 }
 
 // محاسبه فاصله بین دو نقطه جغرافیایی (به کیلومتر)
-function getDistance(lat1, lon1, lat2, lon2) {
+function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // شعاع زمین در کیلومتر
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -158,134 +175,102 @@ function getDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-// نمایش موقعیت کاربر و نزدیک‌ترین بیمارستان
-function showUserLocation(position) {
-    const userLat = position.coords.latitude;
-    const userLng = position.coords.longitude;
-    
-    // بررسی آیا کاربر در محدوده بروجرد است
-    if (
-        userLat < borujerdBounds[0][0] || userLat > borujerdBounds[1][0] ||
-        userLng < borujerdBounds[0][1] || userLng > borujerdBounds[1][1]
-    ) {
-        alert('شما خارج از محدوده بروجرد هستید.');
-        return;
+// رنگ برای انواع مختلف بیمارستان
+function getColorForType(type) {
+    switch(type) {
+        case 'عمومی': return '#28a745';
+        case 'فوق تخصصی': return '#007bff';
+        case 'دولتی': return '#6f42c1';
+        default: return '#6c757d';
     }
-    
-    // یافتن نزدیک‌ترین بیمارستان
-    const {hospital, distance} = findNearestHospital(userLat, userLng);
-    const roundedDistance = Math.round(distance * 10) / 10;
-    
-    // نمایش اطلاعات موقعیت
-    const locationDetails = document.getElementById('locationDetails');
-    locationDetails.innerHTML = `
-        <p><i class="fas fa-map-marker-alt"></i> موقعیت شما ثبت شد</p>
-        <p><strong>نزدیک‌ترین بیمارستان:</strong></p>
-        <p>${hospital.name}</p>
-        <p>فاصله: ${roundedDistance} کیلومتر</p>
-        <button class="btn btn-sm btn-primary mt-2 w-100" onclick="navigateToHospital(${hospital.id})">
-            <i class="fas fa-directions me-1"></i> مسیریابی
-        </button>
-    `;
-    
-    // نمایش نوتیفیکیشن
-    const toast = new bootstrap.Toast(document.getElementById('locationInfo'));
-    toast.show();
-    
-    // اضافه کردن نشانگر موقعیت کاربر
-    if (window.userMarker) {
-        map.removeLayer(window.userMarker);
-    }
-    
-    window.userMarker = L.marker([userLat, userLng], {
-        icon: L.divIcon({
-            className: 'custom-marker user-location',
-            html: '<i class="fas fa-user"></i>',
-            iconSize: [24, 24]
-        })
-    }).addTo(map);
-    
-    // زوم به موقعیت کاربر و نزدیک‌ترین بیمارستان
-    const group = new L.FeatureGroup([window.userMarker, hospitalMarkers.find(m => m.hospitalData.id === hospital.id)]);
-    map.fitBounds(group.getBounds().pad(0.5));
 }
 
-// مسیریابی به بیمارستان انتخاب شده
-function navigateToHospital(hospitalId) {
+// یافتن موقعیت کاربر
+function findUserLocation() {
+    const statusElement = document.getElementById('locationStatus');
+    statusElement.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> در حال یافتن موقعیت شما...';
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                
+                // بررسی آیا کاربر در محدوده بروجرد است
+                if (userLat >= 33.75 && userLat <= 34.05 && userLng >= 48.50 && userLng <= 48.95) {
+                    statusElement.innerHTML = `<i class="fas fa-check-circle me-2"></i> موقعیت شما در بروجرد شناسایی شد`;
+                    
+                    // اضافه کردن نشانگر موقعیت کاربر
+                    const userIcon = L.divIcon({
+                        html: '<i class="fas fa-user" style="color: #fd7e14; font-size: 20px;"></i>',
+                        className: 'user-marker',
+                        iconSize: [30, 30]
+                    });
+                    
+                    L.marker([userLat, userLng], { icon: userIcon })
+                        .addTo(map)
+                        .bindPopup('موقعیت شما')
+                        .openPopup();
+                    
+                    // نمایش بیمارستان‌ها بر اساس فاصله از کاربر
+                    renderHospitalList({ lat: userLat, lng: userLng });
+                    
+                    // زوم به موقعیت کاربر با بیمارستان‌ها
+                    map.setView([userLat, userLng], 14);
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> شما در محدوده بروجرد نیستید';
+                    renderHospitalList();
+                }
+            },
+            error => {
+                console.error('Error getting location:', error);
+                let errorMessage = 'خطا در دریافت موقعیت';
+                if (error.code === error.PERMISSION_DENIED) {
+                    errorMessage = 'دسترسی به موقعیت جغرافیایی رد شد. لطفاً در تنظیمات مرورگر خود اجازه دسترسی را فعال کنید.';
+                }
+                statusElement.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i> ${errorMessage}`;
+                renderHospitalList();
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    } else {
+        statusElement.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> مرورگر شما از موقعیت‌یابی پشتیبانی نمی‌کند';
+        renderHospitalList();
+    }
+}
+
+// نمایش اطلاعات کامل بیمارستان در مدال
+function showHospitalDetails(hospitalId) {
     const hospital = hospitals.find(h => h.id === hospitalId);
     if (!hospital) return;
     
-    if (window.userMarker) {
-        const userLat = window.userMarker.getLatLng().lat;
-        const userLng = window.userMarker.getLatLng().lng;
-        
-        // در حالت واقعی می‌توان از سرویس‌های مسیریابی مانند OSRM استفاده کرد
-        // اینجا فقط یک خط مستقیم بین دو نقطه رسم می‌کنیم
-        if (window.routeLine) {
-            map.removeLayer(window.routeLine);
-        }
-        
-        window.routeLine = L.polyline([
-            [userLat, userLng],
-            [hospital.lat, hospital.lng]
-        ], {color: 'blue'}).addTo(map);
-        
-        map.fitBounds([
-            [userLat, userLng],
-            [hospital.lat, hospital.lng]
-        ]);
-    }
+    document.getElementById('modalTitle').textContent = hospital.name;
+    
+    document.getElementById('modalBody').innerHTML = `
+        <p><strong><i class="fas fa-map-marker-alt me-2"></i>آدرس:</strong> ${hospital.address}</p>
+        <p><strong><i class="fas fa-phone me-2"></i>تلفن:</strong> ${hospital.phone}</p>
+        <p><strong><i class="fas fa-clock me-2"></i>ساعات کاری:</strong> ${hospital.hours}</p>
+        <p><strong><i class="fas fa-stethoscope me-2"></i>خدمات:</strong> ${hospital.services}</p>
+        <p><strong><i class="fas fa-info-circle me-2"></i>نوع:</strong> ${hospital.type}</p>
+    `;
+    
+    document.getElementById('directionsBtn').href = `https://www.google.com/maps/dir/?api=1&destination=${hospital.lat},${hospital.lng}`;
+    
+    const modal = new bootstrap.Modal(document.getElementById('hospitalModal'));
+    modal.show();
 }
 
-// مدیریت خطاهای موقعیت‌یابی
-function handleLocationError(error) {
-    let message = "خطا در دریافت موقعیت شما";
-    
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            message = "دسترسی به موقعیت مکانی رد شد. لطفاً تنظیمات مرورگر خود را بررسی کنید.";
-            break;
-        case error.POSITION_UNAVAILABLE:
-            message = "اطلاعات موقعیت مکانی در دسترس نیست.";
-            break;
-        case error.TIMEOUT:
-            message = "درخواست موقعیت‌یابی زمان‌گذشت.";
-            break;
-        case error.UNKNOWN_ERROR:
-            message = "خطای ناشناخته رخ داد.";
-            break;
-    }
-    
-    alert(message);
-}
+// رویداد کلیک برای دکمه یافتن بیمارستان‌های نزدیک
+document.getElementById('findHospitals').addEventListener('click', findUserLocation);
 
-// رویداد کلیک برای دکمه یافتن نزدیک‌ترین بیمارستان
-document.getElementById('locateBtn').addEventListener('click', () => {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            showUserLocation,
-            handleLocationError,
-            {enableHighAccuracy: true, timeout: 10000}
-        );
-    } else {
-        alert("مرورگر شما از موقعیت‌یابی جغرافیایی پشتیبانی نمی‌کند.");
+// رویداد کلیک برای دکمه‌های اطلاعات بیشتر در پاپاپ‌ها
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('more-info-btn')) {
+        const hospitalId = parseInt(e.target.getAttribute('data-id'));
+        showHospitalDetails(hospitalId);
     }
 });
 
-// برای نمایش سایدبار در موبایل
-if (window.innerWidth <= 768) {
-    const sidebar = document.querySelector('.sidebar');
-    const mapDiv = document.getElementById('map');
-    
-    const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'btn btn-primary btn-sm position-fixed bottom-0 start-0 m-3';
-    toggleBtn.style.zIndex = '1000';
-    toggleBtn.innerHTML = '<i class="fas fa-list"></i> لیست بیمارستان‌ها';
-    toggleBtn.onclick = () => {
-        sidebar.classList.toggle('show');
-        mapDiv.style.height = sidebar.classList.contains('show') ? 
-            'calc(100vh - 56px - 40vh)' : 'calc(100vh - 56px)';
-    };
-    
-    document.body.appendChild(toggleBtn);
-}
+// مقداردهی اولیه
+addHospitalsToMap();
+renderHospitalList();

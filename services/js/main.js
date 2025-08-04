@@ -133,6 +133,22 @@ hospitals.forEach(hospital => {
     </div>
   `);
   
+  marker.on('popupopen', () => {
+    document.querySelector(`.popup-actions .btn-route[data-id="${hospital.id}"]`)
+      .addEventListener('click', () => {
+        if (userLocation) {
+          calculateRoute(hospital.coords);
+        } else {
+          alert('لطفاً ابتدا موقعیت خود را مشخص کنید');
+        }
+      });
+      
+    document.querySelector(`.popup-actions .btn-favorite[data-id="${hospital.id}"]`)
+      .addEventListener('click', () => {
+        toggleFavorite(hospital.id);
+      });
+  });
+  
   hospitalMarkers[hospital.id] = marker;
 });
 
@@ -158,6 +174,9 @@ const btnDarkMode = document.querySelector('.btn-dark-mode');
 const tabBtns = document.querySelectorAll('.tab-btn');
 const tabContents = document.querySelectorAll('.tab-content');
 const nearbyTab = document.getElementById('nearby-tab');
+const routePanel = document.getElementById('route-panel');
+const btnCloseRoute = document.querySelector('.btn-close-route');
+const routeHospitals = document.getElementById('route-hospitals');
 
 // رویدادها
 btnOpenSearch.addEventListener('click', () => {
@@ -181,34 +200,21 @@ btnRouting.addEventListener('click', () => {
     map.removeControl(routingControl);
     routingControl = null;
     btnRouting.innerHTML = '<i class="fas fa-route"></i>';
+    routePanel.classList.remove('open');
     return;
   }
   
-  sidebar.classList.add('open');
-  document.querySelector('[data-tab="search"]').click();
-  
-  hospitalList.innerHTML = `
-    <li class="route-instruction">
-      <h4>مسیریابی به بیمارستان</h4>
-      <p>لطفاً بیمارستان مقصد را انتخاب کنید</p>
-    </li>
-  `;
-  
-  hospitals.forEach(hospital => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <h4>${hospital.name}</h4>
-      <p>${hospital.address}</p>
-      <button class="btn-select-route" data-id="${hospital.id}">
-        <i class="fas fa-route"></i> مسیریابی
-      </button>
-    `;
-    hospitalList.appendChild(li);
-    
-    li.querySelector('.btn-select-route').addEventListener('click', () => {
-      calculateRoute(hospital.coords);
-    });
-  });
+  routePanel.classList.add('open');
+  updateRouteHospitalsList();
+});
+
+btnCloseRoute.addEventListener('click', () => {
+  if (routingControl) {
+    map.removeControl(routingControl);
+    routingControl = null;
+    btnRouting.innerHTML = '<i class="fas fa-route"></i>';
+  }
+  routePanel.classList.remove('open');
 });
 
 btnDarkMode.addEventListener('click', toggleDarkMode);
@@ -402,6 +408,47 @@ function updateHospitalList(filteredHospitals) {
   });
 }
 
+function updateRouteHospitalsList() {
+  routeHospitals.innerHTML = '';
+  
+  hospitals.forEach(hospital => {
+    const li = document.createElement('li');
+    
+    let distanceHtml = '';
+    if (userLocation) {
+      const distance = getDistance(
+        userLocation.lat, 
+        userLocation.lng,
+        hospital.coords[0],
+        hospital.coords[1]
+      ) / 1000; // تبدیل به کیلومتر
+      
+      distanceHtml = `
+        <div class="distance">
+          <i class="fas fa-map-marker-alt"></i>
+          ${distance.toFixed(2)} کیلومتر
+        </div>
+      `;
+    }
+    
+    li.innerHTML = `
+      <h4>${hospital.name}</h4>
+      <p>${hospital.address}</p>
+      ${distanceHtml}
+      <button class="btn-select-route" data-id="${hospital.id}">
+        <i class="fas fa-route"></i> مسیریابی
+      </button>
+    `;
+    
+    li.querySelector('.btn-select-route').addEventListener('click', () => {
+      calculateRoute(hospital.coords);
+      routePanel.classList.remove('open');
+    });
+    
+    routeHospitals.appendChild(li);
+  });
+}
+
 function showHospitalOnMap(hospitalId) {
   const marker = hospitalMarkers[hospitalId];
   if (marker) {
@@ -439,8 +486,25 @@ function calculateRoute(destination) {
     position: 'topleft'
   }).addTo(map);
   
+  routingControl.on('routesfound', function(e) {
+    const routes = e.routes;
+    const summary = routes[0].summary;
+    const distance = (summary.totalDistance / 1000).toFixed(2);
+    const time = (summary.totalTime / 60).toFixed(0);
+    
+    L.popup()
+      .setLatLng(destination)
+      .setContent(`
+        <div class="route-summary">
+          <h4>مسیریابی</h4>
+          <p><i class="fas fa-road"></i> فاصله: ${distance} کیلومتر</p>
+          <p><i class="fas fa-clock"></i> زمان تقریبی: ${time} دقیقه</p>
+        </div>
+      `)
+      .openOn(map);
+  });
+  
   btnRouting.innerHTML = '<i class="fas fa-times"></i>';
-  sidebar.classList.remove('open');
 }
 
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -582,6 +646,12 @@ function toggleFavorite(hospitalId) {
     showFavoriteHospitals();
   } else {
     filterHospitals();
+  }
+  
+  // بروزرسانی مارکرها
+  const marker = hospitalMarkers[hospitalId];
+  if (marker) {
+    marker.openPopup();
   }
 }
 

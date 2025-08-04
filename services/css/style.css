@@ -9,6 +9,8 @@
   --border-color: #e1e5eb;
   --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
+  --header-height: 6rem;
+  --footer-height: 5rem;
 }
 
 [data-theme="dark"] {
@@ -43,28 +45,36 @@ body {
   height: 100%;
   overflow-x: hidden;
   transition: var(--transition);
+  -webkit-tap-highlight-color: transparent;
 }
 
-#app {
+.app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
 }
 
-/* هدر */
+/* هدر ثابت */
 .app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
-  padding: 1.5rem 2rem;
+  padding: 0 2rem;
   box-shadow: var(--shadow);
-  position: relative;
   z-index: 1000;
+  display: flex;
+  align-items: center;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -76,8 +86,8 @@ body {
 }
 
 .logo {
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
 .app-title {
@@ -91,7 +101,7 @@ body {
   gap: 1rem;
 }
 
-.menu-toggle, .btn-locate, .btn-dark-mode {
+.btn-locate, .btn-dark-mode {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -105,36 +115,34 @@ body {
   transition: var(--transition);
 }
 
-.menu-toggle:hover, .btn-locate:hover, .btn-dark-mode:hover {
+.btn-locate:hover, .btn-dark-mode:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
 /* محتوای اصلی */
 .app-main {
   flex: 1;
-  display: flex;
   position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
+  margin-top: var(--header-height);
+  margin-bottom: var(--footer-height);
   width: 100%;
-  padding: 1rem;
+  height: calc(100vh - var(--header-height) - var(--footer-height));
+  overflow: hidden;
 }
 
 .map-container {
-  flex: 1;
-  height: calc(100vh - 8rem);
-  border-radius: 1rem;
-  box-shadow: var(--shadow);
-  z-index: 1;
+  width: 100%;
+  height: 100%;
 }
 
 /* پنل کناری */
 .sidebar {
   position: fixed;
-  top: 0;
-  right: -35rem;
-  width: 35rem;
-  height: 100vh;
+  top: var(--header-height);
+  right: -100%;
+  width: 100%;
+  max-width: 35rem;
+  height: calc(100% - var(--header-height) - var(--footer-height));
   background: var(--card-bg);
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
   transition: var(--transition);
@@ -149,7 +157,7 @@ body {
 }
 
 .sidebar-header {
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
   display: flex;
@@ -185,6 +193,7 @@ body {
   font-family: 'Vazirmatn', sans-serif;
   cursor: pointer;
   transition: var(--transition);
+  font-size: 1.4rem;
 }
 
 .tab-btn.active {
@@ -194,15 +203,18 @@ body {
 
 .tab-content {
   display: none;
-  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .tab-content.active {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .search-container {
-  margin-bottom: 2rem;
+  padding: 2rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .search-box {
@@ -238,7 +250,7 @@ body {
   background: var(--card-bg);
   border-radius: 0.8rem;
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  margin: 0 2rem 2rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
@@ -271,12 +283,32 @@ body {
   text-align: center;
   padding: 3rem 2rem;
   color: var(--text-light);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .location-info i, .empty-state i {
   font-size: 3rem;
   margin-bottom: 1.5rem;
   color: var(--primary-color);
+}
+
+.btn-locate-now {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  margin-top: 2rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-locate-now:hover {
+  background: var(--secondary-color);
 }
 
 .results-container {
@@ -327,9 +359,15 @@ body {
   border-bottom: none;
 }
 
+.hospital-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
 .hospital-list h4 {
   font-size: 1.6rem;
-  margin-bottom: 0.5rem;
   color: var(--primary-color);
 }
 
@@ -348,7 +386,52 @@ body {
   margin-bottom: 1rem;
 }
 
-.btn-show-on-map, .btn-select-route, .btn-route {
+.hospital-info {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.hospital-type {
+  background: rgba(24, 90, 157, 0.1);
+  color: var(--primary-color);
+  padding: 0.3rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hospital-type.خصوصی {
+  background: rgba(67, 206, 162, 0.1);
+  color: var(--secondary-color);
+}
+
+.hospital-type.تأمین-اجتماعی {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--accent-color);
+}
+
+.emergency-badge {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--accent-color);
+  padding: 0.3rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hospital-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-show-on-map, .btn-select-route, .btn-route, .btn-call {
   background: var(--primary-color);
   color: white;
   border: none;
@@ -361,15 +444,45 @@ body {
   align-items: center;
   gap: 0.5rem;
   transition: var(--transition);
+  flex: 1;
+  justify-content: center;
 }
 
-.btn-show-on-map:hover, .btn-select-route:hover, .btn-route:hover {
+.btn-show-on-map:hover, .btn-select-route:hover, .btn-route:hover, .btn-call:hover {
   background: var(--secondary-color);
+}
+
+.btn-call {
+  background: var(--accent-color);
+}
+
+.btn-call:hover {
+  background: #ff5252;
+}
+
+.btn-favorite {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-favorite.favorited {
+  color: var(--accent-color);
 }
 
 .route-instruction {
   text-align: center;
   padding: 2rem;
+  color: var(--text-light);
+}
+
+.route-instruction i {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
 }
 
 .route-instruction h4 {
@@ -380,7 +493,7 @@ body {
 /* دکمه‌های شناور */
 .floating-buttons {
   position: fixed;
-  bottom: 2rem;
+  bottom: calc(var(--footer-height) + 2rem);
   left: 2rem;
   display: flex;
   flex-direction: column;
@@ -389,8 +502,8 @@ body {
 }
 
 .floating-action-btn {
-  width: 5rem;
-  height: 5rem;
+  width: 5.5rem;
+  height: 5.5rem;
   border-radius: 50%;
   background: var(--card-bg);
   color: var(--primary-color);
@@ -414,65 +527,139 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* فوتر */
-.app-footer {
+/* پنل مسیریابی بهبود یافته */
+.route-panel {
+  position: fixed;
+  bottom: -100%;
+  left: 0;
+  right: 0;
   background: var(--card-bg);
-  color: var(--text-color);
-  padding: 2rem;
-  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 2rem 2rem 0 0;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1002;
+  transition: var(--transition);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
+.route-panel.open {
+  bottom: var(--footer-height);
 }
 
-.footer-info {
+.route-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.route-header h3 {
+  font-size: 1.6rem;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-close-route {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.route-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.route-options {
+  margin-bottom: 2rem;
+}
+
+.transport-modes {
+  display: flex;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
-.footer-info p {
-  font-size: 1.2rem;
+.transport-btn {
+  flex: 1;
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
   color: var(--text-light);
-}
-
-.social-links {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.social-links a {
-  color: var(--text-light);
-  font-size: 1.6rem;
+  font-family: 'Vazirmatn', sans-serif;
+  cursor: pointer;
   transition: var(--transition);
-}
-
-.social-links a:hover {
-  color: var(--primary-color);
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
-
-.footer-link {
-  color: var(--text-light);
-  text-decoration: none;
-  font-size: 1.3rem;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  transition: var(--transition);
 }
 
-.footer-link:hover {
+.transport-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.route-hospitals {
+  list-style: none;
+}
+
+.route-hospitals li {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.route-hospitals li:last-child {
+  border-bottom: none;
+}
+
+.route-hospitals h4 {
+  font-size: 1.6rem;
   color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.route-hospitals p {
+  font-size: 1.4rem;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+}
+
+/* فوتر ثابت */
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--footer-height);
+  background: var(--card-bg);
+  color: var(--text-color);
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.footer-content p {
+  font-size: 1.3rem;
+  color: var(--text-light);
 }
 
 /* پاپ‌آپ نقشه */
@@ -491,38 +678,50 @@ body {
   font-size: 1.3rem;
 }
 
+.popup-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.popup-actions button {
+  flex: 1;
+}
+
 /* واکنشگرایی */
 @media (max-width: 768px) {
-  .app-main {
-    padding: 0;
-  }
-
-  .map-container {
-    height: calc(100vh - 7rem);
-    border-radius: 0;
-  }
-
   .sidebar {
     width: 90%;
     right: -90%;
   }
 
   .floating-buttons {
-    bottom: 1rem;
+    bottom: calc(var(--footer-height) + 1rem);
     left: 1rem;
   }
 
-  .footer-info {
-    flex-direction: column;
-    gap: 1rem;
+  .floating-action-btn {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.8rem;
   }
-
-  .footer-links {
-    gap: 1rem;
+  
+  .hospital-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .btn-show-on-map, .btn-select-route, .btn-route, .btn-call {
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
+  :root {
+    --header-height: 5.5rem;
+    --footer-height: 4.5rem;
+  }
+  
   .app-title {
     font-size: 1.6rem;
   }
@@ -534,5 +733,24 @@ body {
   .tab-btn {
     font-size: 1.3rem;
     padding: 1rem;
+  }
+  
+  .route-panel {
+    max-height: 60vh;
+  }
+  
+  /* بهبود نمایش در موبایل */
+  .app-main {
+    margin-top: var(--header-height);
+    margin-bottom: var(--footer-height);
+    height: calc(100vh - var(--header-height) - var(--footer-height));
+  }
+  
+  .map-container {
+    height: 100%;
+  }
+  
+  .sidebar {
+    height: calc(100vh - var(--header-height) - var(--footer-height));
   }
 }

@@ -158,6 +158,7 @@ let userMarker = null;
 let routingControl = null;
 let currentTheme = 'light';
 let favorites = JSON.parse(localStorage.getItem('hospitalFavorites')) || [];
+let currentTransportMode = 'walk'; // حالت پیش‌فرض: پیاده
 
 // عناصر DOM
 const sidebar = document.getElementById('sidebar');
@@ -177,6 +178,7 @@ const nearbyTab = document.getElementById('nearby-tab');
 const routePanel = document.getElementById('route-panel');
 const btnCloseRoute = document.querySelector('.btn-close-route');
 const routeHospitals = document.getElementById('route-hospitals');
+const transportBtns = document.querySelectorAll('.transport-btn');
 
 // رویدادها
 btnOpenSearch.addEventListener('click', () => {
@@ -241,6 +243,23 @@ tabBtns.forEach(btn => {
       case 'favorites':
         showFavoriteHospitals();
         break;
+    }
+  });
+});
+
+// رویدادهای حالت‌های حمل و نقل
+transportBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    transportBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTransportMode = btn.getAttribute('data-mode');
+    
+    // اگر مسیری فعال است، دوباره محاسبه کن
+    if (routingControl) {
+      const currentWaypoints = routingControl.getWaypoints();
+      if (currentWaypoints.length >= 2) {
+        calculateRoute(currentWaypoints[1].latLng);
+      }
     }
   });
 });
@@ -483,7 +502,11 @@ function calculateRoute(destination) {
     },
     createMarker: function() { return null; },
     collapsible: true,
-    position: 'topleft'
+    position: 'topleft',
+    router: new L.Routing.osrmv1({
+      serviceUrl: 'https://router.project-osrm.org/route/v1',
+      profile: currentTransportMode === 'walk' ? 'foot' : 'car'
+    })
   }).addTo(map);
   
   routingControl.on('routesfound', function(e) {
@@ -496,7 +519,7 @@ function calculateRoute(destination) {
       .setLatLng(destination)
       .setContent(`
         <div class="route-summary">
-          <h4>مسیریابی</h4>
+          <h4>مسیریابی (${currentTransportMode === 'walk' ? 'پیاده' : 'ماشین'})</h4>
           <p><i class="fas fa-road"></i> فاصله: ${distance} کیلومتر</p>
           <p><i class="fas fa-clock"></i> زمان تقریبی: ${time} دقیقه</p>
         </div>

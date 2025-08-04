@@ -1,31 +1,107 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>نقشه بیمارستان‌های بروجرد</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>نقشه هوشمند بیمارستان‌های بروجرد</title>
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#185a9d" />
 </head>
 <body>
-  <header>
-    🏥 نقشه بیمارستان‌های بروجرد
-  </header>
+  <div class="app-container">
+    <!-- هدر مدرن با منوی همبرگری -->
+    <header class="app-header">
+      <button class="menu-toggle" aria-label="منوی اصلی">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h1 class="app-title">
+        <i class="fas fa-hospital"></i> نقشه بیمارستان‌های بروجرد
+      </h1>
+      <div class="header-actions">
+        <button class="btn-locate" aria-label="موقعیت من">
+          <i class="fas fa-location-arrow"></i>
+        </button>
+      </div>
+    </header>
 
-  <main>
-    <div id="map"></div>
-    <div id="nearest-hospitals" class="card">
-      <h2>🏥 نزدیک‌ترین بیمارستان‌ها به شما</h2>
-      <ul id="hospital-list"></ul>
-    </div>
-  </main>
+    <!-- محتوای اصلی -->
+    <main class="app-main">
+      <!-- نقشه -->
+      <div id="map" class="map-container"></div>
 
-  <footer>
-    © ۲۰۲۵ نقشه اختصاصی بروجرد | طراحی: شما
-  </footer>
+      <!-- پنل کناری برای جستجو و فیلترها -->
+      <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+          <h2><i class="fas fa-search"></i> جستجوی بیمارستان‌ها</h2>
+          <button class="btn-close-sidebar" aria-label="بستن پنل">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="main.js"></script>
+        <div class="search-container">
+          <div class="search-box">
+            <input type="text" id="search-input" placeholder="نام بیمارستان یا آدرس..." />
+            <i class="fas fa-search search-icon"></i>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <h3><i class="fas fa-sliders-h"></i> فیلترها</h3>
+          <div class="filter-options">
+            <div class="filter-group">
+              <label for="distance-filter">فاصله از موقعیت من:</label>
+              <select id="distance-filter">
+                <option value="all">همه</option>
+                <option value="3">تا ۳ کیلومتر</option>
+                <option value="5">تا ۵ کیلومتر</option>
+                <option value="10">تا ۱۰ کیلومتر</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-header">
+          <h3><i class="fas fa-hospital-alt"></i> نتایج جستجو</h3>
+          <span id="results-count" class="badge">0</span>
+        </div>
+
+        <div class="hospital-list-container">
+          <ul id="hospital-list" class="hospital-list"></ul>
+        </div>
+      </aside>
+
+      <!-- دکمه شناور برای مسیریابی -->
+      <button id="btn-routing" class="floating-action-btn" aria-label="مسیریابی">
+        <i class="fas fa-route"></i>
+      </button>
+
+      <!-- دکمه شناور برای باز کردن پنل جستجو -->
+      <button id="btn-open-search" class="floating-action-btn search-btn" aria-label="جستجو">
+        <i class="fas fa-search"></i>
+      </button>
+    </main>
+
+    <!-- فوتر -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>© ۲۰۲۴ نقشه هوشمند بروجرد | نسخه ۲.۰</p>
+        <div class="footer-links">
+          <a href="#" class="footer-link"><i class="fas fa-info-circle"></i> درباره ما</a>
+          <a href="#" class="footer-link"><i class="fas fa-phone-alt"></i> تماس با ما</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- اسکریپت‌ها -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+  <script src="main.js" type="module"></script>
 </body>
 </html>

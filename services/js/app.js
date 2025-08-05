@@ -54,6 +54,52 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnMenuDarkmode = document.getElementById('menu-darkmode');
   const btnBackElements = document.querySelectorAll('.btn-back');
   const searchInput = document.getElementById('search-input');
+  // Floating Controls Elements
+  const floatingControls = document.getElementById('floating-controls');
+  const closeFloatingControls = document.getElementById('close-floating-controls');
+  const locateUserBtn = document.getElementById('locate-user-btn');
+  const showNearbyBtn = document.getElementById('show-nearby-btn');
+  const toggleThemeBtn = document.getElementById('toggle-theme-btn');
+  const fabLocate = document.getElementById('fab-locate');
+
+
+
+    // Toggle floating controls
+  function toggleFloatingControls() {
+    floatingControls.classList.toggle('active');
+  }
+
+  // Close floating controls
+  function closeFloatingControlsHandler() {
+    floatingControls.classList.remove('active');
+  }
+
+  // Initialize floating controls
+  function initFloatingControls() {
+    // Event listeners
+    fabLocate.addEventListener('click', toggleFloatingControls);
+    closeFloatingControls.addEventListener('click', closeFloatingControlsHandler);
+    
+    locateUserBtn.addEventListener('click', () => {
+      locateUser(false); // فقط موقعیت کاربر را نشان بده
+      closeFloatingControlsHandler();
+    });
+    
+    showNearbyBtn.addEventListener('click', () => {
+      showNearbyHospitals(); // نمایش بیمارستان‌های نزدیک
+      closeFloatingControlsHandler();
+    });
+    
+    toggleThemeBtn.addEventListener('click', () => {
+      toggleDarkMode(); // تغییر تم
+      closeFloatingControlsHandler();
+    });
+    
+    // Update theme icon
+    toggleThemeBtn.innerHTML = currentTheme === 'dark' 
+      ? '<i class="fas fa-sun"></i>' 
+      : '<i class="fas fa-moon"></i>';
+  }
 
   // Custom Icons
   const hospitalIcon = L.icon({
@@ -252,6 +298,11 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('theme', currentTheme);
     loadMapLayer();
     updateMarkersStyle();
+    
+    // Update theme icon
+    toggleThemeBtn.innerHTML = currentTheme === 'dark' 
+      ? '<i class="fas fa-sun"></i>' 
+      : '<i class="fas fa-moon"></i>';
   }
 
   function updateMarkersStyle() {
@@ -737,7 +788,9 @@ document.addEventListener('DOMContentLoaded', () => {
         autoPanPaddingTopLeft: [50, 50],
         autoPanPaddingBottomRight: [50, 50]
       });
-      
+
+      initFloatingControls();
+
       marker.on('popupopen', () => {
         // Center the map on the marker with proper padding
         map.setView(marker.getLatLng(), map.getZoom(), {

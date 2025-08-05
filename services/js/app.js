@@ -533,6 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // در بخش init() تغییرات زیر را اعمال کنید:
   function init() {
     // Load saved theme
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -578,11 +579,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Event listeners
-    btnShowNearby.addEventListener('click', showNearbyHospitals);
-    btnShowSettings.addEventListener('click', () => settingsPanel.classList.add('open'));
-    btnLocate.addEventListener('click', locateUser);
+    const floatingSettings = document.getElementById('floating-settings');
+    const btnShowSettings = document.getElementById('btn-show-settings');
     
-    btnBackElements.forEach(btn => {
+    btnShowNearby.addEventListener('click', showNearbyHospitals);
+    
+    btnShowSettings.addEventListener('click', () => {
+      floatingSettings.classList.toggle('open');
+    });
+    
+    document.getElementById('locate-option').addEventListener('click', () => {
+      floatingSettings.classList.remove('open');
+      locateUser();
+    });
+    
+    document.querySelectorAll('.btn-back').forEach(btn => {
       btn.addEventListener('click', closeAllPanels);
     });
     
@@ -599,6 +610,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     darkModeToggle.addEventListener('change', toggleDarkMode);
+    
+    // Close settings when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!floatingSettings.contains(e.target) && !btnShowSettings.contains(e.target)) {
+        floatingSettings.classList.remove('open');
+      }
+    });
     
     // Show welcome notification
     setTimeout(() => {

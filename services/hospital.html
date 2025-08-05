@@ -12,23 +12,17 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#185a9d">
+  <meta name="theme-color" content="#2563eb">
   <link rel="icon" href="assets/img/icons/medical-cross.png">
 </head>
 <body>
   <div class="app-container">
-    <!-- هدر مدرن و مینیمال -->
+    <!-- هدر جدید و مینیمال -->
     <header class="app-header">
       <div class="header-content">
-        <div class="logo-title">
-          <img src="assets/img/icons/medical-cross.png" alt="لوگو" class="logo">
-          <h1 class="app-title">بیمارستان‌های بروجرد</h1>
-        </div>
-        <div class="header-actions">
-          <button id="btn-locate" class="btn-locate" aria-label="موقعیت من">
-            <i class="fas fa-location-arrow"></i>
-          </button>
-        </div>
+        <img src="assets/img/icons/medical-cross.png" alt="لوگو" class="header-logo">
+        <h1 class="app-title">بیمارستان‌های بروجرد</h1>
+        <div class="header-placeholder"></div>
       </div>
     </header>
 
@@ -118,41 +112,37 @@
         </div>
       </div>
 
-      <!-- منوی تنظیمات -->
-      <div id="settings-panel" class="panel settings-panel">
-        <div class="panel-header">
-          <button class="btn-back" aria-label="بازگشت">
-            <i class="fas fa-times"></i>
-          </button>
-          <h3>تنظیمات</h3>
+      <!-- منوی شناور تنظیمات -->
+      <div id="floating-settings" class="floating-settings">
+        <div class="settings-option" id="dark-mode-option">
+          <i class="fas fa-moon"></i>
+          <span>حالت شب</span>
+          <label class="switch">
+            <input type="checkbox" id="dark-mode-toggle">
+            <span class="slider round"></span>
+          </label>
         </div>
-        <div class="panel-content">
-          <div class="settings-option">
-            <i class="fas fa-moon"></i>
-            <span>حالت شب</span>
-            <label class="switch">
-              <input type="checkbox" id="dark-mode-toggle">
-              <span class="slider round"></span>
-            </label>
-          </div>
-          <div class="settings-option">
-            <i class="fas fa-bell"></i>
-            <span>اعلانات</span>
-            <label class="switch">
-              <input type="checkbox" id="notifications-toggle" checked>
-              <span class="slider round"></span>
-            </label>
-          </div>
+        <div class="settings-option">
+          <i class="fas fa-bell"></i>
+          <span>اعلانات</span>
+          <label class="switch">
+            <input type="checkbox" id="notifications-toggle" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="settings-option" id="locate-option">
+          <i class="fas fa-location-arrow"></i>
+          <span>مکان‌یابی</span>
         </div>
       </div>
 
       <!-- دکمه‌های شناور -->
       <div class="floating-buttons">
         <button id="btn-show-nearby" class="floating-action-btn primary" aria-label="نزدیک‌ترین‌ها">
-          <i class="fas fa-map-marker-alt"></i>
+          <i class="fas fa-hospital"></i>
         </button>
         <button id="btn-show-settings" class="floating-action-btn secondary" aria-label="تنظیمات">
-          <i class="fas fa-cog"></i>
+          <i class="fas fa-layer-group"></i>
         </button>
       </div>
 
@@ -171,15 +161,10 @@
       </div>
     </main>
 
-    <!-- فوتر مدرن -->
+    <!-- فوتر جدید و مینیمال -->
     <footer class="app-footer">
       <div class="footer-content">
-        <div class="footer-links">
-          <a href="#" class="footer-link">درباره ما</a>
-          <a href="#" class="footer-link">تماس با ما</a>
-          <a href="#" class="footer-link">حریم خصوصی</a>
-        </div>
-        <p class="copyright">© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۸.۰</p>
+        <p class="copyright">© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۸.۱</p>
       </div>
     </footer>
   </div>

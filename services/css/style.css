@@ -910,3 +910,171 @@ input:checked + .slider:before {
     font-size: 2rem;
   }
 }
+
+
+/* هدر جدید */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: var(--card-bg);
+  color: var(--text-color);
+  padding: 0 1rem;
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.header-logo {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.app-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.header-placeholder {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* فوتر جدید */
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--footer-height);
+  background: var(--card-bg);
+  color: var(--text-light);
+  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  transition: var(--transition);
+  border-top: 1px solid var(--border-color);
+  padding: 0 1rem;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.copyright {
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--text-light);
+}
+
+/* منوی شناور تنظیمات */
+.floating-settings {
+  position: fixed;
+  bottom: calc(var(--footer-height) + 7rem);
+  left: 2rem;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  z-index: 1001;
+  transform: translateY(20px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  width: 25rem;
+}
+
+.floating-settings.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.floating-settings .settings-option {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.floating-settings .settings-option:last-child {
+  border-bottom: none;
+}
+
+.floating-settings .settings-option i {
+  color: var(--primary-color);
+  font-size: 1.6rem;
+  width: 3rem;
+  text-align: center;
+}
+
+.floating-settings .settings-option span {
+  flex: 1;
+  font-size: 1.4rem;
+}
+
+/* دکمه‌های شناور */
+.floating-buttons {
+  position: fixed;
+  bottom: calc(var(--footer-height) + 2rem);
+  left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 1000;
+}
+
+.floating-action-btn {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--primary-color);
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  font-size: 2.2rem;
+}
+
+.floating-action-btn.primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.floating-action-btn.secondary {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.floating-action-btn:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}

@@ -47,59 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSearchSubmit = document.getElementById('btn-search-submit');
   const btnSearchClose = document.getElementById('btn-search-close');
   const darkModeToggle = document.getElementById('dark-mode-toggle');
-  const btnFabLocate = document.getElementById('fab-locate');
   const btnCallHospital = document.getElementById('btn-call-hospital');
   const btnShowRoute = document.getElementById('btn-show-route');
   const btnMenuLocate = document.getElementById('menu-locate');
   const btnMenuDarkmode = document.getElementById('menu-darkmode');
   const btnBackElements = document.querySelectorAll('.btn-back');
   const searchInput = document.getElementById('search-input');
+  
   // Floating Controls Elements
+  const fabLocate = document.getElementById('fab-locate');
+  const fabIcon = document.getElementById('fab-icon');
   const floatingControls = document.getElementById('floating-controls');
-  const closeFloatingControls = document.getElementById('close-floating-controls');
   const locateUserBtn = document.getElementById('locate-user-btn');
   const showNearbyBtn = document.getElementById('show-nearby-btn');
   const toggleThemeBtn = document.getElementById('toggle-theme-btn');
-  const fabLocate = document.getElementById('fab-locate');
-
-
-
-    // Toggle floating controls
-  function toggleFloatingControls() {
-    floatingControls.classList.toggle('active');
-  }
-
-  // Close floating controls
-  function closeFloatingControlsHandler() {
-    floatingControls.classList.remove('active');
-  }
-
-  // Initialize floating controls
-  function initFloatingControls() {
-    // Event listeners
-    fabLocate.addEventListener('click', toggleFloatingControls);
-    closeFloatingControls.addEventListener('click', closeFloatingControlsHandler);
-    
-    locateUserBtn.addEventListener('click', () => {
-      locateUser(false); // فقط موقعیت کاربر را نشان بده
-      closeFloatingControlsHandler();
-    });
-    
-    showNearbyBtn.addEventListener('click', () => {
-      showNearbyHospitals(); // نمایش بیمارستان‌های نزدیک
-      closeFloatingControlsHandler();
-    });
-    
-    toggleThemeBtn.addEventListener('click', () => {
-      toggleDarkMode(); // تغییر تم
-      closeFloatingControlsHandler();
-    });
-    
-    // Update theme icon
-    toggleThemeBtn.innerHTML = currentTheme === 'dark' 
-      ? '<i class="fas fa-sun"></i>' 
-      : '<i class="fas fa-moon"></i>';
-  }
 
   // Custom Icons
   const hospitalIcon = L.icon({
@@ -224,11 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function showNotification(message, duration = 3000, type = 'info') {
     clearTimeout(notificationTimeout);
     
-    // ابتدا کلاس hide را اضافه می‌کنیم تا اگر نوتیفیکیشن در حال نمایش است، ابتدا محو شود
     notification.classList.remove('show');
     notification.classList.add('hide');
     
-    // پس از اتمام انیمیشن محو شدن، نوتیفیکیشن جدید را نمایش می‌دهیم
     setTimeout(() => {
       const notificationMessage = document.getElementById('notification-message');
       const notificationIcon = document.getElementById('notification-icon');
@@ -247,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         notification.classList.remove('show');
         notification.classList.add('hide');
       }, duration);
-    }, 300); // این تایم‌اوت باید برابر با مدت زمان انیمیشن در CSS باشد
+    }, 300);
   }
 
   function toggleLoading(show) {
@@ -300,9 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMarkersStyle();
     
     // Update theme icon
-    toggleThemeBtn.innerHTML = currentTheme === 'dark' 
-      ? '<i class="fas fa-sun"></i>' 
-      : '<i class="fas fa-moon"></i>';
+    const icon = currentTheme === 'dark' ? 'fa-sun' : 'fa-moon';
+    toggleThemeBtn.innerHTML = `<i class="fas ${icon}"></i><span>حالت شب</span>`;
   }
 
   function updateMarkersStyle() {
@@ -759,6 +717,87 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleSearch();
   }
 
+    // Floating Controls Functions
+  // Floating Controls Functions
+  // Floating Controls Functions
+  function initFloatingControls() {
+    const fab = document.getElementById('fab-locate');
+    const fabIcon = document.getElementById('fab-icon');
+    const floatingControls = document.getElementById('floating-controls');
+    const themeIcon = document.getElementById('theme-icon');
+
+    // Update theme icon based on current theme
+    function updateThemeIcon() {
+      if (currentTheme === 'dark') {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+      } else {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+      }
+    }
+
+    // Toggle floating controls
+    fab.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fab.classList.toggle('active');
+      floatingControls.classList.toggle('active');
+      
+      // Change icon from ! to ×
+      if (fab.classList.contains('active')) {
+        fabIcon.textContent = '×';
+        fab.style.backgroundColor = 'var(--accent-500)';
+      } else {
+        fabIcon.textContent = '!';
+        fab.style.backgroundColor = '';
+      }
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!floatingControls.contains(e.target) && !fab.contains(e.target)) {
+        fab.classList.remove('active');
+        floatingControls.classList.remove('active');
+        fabIcon.textContent = '!';
+        fab.style.backgroundColor = '';
+      }
+    });
+
+    // Control buttons functionality
+    document.getElementById('locate-user-btn').addEventListener('click', () => {
+      locateUser(false);
+      closeFloatingControls();
+    });
+
+    document.getElementById('show-nearby-btn').addEventListener('click', () => {
+      showNearbyHospitals();
+      closeFloatingControls();
+    });
+
+    document.getElementById('toggle-theme-btn').addEventListener('click', () => {
+      toggleDarkMode();
+      updateThemeIcon();
+      closeFloatingControls();
+    });
+
+    function closeFloatingControls() {
+      fab.classList.remove('active');
+      floatingControls.classList.remove('active');
+      fabIcon.textContent = '!';
+      fab.style.backgroundColor = '';
+    }
+
+    // Initialize theme icon
+    updateThemeIcon();
+  }
+
+  function closeFloatingControls() {
+    floatingControls.classList.remove('active');
+    fabLocate.classList.remove('active');
+    fabIcon.classList.remove('fa-times');
+    fabIcon.classList.add('fa-location-arrow');
+  }
+
   function init() {
     // Load saved theme
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -788,8 +827,6 @@ document.addEventListener('DOMContentLoaded', () => {
         autoPanPaddingTopLeft: [50, 50],
         autoPanPaddingBottomRight: [50, 50]
       });
-
-      initFloatingControls();
 
       marker.on('popupopen', () => {
         // Center the map on the marker with proper padding
@@ -845,23 +882,24 @@ document.addEventListener('DOMContentLoaded', () => {
       closeAllPanels();
       menuPanel.classList.add('open');
     });
-    btnFabLocate.addEventListener('click', () => {
-      locateUser(true); // Show nearby hospitals after locating
-    });
+    
     btnCallHospital.addEventListener('click', () => {
       if (selectedHospital) {
         window.open(`tel:${selectedHospital.phone}`);
       }
     });
+    
     btnShowRoute.addEventListener('click', () => {
       if (selectedHospital) {
         showRoutePanel(selectedHospital.id);
       }
     });
+    
     btnMenuLocate.addEventListener('click', () => {
       closeAllPanels();
-      locateUser(false); // Just locate, don't show nearby
+      locateUser(false);
     });
+    
     btnMenuDarkmode.addEventListener('click', () => {
       darkModeToggle.checked = !darkModeToggle.checked;
       toggleDarkMode();
@@ -885,11 +923,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    // Show welcome notification
+    // Initialize floating controls
+    initFloatingControls();
+    
     // Show welcome notification after everything is loaded
     setTimeout(() => {
       showNotification('به نقشه بیمارستان‌های بروجرد خوش آمدید', 3000, 'success');
-    }, 1500); // افزایش تایم‌اوت برای اطمینان از بارگذاری کامل
+    }, 1500);
   }
 
   init();

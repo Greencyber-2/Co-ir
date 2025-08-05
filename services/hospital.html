@@ -232,26 +232,21 @@
 
 
 
-    <!-- Floating Control Panel -->
+
+    <!-- Floating Controls Panel -->
     <div class="floating-controls" id="floating-controls">
-      <button class="close-btn" id="close-floating-controls">
-        <i class="fas fa-times"></i>
-      </button>
       <div class="control-buttons">
-        <button class="control-btn" id="locate-user-btn" title="نمایش موقعیت من">
+        <button class="control-btn" id="locate-user-btn" aria-label="نمایش موقعیت من">
           <i class="fas fa-location-arrow"></i>
         </button>
-        <button class="control-btn" id="show-nearby-btn" title="بیمارستان‌های نزدیک">
+        <button class="control-btn" id="show-nearby-btn" aria-label="بیمارستان‌های نزدیک">
           <i class="fas fa-hospital"></i>
         </button>
-        <button class="control-btn" id="toggle-theme-btn" title="تغییر تم">
-          <i class="fas fa-moon"></i>
+        <button class="control-btn" id="toggle-theme-btn" aria-label="تغییر تم">
+          <i class="fas fa-moon" id="theme-icon"></i>
         </button>
       </div>
     </div>
-
-
-
 
 
       <!-- Nearby Hospitals Panel -->
@@ -335,10 +330,10 @@
       
       
       <!-- Floating Action Button -->
-      <button class="fab" id="fab-locate" aria-label="مکان‌یابی">
-        <i class="fas fa-location-arrow"></i>
+      <button class="fab" id="fab-locate" aria-label="منوی کنترل‌ها">
+        <span class="fab-icon" id="fab-icon">!</span>
       </button>
-      
+            
       <!-- Notification -->
       <div class="notification" id="notification">
         <div class="notification-content">

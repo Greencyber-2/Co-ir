@@ -56,7 +56,7 @@ const userIcon = L.icon({
   popupAnchor: [0, -36]
 });
 
-// داده بیمارستان‌های بروجرد (کامل‌تر شده)
+// داده بیمارستان‌های بروجرد
 const hospitals = [
   {
     id: 1,
@@ -278,10 +278,12 @@ function updatePopupsStyle() {
   }
 }
 
-// تابع برای ایجاد محتوای پاپ‌آپ
 function createPopupContent(hospital) {
   return `
     <div class="popup-content">
+      <button class="popup-close-btn" aria-label="بستن">
+        <i class="fas fa-times"></i>
+      </button>
       <h4>${hospital.name}</h4>
       <p><i class="fas fa-hospital"></i> ${hospital.type}</p>
       <div class="popup-actions">
@@ -497,7 +499,7 @@ function showHospitalDetails(hospitalId) {
   const hospitalImage = document.getElementById('hospital-image');
   hospitalImage.style.backgroundImage = `url('${hospital.photo}')`;
   
-  // نمایش پنل
+  // نمایش پنل به صورت تمام صفحه
   closeAllPanels();
   hospitalPanel.classList.add('open');
   
@@ -507,9 +509,9 @@ function showHospitalDetails(hospitalId) {
     duration: 1
   });
   
-  // باز کردن پاپ‌آپ
+  // بستن پاپ‌آپ اگر باز بود
   if (hospitalMarkers[hospital.id]) {
-    hospitalMarkers[hospital.id].openPopup();
+    hospitalMarkers[hospital.id].closePopup();
   }
 }
 
@@ -621,6 +623,9 @@ function closeAllPanels() {
 
 // تابع برای مدیریت کشیدن پنل
 function setupPanelDrag(panel) {
+  // فقط برای پنل‌های غیر از hospital-panel قابلیت کشیدن را فعال می‌کنیم
+  if (panel.id === 'hospital-panel') return;
+  
   const panelHeader = panel.querySelector('.panel-header');
   
   panelHeader.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -713,14 +718,21 @@ function init() {
     marker.bindPopup(createPopupContent(hospital));
     
     marker.on('popupopen', () => {
+      // رویداد برای دکمه بستن پاپ‌آپ
+      document.querySelector('.popup-close-btn').addEventListener('click', () => {
+        marker.closePopup();
+      });
+
       document.querySelector(`.popup-btn[data-action="details"]`).addEventListener('click', () => {
         const hospitalId = parseInt(document.querySelector(`.popup-btn[data-action="details"]`).getAttribute('data-id'));
         showHospitalDetails(hospitalId);
+        marker.closePopup();
       });
       
       document.querySelector(`.popup-btn[data-action="route"]`).addEventListener('click', () => {
         const hospitalId = parseInt(document.querySelector(`.popup-btn[data-action="route"]`).getAttribute('data-id'));
         showRoutePanel(hospitalId);
+        marker.closePopup();
       });
     });
     

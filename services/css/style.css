@@ -9,7 +9,7 @@
   --card-bg: #fff;
   --border-color: #e1e5eb;
   --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   --header-height: 6rem;
   --footer-height: 6rem;
 }
@@ -568,6 +568,24 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+.map-style-select {
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.map-style-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(24, 90, 157, 0.2);
+}
+
 /* دکمه‌های شناور */
 .floating-buttons {
   position: fixed;
@@ -626,6 +644,9 @@ input:checked + .slider:before {
   max-width: 90%;
   text-align: center;
   border-left: 5px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .notification.show {
@@ -636,6 +657,11 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.notification-icon {
+  color: var(--primary-color);
+  font-size: 2rem;
 }
 
 /* لودینگ */

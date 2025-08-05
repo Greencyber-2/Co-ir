@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>نقشه هوشمند بیمارستان‌های بروجرد</title>
-  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#185a9d" />
-  <link rel="icon" href="assets/img/icons/medical-cross.png" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#185a9d">
+  <link rel="icon" href="assets/img/icons/medical-cross.png">
 </head>
 <body>
   <div class="app-container">
@@ -21,7 +21,7 @@
     <header class="app-header">
       <div class="header-content">
         <div class="logo-title">
-          <img src="assets/img/icons/medical-cross.png" alt="لوگو" class="logo" />
+          <img src="assets/img/icons/medical-cross.png" alt="لوگو" class="logo">
           <h1 class="app-title">بیمارستان‌های بروجرد</h1>
         </div>
         <div class="header-actions">
@@ -39,6 +39,7 @@
 
       <!-- پنل اطلاعات بیمارستان -->
       <div id="hospital-panel" class="panel hospital-panel">
+        <div class="panel-handle"></div>
         <div class="panel-header">
           <h3 id="hospital-name">نام بیمارستان</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -82,6 +83,7 @@
 
       <!-- پنل مسیریابی -->
       <div id="route-panel" class="panel route-panel">
+        <div class="panel-handle"></div>
         <div class="panel-header">
           <h3>مسیریابی</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -117,6 +119,7 @@
 
       <!-- پنل بیمارستان‌های نزدیک -->
       <div id="nearby-panel" class="panel nearby-panel">
+        <div class="panel-handle"></div>
         <div class="panel-header">
           <h3>بیمارستان‌های نزدیک</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -132,6 +135,7 @@
 
       <!-- منوی تنظیمات -->
       <div id="settings-panel" class="panel settings-panel">
+        <div class="panel-handle"></div>
         <div class="panel-header">
           <h3>تنظیمات</h3>
           <button class="btn-close-panel" aria-label="بستن پنل">
@@ -155,6 +159,15 @@
               <span class="slider round"></span>
             </label>
           </div>
+          <div class="settings-option">
+            <i class="fas fa-map"></i>
+            <span>نوع نقشه</span>
+            <select id="map-style-select" class="map-style-select">
+              <option value="light">روشن</option>
+              <option value="dark">تیره</option>
+              <option value="satellite">ماهواره</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -171,6 +184,7 @@
       <!-- اعلانات -->
       <div id="notification" class="notification">
         <div class="notification-content">
+          <i class="fas fa-info-circle notification-icon"></i>
           <span id="notification-message"></span>
         </div>
       </div>

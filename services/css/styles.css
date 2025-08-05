@@ -1154,19 +1154,28 @@ input:checked + .slider:before {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   z-index: 1200;
-  transition: var(--transition-all);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   max-width: 90%;
   text-align: center;
   display: flex;
   align-items: center;
   gap: var(--space-3);
   border-left: 4px solid var(--primary-600);
+  opacity: 0;
+  visibility: hidden;
 }
 
 .notification.show {
   top: calc(var(--header-height) + var(--space-4));
+  opacity: 1;
+  visibility: visible;
 }
 
+.notification.hide {
+  top: -100px;
+  opacity: 0;
+  visibility: hidden;
+}
 .notification-content {
   display: flex;
   align-items: center;

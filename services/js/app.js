@@ -779,9 +779,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Show welcome notification
+    // Show welcome notification after everything is loaded
     setTimeout(() => {
       showNotification('به نقشه بیمارستان‌های بروجرد خوش آمدید', 3000, 'success');
-    }, 1000);
+    }, 1500); // افزایش تایم‌اوت برای اطمینان از بارگذاری کامل
   }
 
   init();

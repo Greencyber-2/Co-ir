@@ -24,9 +24,11 @@
           <img src="assets/img/icons/medical-cross.png" alt="لوگو" class="logo" />
           <h1 class="app-title">بیمارستان‌های بروجرد</h1>
         </div>
-        <button class="btn-menu" id="btn-menu" aria-label="منو">
-          <i class="fas fa-bars"></i>
-        </button>
+        <div class="header-actions">
+          <button class="btn-locate" aria-label="موقعیت من">
+            <i class="fas fa-location-arrow"></i>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -34,30 +36,6 @@
     <main class="app-main">
       <!-- نقشه -->
       <div id="map" class="map-container"></div>
-
-      <!-- پنل منو -->
-      <div id="menu-panel" class="panel menu-panel">
-        <div class="panel-header">
-          <h3>منو</h3>
-          <button class="btn-close-panel" aria-label="بستن منو">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="panel-content">
-          <button class="menu-item" id="menu-dark-mode">
-            <i class="fas fa-moon"></i>
-            <span>حالت شب</span>
-          </button>
-          <button class="menu-item" id="menu-locate">
-            <i class="fas fa-location-arrow"></i>
-            <span>موقعیت من</span>
-          </button>
-          <button class="menu-item" id="menu-about">
-            <i class="fas fa-info-circle"></i>
-            <span>درباره برنامه</span>
-          </button>
-        </div>
-      </div>
 
       <!-- پنل اطلاعات بیمارستان -->
       <div id="hospital-panel" class="panel hospital-panel">
@@ -134,9 +112,6 @@
             </button>
           </div>
           <div id="route-instructions" class="route-instructions"></div>
-          <button class="btn-primary" id="btn-start-route">
-            شروع مسیریابی
-          </button>
         </div>
       </div>
 
@@ -155,10 +130,41 @@
         </div>
       </div>
 
+      <!-- منوی تنظیمات -->
+      <div id="settings-panel" class="panel settings-panel">
+        <div class="panel-header">
+          <h3>تنظیمات</h3>
+          <button class="btn-close-panel" aria-label="بستن پنل">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="panel-content">
+          <div class="settings-option">
+            <i class="fas fa-moon"></i>
+            <span>حالت شب</span>
+            <label class="switch">
+              <input type="checkbox" id="dark-mode-toggle">
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="settings-option">
+            <i class="fas fa-bell"></i>
+            <span>اعلانات</span>
+            <label class="switch">
+              <input type="checkbox" id="notifications-toggle" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <!-- دکمه‌های شناور -->
       <div class="floating-buttons">
         <button id="btn-show-nearby" class="floating-action-btn primary" aria-label="نزدیک‌ترین‌ها">
           <i class="fas fa-map-marker-alt"></i>
+        </button>
+        <button id="btn-show-settings" class="floating-action-btn secondary" aria-label="تنظیمات">
+          <i class="fas fa-bars"></i>
         </button>
       </div>
 

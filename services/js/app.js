@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
         hospitals: [],
         hospitalMarkers: {},
         activePanel: null,
-        geolocationWatchId: null
+        geolocationWatchId: null,
+        isFirstLocation: true // Flag for first location update
     };
 
     // DOM Elements
@@ -211,6 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeButton: false,
                 maxWidth: 300,
                 minWidth: 250
+            });
+            
+            // Add click event to show hospital details
+            marker.on('click', () => {
+                showHospitalDetails(hospital.id);
             });
             
             marker.on('popupopen', () => {
@@ -413,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Get current position with high accuracy
-        state.geolocationWatchId = navigator.geolocation.watchPosition(
+        navigator.geolocation.getCurrentPosition(
             position => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
@@ -436,6 +442,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (state.activePanel === 'nearby') {
                     showNearbyHospitals();
                 }
+                
+                // Start watching position with less frequency
+                state.geolocationWatchId = navigator.geolocation.watchPosition(
+                    pos => {
+                        const newLat = pos.coords.latitude;
+                        const newLng = pos.coords.longitude;
+                        
+                        if (state.userLocation.lat !== newLat || state.userLocation.lng !== newLng) {
+                            state.userLocation = { lat: newLat, lng: newLng };
+                            updateUserMarker(newLat, newLng, false); // Don't center on update
+                        }
+                    },
+                    null,
+                    {
+                        enableHighAccuracy: true,
+                        maximumAge: 30000, // 30 seconds
+                        timeout: 10000
+                    }
+                );
             },
             error => {
                 console.error('Geolocation error:', error);
@@ -482,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Update user marker on map
-    function updateUserMarker(lat, lng) {
+    function updateUserMarker(lat, lng, centerMap = true) {
         if (state.userMarker) {
             state.map.removeLayer(state.userMarker);
         }
@@ -497,7 +522,9 @@ document.addEventListener('DOMContentLoaded', () => {
             closeButton: false
         }).openPopup();
         
-        state.map.setView([lat, lng], 15);
+        if (centerMap) {
+            state.map.setView([lat, lng], 15);
+        }
     }
 
     // Show nearby hospitals panel

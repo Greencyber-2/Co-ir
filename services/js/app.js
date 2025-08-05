@@ -722,43 +722,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const fab = document.getElementById('fab-locate');
     const fabIcon = document.getElementById('fab-icon');
     const floatingControls = document.getElementById('floating-controls');
-    const themeBtn = document.getElementById('toggle-theme-btn');
     const themeIcon = document.getElementById('theme-icon');
 
-    // تابع به‌روزرسانی آیکون تم
+    // Update theme icon
     function updateThemeIcon() {
-      if (currentTheme === 'dark') {
-        themeIcon.classList.remove('fa-moon');
-        themeIcon.classList.add('fa-sun');
-      } else {
-        themeIcon.classList.remove('fa-sun');
-        themeIcon.classList.add('fa-moon');
-      }
+      themeIcon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
 
-    // رویداد کلیک برای دکته شناور
+    // Toggle floating controls
     fab.addEventListener('click', (e) => {
       e.stopPropagation();
-      fab.classList.toggle('active');
+      const isActive = fab.classList.toggle('active');
       floatingControls.classList.toggle('active');
       
-      if (fab.classList.contains('active')) {
-        fabIcon.textContent = '×';
-        fab.style.backgroundColor = 'var(--accent-500)';
+      // Change icon animation
+      if (isActive) {
+        fabIcon.classList.remove('fa-bars');
+        fabIcon.classList.add('fa-times');
       } else {
-        fabIcon.textContent = '!';
-        fab.style.backgroundColor = '';
+        fabIcon.classList.remove('fa-times');
+        fabIcon.classList.add('fa-bars');
       }
     });
 
-    // بستن پنل با کلیک خارج از آن
+    // Close when clicking outside
     document.addEventListener('click', (e) => {
       if (!floatingControls.contains(e.target) && !fab.contains(e.target)) {
         closeFloatingControls();
       }
     });
 
-    // رویدادهای دکمه‌های کنترل
+    // Control buttons functionality
     document.getElementById('locate-user-btn').addEventListener('click', () => {
       locateUser(false);
       closeFloatingControls();
@@ -769,21 +763,20 @@ document.addEventListener('DOMContentLoaded', () => {
       closeFloatingControls();
     });
 
-    themeBtn.addEventListener('click', () => {
+    document.getElementById('toggle-theme-btn').addEventListener('click', () => {
       toggleDarkMode();
       updateThemeIcon();
       closeFloatingControls();
     });
 
-    // تابع بستن پنل شناور
     function closeFloatingControls() {
       fab.classList.remove('active');
       floatingControls.classList.remove('active');
-      fabIcon.textContent = '!';
-      fab.style.backgroundColor = '';
+      fabIcon.classList.remove('fa-times');
+      fabIcon.classList.add('fa-bars');
     }
 
-    // مقداردهی اولیه آیکون تم
+    // Initialize theme icon
     updateThemeIcon();
   }
 

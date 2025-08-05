@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapContainer = document.getElementById('map');
     if (!mapContainer) {
       console.error('Map container not found');
-      showNotification('خطا در بارگذاری نقشه');
+      showNotification('خطا در بارگذاری نقشه', 3000, 'error');
       return;
     }
 
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   } catch (error) {
     console.error('Error initializing map:', error);
-    showNotification('خطا در بارگذاری نقشه');
+    showNotification('خطا در بارگذاری نقشه', 3000, 'error');
     return;
   }
 
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedHospital = null;
   let routingControl = null;
   let currentTransportMode = 'walk';
-  let welcomeNotificationTimeout;
+  let notificationTimeout;
 
   // DOM Elements
   const hospitalPanel = document.getElementById('hospital-panel');
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Utility Functions
   function showNotification(message, duration = 3000, type = 'info') {
-    clearTimeout(welcomeNotificationTimeout);
+    clearTimeout(notificationTimeout);
     
     const notificationMessage = document.getElementById('notification-message');
     const notificationIcon = document.getElementById('notification-icon');
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     notification.className = `notification ${type}`;
     notification.classList.add('show');
     
-    welcomeNotificationTimeout = setTimeout(() => {
+    notificationTimeout = setTimeout(() => {
       notification.classList.remove('show');
     }, duration);
   }
@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  function locateUser() {
+  function locateUser(showNearby = false) {
     if (navigator.geolocation) {
       showNotification('در حال دریافت موقعیت شما...');
       toggleLoading(true);
@@ -323,6 +323,10 @@ document.addEventListener('DOMContentLoaded', () => {
           map.setView([lat, lng], 15);
           showNotification('موقعیت شما با موفقیت مشخص شد', 3000, 'success');
           toggleLoading(false);
+          
+          if (showNearby) {
+            showNearbyHospitals();
+          }
         },
         error => {
           console.error('خطا در دریافت موقعیت:', error);
@@ -357,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showNearbyHospitals() {
     if (!userLocation || !isInBorujerd) {
-      locateUser();
+      locateUser(true);
       return;
     }
     
@@ -478,9 +482,11 @@ document.addEventListener('DOMContentLoaded', () => {
     closeAllPanels();
     hospitalPanel.classList.add('open');
     
+    // Center the map on the hospital with proper padding
     map.setView(hospital.coords, 16, {
       animate: true,
-      duration: 1
+      duration: 1,
+      paddingTopLeft: [300, 0] // Adjust this value as needed
     });
     
     if (hospitalMarkers[hospital.id]) {
@@ -613,6 +619,8 @@ document.addEventListener('DOMContentLoaded', () => {
     searchContainer.classList.toggle('active');
     if (searchContainer.classList.contains('active')) {
       searchInput.focus();
+    } else {
+      searchInput.value = '';
     }
   }
 
@@ -636,9 +644,11 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     map.fitBounds(group.getBounds(), { padding: [50, 50] });
 
-    // Open popup for the first result
+    // Open popup for the first result and center it
     if (results.length > 0) {
-      hospitalMarkers[results[0].id].openPopup();
+      const firstResult = results[0];
+      map.setView(firstResult.coords, 16);
+      hospitalMarkers[firstResult.id].openPopup();
     }
 
     toggleSearch();
@@ -669,10 +679,18 @@ document.addEventListener('DOMContentLoaded', () => {
         maxWidth: 300,
         minWidth: 250,
         autoPan: true,
-        autoPanPadding: [50, 50]
+        autoPanPadding: [50, 50],
+        autoPanPaddingTopLeft: [50, 50],
+        autoPanPaddingBottomRight: [50, 50]
       });
       
       marker.on('popupopen', () => {
+        // Center the map on the marker with proper padding
+        map.setView(marker.getLatLng(), map.getZoom(), {
+          animate: true,
+          paddingTopLeft: [300, 0]
+        });
+
         document.querySelectorAll('.popup-btn[data-action="details"]').forEach(btn => {
           btn.addEventListener('click', () => {
             const hospitalId = parseInt(btn.getAttribute('data-id'));
@@ -720,7 +738,9 @@ document.addEventListener('DOMContentLoaded', () => {
       closeAllPanels();
       menuPanel.classList.add('open');
     });
-    btnFabLocate.addEventListener('click', locateUser);
+    btnFabLocate.addEventListener('click', () => {
+      locateUser(true); // Show nearby hospitals after locating
+    });
     btnCallHospital.addEventListener('click', () => {
       if (selectedHospital) {
         window.open(`tel:${selectedHospital.phone}`);
@@ -731,7 +751,10 @@ document.addEventListener('DOMContentLoaded', () => {
         showRoutePanel(selectedHospital.id);
       }
     });
-    btnMenuLocate.addEventListener('click', locateUser);
+    btnMenuLocate.addEventListener('click', () => {
+      closeAllPanels();
+      locateUser(false); // Just locate, don't show nearby
+    });
     btnMenuDarkmode.addEventListener('click', () => {
       darkModeToggle.checked = !darkModeToggle.checked;
       toggleDarkMode();

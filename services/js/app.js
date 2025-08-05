@@ -258,9 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMapLayer();
     updateMarkersStyle();
     
-    // Update theme icon
-    const icon = currentTheme === 'dark' ? 'fa-sun' : 'fa-moon';
-    toggleThemeBtn.innerHTML = `<i class="fas ${icon}"></i><span>حالت شب</span>`;
+    // // Update theme icon
+    // const icon = currentTheme === 'dark' ? 'fa-sun' : 'fa-moon';
+    // toggleThemeBtn.innerHTML = `<i class="fas ${icon}"></i><span>حالت شب</span>`;
   }
 
   function updateMarkersStyle() {
@@ -717,16 +717,15 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleSearch();
   }
 
-    // Floating Controls Functions
-  // Floating Controls Functions
   // Floating Controls Functions
   function initFloatingControls() {
     const fab = document.getElementById('fab-locate');
     const fabIcon = document.getElementById('fab-icon');
     const floatingControls = document.getElementById('floating-controls');
+    const themeBtn = document.getElementById('toggle-theme-btn');
     const themeIcon = document.getElementById('theme-icon');
 
-    // Update theme icon based on current theme
+    // تابع به‌روزرسانی آیکون تم
     function updateThemeIcon() {
       if (currentTheme === 'dark') {
         themeIcon.classList.remove('fa-moon');
@@ -737,13 +736,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Toggle floating controls
+    // رویداد کلیک برای دکته شناور
     fab.addEventListener('click', (e) => {
       e.stopPropagation();
       fab.classList.toggle('active');
       floatingControls.classList.toggle('active');
       
-      // Change icon from ! to ×
       if (fab.classList.contains('active')) {
         fabIcon.textContent = '×';
         fab.style.backgroundColor = 'var(--accent-500)';
@@ -753,17 +751,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Close when clicking outside
+    // بستن پنل با کلیک خارج از آن
     document.addEventListener('click', (e) => {
       if (!floatingControls.contains(e.target) && !fab.contains(e.target)) {
-        fab.classList.remove('active');
-        floatingControls.classList.remove('active');
-        fabIcon.textContent = '!';
-        fab.style.backgroundColor = '';
+        closeFloatingControls();
       }
     });
 
-    // Control buttons functionality
+    // رویدادهای دکمه‌های کنترل
     document.getElementById('locate-user-btn').addEventListener('click', () => {
       locateUser(false);
       closeFloatingControls();
@@ -774,12 +769,13 @@ document.addEventListener('DOMContentLoaded', () => {
       closeFloatingControls();
     });
 
-    document.getElementById('toggle-theme-btn').addEventListener('click', () => {
+    themeBtn.addEventListener('click', () => {
       toggleDarkMode();
       updateThemeIcon();
       closeFloatingControls();
     });
 
+    // تابع بستن پنل شناور
     function closeFloatingControls() {
       fab.classList.remove('active');
       floatingControls.classList.remove('active');
@@ -787,7 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fab.style.backgroundColor = '';
     }
 
-    // Initialize theme icon
+    // مقداردهی اولیه آیکون تم
     updateThemeIcon();
   }
 

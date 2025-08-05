@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedHospital = null;
   let routingControl = null;
   let currentTransportMode = 'walk';
+  let welcomeNotificationTimeout;
 
   // DOM Elements
   const hospitalPanel = document.getElementById('hospital-panel');
@@ -52,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnMenuLocate = document.getElementById('menu-locate');
   const btnMenuDarkmode = document.getElementById('menu-darkmode');
   const btnBackElements = document.querySelectorAll('.btn-back');
+  const searchInput = document.getElementById('search-input');
 
   // Custom Icons
   const hospitalIcon = L.icon({
@@ -173,15 +175,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const hospitalMarkers = {};
 
   // Utility Functions
-  function showNotification(message, duration = 3000) {
+  function showNotification(message, duration = 3000, type = 'info') {
+    clearTimeout(welcomeNotificationTimeout);
+    
     const notificationMessage = document.getElementById('notification-message');
     const notificationIcon = document.getElementById('notification-icon');
     
     notificationMessage.textContent = message;
-    notificationIcon.className = 'notification-icon fas fa-info-circle';
+    notificationIcon.className = `notification-icon fas ${
+      type === 'error' ? 'fa-exclamation-circle' : 
+      type === 'success' ? 'fa-check-circle' : 'fa-info-circle'
+    }`;
+    
+    notification.className = `notification ${type}`;
     notification.classList.add('show');
     
-    setTimeout(() => {
+    welcomeNotificationTimeout = setTimeout(() => {
       notification.classList.remove('show');
     }, duration);
   }
@@ -290,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
           isInBorujerd = checkIfInBorujerd(lat, lng);
           
           if (!isInBorujerd) {
-            showNotification('شما در محدوده بروجرد نیستید');
+            showNotification('شما در محدوده بروجرد نیستید', 3000, 'error');
             toggleLoading(false);
             return;
           }
@@ -312,15 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
           }).openPopup();
           
           map.setView([lat, lng], 15);
-          showNotification('موقعیت شما با موفقیت مشخص شد');
+          showNotification('موقعیت شما با موفقیت مشخص شد', 3000, 'success');
           toggleLoading(false);
-          
-          // Auto show nearby hospitals if user is in Borujerd
-          showNearbyHospitals();
         },
         error => {
           console.error('خطا در دریافت موقعیت:', error);
-          showNotification('خطا در دریافت موقعیت مکانی');
+          showNotification('خطا در دریافت موقعیت مکانی', 3000, 'error');
           toggleLoading(false);
         },
         {
@@ -330,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       );
     } else {
-      showNotification('مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند');
+      showNotification('مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند', 3000, 'error');
     }
   }
 
@@ -412,8 +418,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <button class="nearby-btn details-btn" data-id="${hospital.id}">
             <i class="fas fa-info-circle"></i> جزئیات
           </button>
-          <button class="nearby-btn route-btn" data-id="${hospital.id}">
-            <i class="fas fa-route"></i> مسیریابی
+          <button class="nearby-btn show-on-map-btn" data-id="${hospital.id}">
+            <i class="fas fa-map-marker-alt"></i> نمایش روی نقشه
           </button>
         </div>
       `;
@@ -428,10 +434,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    nearbyList.querySelectorAll('.route-btn').forEach(btn => {
+    nearbyList.querySelectorAll('.show-on-map-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const hospitalId = parseInt(btn.getAttribute('data-id'));
-        showRoutePanel(hospitalId);
+        const hospital = hospitals.find(h => h.id === hospitalId);
+        if (hospital) {
+          map.setView(hospital.coords, 16);
+          hospitalMarkers[hospitalId].openPopup();
+          closeAllPanels();
+        }
       });
     });
     
@@ -480,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function showRoutePanel(hospitalId) {
     const hospital = hospitals.find(h => h.id === hospitalId);
     if (!hospital || !userLocation || !isInBorujerd) {
-      showNotification('لطفاً ابتدا موقعیت خود را مشخص کنید و مطمئن شوید در بروجرد هستید');
+      showNotification('لطفاً ابتدا موقعیت خود را مشخص کنید و مطمئن شوید در بروجرد هستید', 3000, 'error');
       return;
     }
     
@@ -600,6 +611,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function toggleSearch() {
     searchContainer.classList.toggle('active');
+    if (searchContainer.classList.contains('active')) {
+      searchInput.focus();
+    }
+  }
+
+  function searchHospitals(query) {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return;
+
+    const results = hospitals.filter(hospital => 
+      hospital.name.toLowerCase().includes(normalizedQuery) ||
+      hospital.specialties.some(spec => spec.toLowerCase().includes(normalizedQuery))
+    );
+
+    if (results.length === 0) {
+      showNotification('نتیجه‌ای یافت نشد', 3000, 'error');
+      return;
+    }
+
+    // Zoom to show all results
+    const group = new L.featureGroup(
+      results.map(hospital => hospitalMarkers[hospital.id])
+    );
+    map.fitBounds(group.getBounds(), { padding: [50, 50] });
+
+    // Open popup for the first result
+    if (results.length > 0) {
+      hospitalMarkers[results[0].id].openPopup();
+    }
+
+    toggleSearch();
   }
 
   function init() {
@@ -625,7 +667,9 @@ document.addEventListener('DOMContentLoaded', () => {
         className: 'hospital-popup',
         closeButton: false,
         maxWidth: 300,
-        minWidth: 250
+        minWidth: 250,
+        autoPan: true,
+        autoPanPadding: [50, 50]
       });
       
       marker.on('popupopen', () => {
@@ -640,8 +684,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.popup-btn[data-action="route"]').forEach(btn => {
           btn.addEventListener('click', () => {
             const hospitalId = parseInt(btn.getAttribute('data-id'));
-            locateUser();
-            setTimeout(() => showRoutePanel(hospitalId), 1000);
+            if (!userLocation) {
+              locateUser();
+              setTimeout(() => {
+                if (userLocation && isInBorujerd) {
+                  showRoutePanel(hospitalId);
+                }
+              }, 1000);
+            } else if (isInBorujerd) {
+              showRoutePanel(hospitalId);
+            }
             marker.closePopup();
           });
         });
@@ -653,6 +705,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners
     btnSearch.addEventListener('click', toggleSearch);
     btnSearchClose.addEventListener('click', toggleSearch);
+    btnSearchSubmit.addEventListener('click', () => {
+      searchHospitals(searchInput.value);
+    });
+    
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        searchHospitals(searchInput.value);
+      }
+    });
+    
     btnNearby.addEventListener('click', showNearbyHospitals);
     btnMenu.addEventListener('click', () => {
       closeAllPanels();
@@ -695,7 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Show welcome notification
     setTimeout(() => {
-      showNotification('به نقشه بیمارستان‌های بروجرد خوش آمدید');
+      showNotification('به نقشه بیمارستان‌های بروجرد خوش آمدید', 3000, 'success');
     }, 1000);
   }
 

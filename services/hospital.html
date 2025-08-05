@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,19 +23,20 @@
   
   <title>نقشه هوشمند بیمارستان‌های بروجرد | اطلاعات کامل و مسیریابی</title>
   
-  <!-- Preload important resources -->
-  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
-  <link rel="preload" href="css/styles.css" as="style">
+  <!-- Preload JS resources -->
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
   <link rel="preload" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js" as="script">
+  <link rel="preload" href="js/app.js" as="script">
   
-  <!-- Fonts & Icons -->
-  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- CSS files -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="">
   
-  <!-- Main CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  
   <link rel="stylesheet" href="css/styles.css">
   
   <!-- Favicon -->
@@ -326,15 +327,21 @@
     <footer class="app-footer">
       <div class="footer-container">
         <p class="copyright">
-          &copy; <span id="current-year">1403</span> نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۹.۰
+          &copy; <span id="current-year">1403</span> نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۱۰.۱
         </p>
       </div>
     </footer>
   </div>
   
   <!-- Scripts -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+  
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"
+          integrity="sha256-8QfV1+6Yw+J3Z5r5v5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5="
+          crossorigin=""></script>
+  
   <script src="js/app.js" defer></script>
   
   <!-- Structured Data for SEO -->

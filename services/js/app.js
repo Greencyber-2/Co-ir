@@ -178,21 +178,30 @@ document.addEventListener('DOMContentLoaded', () => {
   function showNotification(message, duration = 3000, type = 'info') {
     clearTimeout(notificationTimeout);
     
-    const notificationMessage = document.getElementById('notification-message');
-    const notificationIcon = document.getElementById('notification-icon');
+    // ابتدا کلاس hide را اضافه می‌کنیم تا اگر نوتیفیکیشن در حال نمایش است، ابتدا محو شود
+    notification.classList.remove('show');
+    notification.classList.add('hide');
     
-    notificationMessage.textContent = message;
-    notificationIcon.className = `notification-icon fas ${
-      type === 'error' ? 'fa-exclamation-circle' : 
-      type === 'success' ? 'fa-check-circle' : 'fa-info-circle'
-    }`;
-    
-    notification.className = `notification ${type}`;
-    notification.classList.add('show');
-    
-    notificationTimeout = setTimeout(() => {
-      notification.classList.remove('show');
-    }, duration);
+    // پس از اتمام انیمیشن محو شدن، نوتیفیکیشن جدید را نمایش می‌دهیم
+    setTimeout(() => {
+      const notificationMessage = document.getElementById('notification-message');
+      const notificationIcon = document.getElementById('notification-icon');
+      
+      notificationMessage.textContent = message;
+      notificationIcon.className = `notification-icon fas ${
+        type === 'error' ? 'fa-exclamation-circle' : 
+        type === 'success' ? 'fa-check-circle' : 'fa-info-circle'
+      }`;
+      
+      notification.className = `notification ${type}`;
+      notification.classList.remove('hide');
+      notification.classList.add('show');
+      
+      notificationTimeout = setTimeout(() => {
+        notification.classList.remove('show');
+        notification.classList.add('hide');
+      }, duration);
+    }, 300); // این تایم‌اوت باید برابر با مدت زمان انیمیشن در CSS باشد
   }
 
   function toggleLoading(show) {

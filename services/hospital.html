@@ -2,394 +2,356 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="نقشه هوشمند بیمارستان‌های شهر بروجرد با اطلاعات کامل و مسیریابی پیشرفته">
+  <meta name="keywords" content="بیمارستان بروجرد, نقشه بیمارستان, بیمارستان‌های بروجرد, اورژانس بروجرد">
+  <meta name="author" content="نقشه هوشمند بروجرد">
   
-  <!-- متا تگ های SEO -->
-  <title>نقشه هوشمند بیمارستان‌های بروجرد | یافتن نزدیک‌ترین مراکز درمانی</title>
-  <meta name="description" content="نقشه هوشمند بیمارستان‌ها و مراکز درمانی شهر بروجرد با امکان مسیریابی، مشاهده اطلاعات تماس و تخصص‌های هر مرکز">
-  <meta name="keywords" content="بیمارستان بروجرد, بیمارستان‌های بروجرد, نقشه بیمارستان, اورژانس بروجرد, مراکز درمانی بروجرد">
-  <meta property="og:title" content="نقشه هوشمند بیمارستان‌های بروجرد">
-  <meta property="og:description" content="یافتن نزدیک‌ترین مراکز درمانی در بروجرد با امکان مسیریابی">
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://hospital-map-borujerd.ir">
+  <meta property="og:url" content="https://hospital-map-borujerd.ir/">
+  <meta property="og:title" content="نقشه هوشمند بیمارستان‌های بروجرد">
+  <meta property="og:description" content="اطلاعات کامل بیمارستان‌های شهر بروجرد با امکان مسیریابی و جستجوی پیشرفته">
   <meta property="og:image" content="https://hospital-map-borujerd.ir/assets/img/social-preview.jpg">
   
-  <!-- فونت‌ها و استایل‌ها -->
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://hospital-map-borujerd.ir/">
+  <meta property="twitter:title" content="نقشه هوشمند بیمارستان‌های بروجرد">
+  <meta property="twitter:description" content="اطلاعات کامل بیمارستان‌های شهر بروجرد با امکان مسیریابی و جستجوی پیشرفته">
+  <meta property="twitter:image" content="https://hospital-map-borujerd.ir/assets/img/social-preview.jpg">
+  
+  <title>نقشه هوشمند بیمارستان‌های بروجرد | اطلاعات کامل و مسیریابی</title>
+  
+  <!-- Preload important resources -->
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+  <link rel="preload" href="css/styles.css" as="style">
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
+  <link rel="preload" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js" as="script">
+  
+  <!-- Fonts & Icons -->
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
   
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1E3A8A">
-  <link rel="icon" href="assets/img/icons/medical-cross.png">
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/styles.css">
   
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "نقشه هوشمند بیمارستان‌های بروجرد",
-    "description": "نقشه هوشمند بیمارستان‌ها و مراکز درمانی شهر بروجرد",
-    "applicationCategory": "HealthApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "IRR"
-    }
-  }
-  </script>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2563eb">
+  <meta name="msapplication-TileColor" content="#2563eb">
 </head>
 <body>
+  <!-- App Container -->
   <div class="app-container">
-    <!-- هدر مدرن با جلوه شیشه‌ای -->
+    <!-- Header -->
     <header class="app-header">
-      <div class="header-content">
-        <button class="menu-btn" aria-label="منو" id="btn-menu">
-          <i class="fas fa-bars"></i>
-        </button>
-        
-        <div class="header-logo">
-          <img src="assets/img/icons/medical-cross.png" alt="لوگو بیمارستان‌های بروجرد">
+      <div class="header-container">
+        <!-- Logo -->
+        <div class="logo-container">
+          <img src="assets/img/logo.svg" alt="لوگو نقشه بیمارستان‌های بروجرد" class="logo" width="40" height="40" loading="lazy">
           <h1 class="app-title">بیمارستان‌های بروجرد</h1>
         </div>
         
-        <div class="search-btn" id="btn-search">
-          <i class="fas fa-search"></i>
-        </div>
+        <!-- Navigation -->
+        <nav class="main-nav">
+          <button class="nav-btn" id="btn-search" aria-label="جستجوی بیمارستان">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="nav-btn" id="btn-nearby" aria-label="بیمارستان‌های نزدیک">
+            <i class="fas fa-hospital"></i>
+          </button>
+          <button class="nav-btn" id="btn-menu" aria-label="منوی اصلی">
+            <i class="fas fa-bars"></i>
+          </button>
+        </nav>
       </div>
       
-      <!-- نوار جستجو -->
-      <div class="search-bar" id="search-bar">
-        <input type="text" placeholder="جستجوی بیمارستان..." id="search-input">
-        <button class="search-close" id="search-close">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- محتوای اصلی -->
-    <main class="app-main">
-      <!-- نقشه -->
-      <div id="map" class="map-container"></div>
-      
-      <!-- پنل نتایج جستجو -->
-      <div class="search-results" id="search-results">
-        <div class="results-header">
-          <h3>نتایج جستجو</h3>
-          <button class="btn-close-results" id="btn-close-results">
+      <!-- Search Bar -->
+      <div class="search-container" id="search-container">
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="جستجوی نام یا تخصص بیمارستان..." aria-label="جستجوی بیمارستان">
+          <button class="search-btn" id="btn-search-submit" aria-label="ارسال جستجو">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="search-btn close-btn" id="btn-search-close" aria-label="بستن جستجو">
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="results-list" id="results-list"></div>
       </div>
-
-      <!-- پنل بیمارستان -->
-      <div id="hospital-panel" class="panel hospital-panel">
+    </header>
+    
+    <!-- Main Content -->
+    <main class="app-main">
+      <!-- Map Container -->
+      <div id="map" class="map-container"></div>
+      
+      <!-- Hospital Details Panel -->
+      <aside class="panel hospital-panel" id="hospital-panel">
         <div class="panel-header">
           <button class="btn-back" aria-label="بازگشت">
             <i class="fas fa-arrow-left"></i>
           </button>
-          <h3 id="hospital-name">نام بیمارستان</h3>
+          <h2 id="hospital-name">نام بیمارستان</h2>
         </div>
         
         <div class="panel-content">
-          <div class="hospital-image" id="hospital-image">
-            <div class="image-overlay"></div>
-            <div class="hospital-badge">
-              <span id="hospital-type-badge">عمومی</span>
-              <span id="emergency-badge" class="emergency"><i class="fas fa-ambulance"></i> اورژانس</span>
+          <!-- Hospital Image with Loading -->
+          <div class="hospital-image-container">
+            <div class="hospital-image" id="hospital-image" role="img" aria-label="تصویر بیمارستان">
+              <div class="image-loading"></div>
+            </div>
+            <div class="hospital-badge" id="hospital-badge">
+              <span class="badge-type" id="hospital-type-badge">عمومی</span>
+              <span class="badge-emergency" id="hospital-emergency-badge">
+                <i class="fas fa-ambulance"></i> اورژانس
+              </span>
             </div>
           </div>
           
+          <!-- Hospital Info -->
           <div class="hospital-info">
-            <div class="info-section">
-              <h4 class="section-title">
-                <i class="fas fa-info-circle"></i>
-                اطلاعات بیمارستان
-              </h4>
-              
-              <div class="info-row">
-                <i class="fas fa-map-marker-alt"></i>
-                <span id="hospital-address">آدرس بیمارستان</span>
-              </div>
-              
-              <div class="info-row">
-                <i class="fas fa-phone"></i>
-                <span id="hospital-phone">شماره تماس</span>
-              </div>
-              
-              <div class="info-row">
-                <i class="fas fa-clock"></i>
-                <span id="hospital-hours">۲۴ ساعته</span>
-              </div>
-            </div>
-            
-            <div class="info-section">
-              <h4 class="section-title">
-                <i class="fas fa-stethoscope"></i>
-                تخصص‌ها و خدمات
-              </h4>
-              
-              <div class="specialties" id="hospital-specialties">
-                <div class="specialties-list"></div>
-              </div>
-            </div>
-            
-            <div class="info-section">
-              <h4 class="section-title">
-                <i class="fas fa-comment-alt"></i>
-                توضیحات
-              </h4>
-              <p id="hospital-description" class="description-text">توضیحات بیمارستان</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="panel-actions">
-          <button class="btn-action btn-call" id="btn-call-hospital">
-            <i class="fas fa-phone"></i> تماس
-          </button>
-          <button class="btn-action btn-route" id="btn-show-route">
-            <i class="fas fa-route"></i> مسیریابی
-          </button>
-          <button class="btn-action btn-share" id="btn-share-hospital">
-            <i class="fas fa-share-alt"></i> اشتراک
-          </button>
-        </div>
-      </div>
-
-      <!-- پنل مسیریابی -->
-      <div id="route-panel" class="panel route-panel">
-        <div class="panel-header">
-          <button class="btn-back" aria-label="بازگشت">
-            <i class="fas fa-arrow-left"></i>
-          </button>
-          <h3>مسیریابی</h3>
-        </div>
-        
-        <div class="panel-content">
-          <div class="route-summary">
-            <div class="route-info distance">
-              <i class="fas fa-ruler-combined"></i>
+            <div class="info-item">
+              <i class="fas fa-map-marker-alt"></i>
               <div>
-                <span class="label">مسافت</span>
-                <span id="route-distance">-- کیلومتر</span>
+                <h3>آدرس</h3>
+                <p id="hospital-address">آدرس بیمارستان</p>
               </div>
             </div>
             
-            <div class="route-info time">
-              <i class="fas fa-clock"></i>
+            <div class="info-item">
+              <i class="fas fa-phone"></i>
               <div>
-                <span class="label">زمان</span>
-                <span id="route-time">-- دقیقه</span>
+                <h3>تلفن</h3>
+                <p id="hospital-phone">شماره تماس</p>
               </div>
             </div>
             
-            <div class="transport-mode">
-              <button class="mode-btn walk active" data-mode="walk">
-                <i class="fas fa-walking"></i> پیاده
-              </button>
-              <button class="mode-btn drive" data-mode="drive">
-                <i class="fas fa-car"></i> خودرو
-              </button>
-            </div>
-          </div>
-          
-          <div id="route-instructions" class="route-instructions"></div>
-        </div>
-      </div>
-
-      <!-- پنل بیمارستان‌های نزدیک -->
-      <div id="nearby-panel" class="panel nearby-panel">
-        <div class="panel-header">
-          <button class="btn-back" aria-label="بازگشت">
-            <i class="fas fa-arrow-left"></i>
-          </button>
-          <h3>بیمارستان‌های نزدیک</h3>
-          <button class="btn-refresh" id="btn-refresh-nearby" aria-label="بروزرسانی">
-            <i class="fas fa-sync-alt"></i>
-          </button>
-        </div>
-        
-        <div class="panel-content">
-          <div class="nearby-filters">
-            <button class="filter-btn active" data-filter="all">همه</button>
-            <button class="filter-btn" data-filter="emergency">اورژانس</button>
-            <button class="filter-btn" data-filter="public">عمومی</button>
-            <button class="filter-btn" data-filter="private">خصوصی</button>
-          </div>
-          
-          <div class="nearby-list" id="nearby-list">
-            <!-- لیست بیمارستان‌های نزدیک اینجا قرار می‌گیرد -->
-          </div>
-        </div>
-      </div>
-      
-      <!-- منوی اصلی -->
-      <div id="main-menu" class="main-menu">
-        <div class="menu-overlay" id="menu-overlay"></div>
-        
-        <div class="menu-content">
-          <div class="menu-header">
-            <h3>منوی اصلی</h3>
-            <button class="menu-close" id="menu-close">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          
-          <nav class="menu-items">
-            <a href="#" class="menu-item" id="menu-nearby">
-              <i class="fas fa-hospital"></i>
-              <span>بیمارستان‌های نزدیک</span>
-            </a>
-            
-            <a href="#" class="menu-item" id="menu-locate">
-              <i class="fas fa-location-arrow"></i>
-              <span>مکان‌یابی</span>
-            </a>
-            
-            <div class="menu-item toggle-item">
-              <i class="fas fa-moon"></i>
-              <span>حالت شب</span>
-              <label class="switch">
-                <input type="checkbox" id="dark-mode-toggle">
-                <span class="slider round"></span>
-              </label>
-            </div>
-            
-            <div class="menu-item toggle-item">
-              <i class="fas fa-bell"></i>
-              <span>اعلانات</span>
-              <label class="switch">
-                <input type="checkbox" id="notifications-toggle" checked>
-                <span class="slider round"></span>
-              </label>
-            </div>
-            
-            <a href="#" class="menu-item" id="menu-about">
+            <div class="info-item">
               <i class="fas fa-info-circle"></i>
-              <span>درباره برنامه</span>
-            </a>
-            
-            <a href="#" class="menu-item" id="menu-contact">
-              <i class="fas fa-envelope"></i>
-              <span>تماس با ما</span>
-            </a>
-          </nav>
-        </div>
-      </div>
-      
-      <!-- دکمه‌های شناور -->
-      <div class="floating-buttons">
-        <div class="fab-container">
-          <button class="fab-main" id="fab-main">
-            <i class="fas fa-plus"></i>
-          </button>
+              <div>
+                <h3>توضیحات</h3>
+                <p id="hospital-description">توضیحات بیمارستان</p>
+              </div>
+            </div>
+          </div>
           
-          <div class="fab-options">
-            <button class="fab-option" id="fab-nearby" data-tooltip="بیمارستان‌های نزدیک">
-              <i class="fas fa-hospital"></i>
+          <!-- Specialties -->
+          <div class="specialties-section">
+            <h3 class="section-title">
+              <i class="fas fa-stethoscope"></i>
+              <span>تخصص‌ها و خدمات</span>
+            </h3>
+            <ul class="specialties-list" id="specialties-list">
+              <!-- Filled by JavaScript -->
+            </ul>
+          </div>
+          
+          <!-- Actions -->
+          <div class="action-buttons">
+            <button class="btn-action btn-call" id="btn-call-hospital">
+              <i class="fas fa-phone"></i>
+              <span>تماس با بیمارستان</span>
             </button>
-            
-            <button class="fab-option" id="fab-locate" data-tooltip="مکان‌یابی">
-              <i class="fas fa-location-arrow"></i>
-            </button>
-            
-            <button class="fab-option" id="fab-settings" data-tooltip="تنظیمات">
-              <i class="fas fa-cog"></i>
+            <button class="btn-action btn-route" id="btn-show-route">
+              <i class="fas fa-route"></i>
+              <span>مسیریابی</span>
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- اعلانات -->
-      <div id="notification" class="notification">
+      </aside>
+      
+      <!-- Route Panel -->
+      <aside class="panel route-panel" id="route-panel">
+        <div class="panel-header">
+          <button class="btn-back" aria-label="بازگشت">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <h2>مسیریابی</h2>
+        </div>
+        
+        <div class="panel-content">
+          <!-- Route Summary -->
+          <div class="route-summary">
+            <div class="summary-item">
+              <div class="summary-icon">
+                <i class="fas fa-road"></i>
+              </div>
+              <div>
+                <h3>مسافت</h3>
+                <p id="route-distance">-- کیلومتر</p>
+              </div>
+            </div>
+            
+            <div class="summary-item">
+              <div class="summary-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div>
+                <h3>زمان تقریبی</h3>
+                <p id="route-time">-- دقیقه</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Transport Mode -->
+          <div class="transport-mode">
+            <button class="mode-btn active" data-mode="walk">
+              <i class="fas fa-walking"></i>
+              <span>پیاده</span>
+            </button>
+            <button class="mode-btn" data-mode="drive">
+              <i class="fas fa-car"></i>
+              <span>خودرو</span>
+            </button>
+            <button class="mode-btn" data-mode="bike">
+              <i class="fas fa-bicycle"></i>
+              <span>دوچرخه</span>
+            </button>
+          </div>
+          
+          <!-- Route Instructions -->
+          <div class="route-instructions" id="route-instructions">
+            <!-- Filled by JavaScript -->
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Nearby Hospitals Panel -->
+      <aside class="panel nearby-panel" id="nearby-panel">
+        <div class="panel-header">
+          <button class="btn-back" aria-label="بازگشت">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <h2>بیمارستان‌های نزدیک</h2>
+        </div>
+        
+        <div class="panel-content">
+          <div class="nearby-list" id="nearby-list">
+            <!-- Filled by JavaScript -->
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Main Menu -->
+      <aside class="panel menu-panel" id="menu-panel">
+        <div class="panel-header">
+          <button class="btn-back" aria-label="بستن منو">
+            <i class="fas fa-times"></i>
+          </button>
+          <h2>منوی اصلی</h2>
+        </div>
+        
+        <div class="panel-content">
+          <nav class="menu-nav">
+            <ul>
+              <li>
+                <a href="#" class="menu-item" id="menu-locate">
+                  <i class="fas fa-location-arrow"></i>
+                  <span>مکان‌یابی من</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="menu-item" id="menu-darkmode">
+                  <i class="fas fa-moon"></i>
+                  <span>حالت شب</span>
+                  <label class="switch">
+                    <input type="checkbox" id="dark-mode-toggle">
+                    <span class="slider round"></span>
+                  </label>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="menu-item">
+                  <i class="fas fa-info-circle"></i>
+                  <span>درباره ما</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="menu-item">
+                  <i class="fas fa-envelope"></i>
+                  <span>تماس با ما</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="menu-item">
+                  <i class="fas fa-share-alt"></i>
+                  <span>اشتراک گذاری</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="تلگرام">
+              <i class="fab fa-telegram"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="اینستاگرام">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="توییتر">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Floating Action Button -->
+      <button class="fab" id="fab-locate" aria-label="مکان‌یابی">
+        <i class="fas fa-location-arrow"></i>
+      </button>
+      
+      <!-- Notification -->
+      <div class="notification" id="notification">
         <div class="notification-content">
-          <i class="fas fa-info-circle notification-icon"></i>
-          <span id="notification-message"></span>
+          <i class="notification-icon" id="notification-icon"></i>
+          <p class="notification-message" id="notification-message"></p>
         </div>
       </div>
-
-      <!-- لودینگ -->
-      <div id="loading" class="loading-overlay">
+      
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
         <p class="loading-text">در حال بارگذاری...</p>
       </div>
-      
-      <!-- درباره برنامه -->
-      <div id="about-modal" class="modal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>درباره برنامه</h3>
-            <button class="modal-close" id="about-close">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          
-          <div class="modal-body">
-            <div class="about-logo">
-              <img src="assets/img/icons/medical-cross.png" alt="لوگوی بیمارستان‌های بروجرد">
-            </div>
-            
-            <h4>نقشه هوشمند بیمارستان‌های بروجرد</h4>
-            <p class="version">نسخه ۹.۰</p>
-            
-            <p class="about-text">
-              این برنامه با هدف تسهیل دسترسی به اطلاعات بیمارستان‌ها و مراکز درمانی شهر بروجرد طراحی شده است. 
-              شما می‌توانید نزدیک‌ترین مراکز درمانی به موقعیت خود را پیدا کرده و بهترین مسیر را برای رسیدن به آن‌ها مشاهده کنید.
-            </p>
-            
-            <div class="social-links">
-              <a href="#" class="social-link" aria-label="تلگرام">
-                <i class="fab fa-telegram"></i>
-              </a>
-              <a href="#" class="social-link" aria-label="اینستاگرام">
-                <i class="fab fa-instagram"></i>
-              </a>
-              <a href="#" class="social-link" aria-label="توییتر">
-                <i class="fab fa-twitter"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
     </main>
-
-    <!-- فوتر مدرن -->
+    
+    <!-- Footer -->
     <footer class="app-footer">
-      <div class="footer-content">
-        <div class="footer-links">
-          <a href="#" class="footer-link" id="footer-about">درباره</a>
-          <a href="#" class="footer-link" id="footer-contact">تماس</a>
-          <a href="#" class="footer-link" id="footer-privacy">حریم خصوصی</a>
-        </div>
-        
-        <p class="copyright">© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | تمام حقوق محفوظ است</p>
+      <div class="footer-container">
+        <p class="copyright">
+          &copy; <span id="current-year">1403</span> نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۹.۰
+        </p>
       </div>
     </footer>
   </div>
-
-  <!-- اسکریپت‌ها -->
+  
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/app.js" defer></script>
   
-  <!-- سرویس ورکر برای PWA -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(registration => {
-          console.log('ServiceWorker registration successful');
-        }).catch(err => {
-          console.log('ServiceWorker registration failed: ', err);
-        });
-      });
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "نقشه هوشمند بیمارستان‌های بروجرد",
+      "description": "اطلاعات کامل بیمارستان‌های شهر بروجرد با امکان مسیریابی و جستجوی پیشرفته",
+      "url": "https://hospital-map-borujerd.ir",
+      "applicationCategory": "MapApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "IRR"
+      }
     }
   </script>
 </body>

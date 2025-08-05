@@ -553,15 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function showRoutePanel(hospitalId) {
-    const hospital = hospitals.find(h => h.id === hospitalId);
-    if (!hospital || !userLocation || !isInBorujerd) {
-      showNotification('لطفاً ابتدا موقعیت خود را مشخص کنید و مطمئن شوید در بروجرد هستید', 3000, 'error');
-      return;
-    }
-    
-    selectedHospital = hospital;
-    
+  function drawRoute(start, end, mode = 'walk') {
     if (routingControl) {
       map.removeControl(routingControl);
       routingControl = null;
@@ -569,8 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     routingControl = L.Routing.control({
       waypoints: [
-        L.latLng(userLocation.lat, userLocation.lng),
-        L.latLng(hospital.coords[0], hospital.coords[1])
+        L.latLng(start.lat, start.lng),
+        L.latLng(end[0], end[1])
       ],
       routeWhileDragging: false,
       showAlternatives: false,
@@ -578,14 +570,17 @@ document.addEventListener('DOMContentLoaded', () => {
       draggableWaypoints: false,
       fitSelectedRoutes: true,
       lineOptions: {
-        styles: [{color: currentTheme === 'dark' ? '#3b82f6' : '#2563eb', opacity: 0.8, weight: 6}]
+        styles: [{ 
+          color: currentTheme === 'dark' ? '#3b82f6' : '#2563eb', 
+          opacity: 0.8, 
+          weight: 6 
+        }]
       },
       createMarker: () => null,
       collapsible: false,
-      position: 'topleft',
       router: new L.Routing.osrmv1({
         serviceUrl: 'https://router.project-osrm.org/route/v1',
-        profile: currentTransportMode === 'walk' ? 'foot' : (currentTransportMode === 'bike' ? 'bike' : 'car')
+        profile: mode === 'walk' ? 'foot' : (mode === 'bike' ? 'bike' : 'car')
       })
     }).addTo(map);
     
@@ -606,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryItem.className = 'route-instruction-item summary';
       summaryItem.innerHTML = `
         <i class="fas fa-info-circle"></i>
-        <span>مسیر پیشنهادی از موقعیت فعلی شما به ${hospital.name}</span>
+        <span>مسیر پیشنهادی از موقعیت فعلی شما به ${selectedHospital.name}</span>
       `;
       instructionsContainer.appendChild(summaryItem);
       
@@ -652,10 +647,22 @@ document.addEventListener('DOMContentLoaded', () => {
       endItem.className = 'route-instruction-item end';
       endItem.innerHTML = `
         <i class="fas fa-flag-checkered"></i>
-        <span>${hospital.name}</span>
+        <span>${selectedHospital.name}</span>
       `;
       instructionsContainer.appendChild(endItem);
     });
+  }
+
+  function showRoutePanel(hospitalId) {
+    const hospital = hospitals.find(h => h.id === hospitalId);
+    if (!hospital || !userLocation || !isInBorujerd) {
+      showNotification('لطفاً ابتدا موقعیت خود را مشخص کنید و مطمئن شوید در بروجرد هستید', 3000, 'error');
+      return;
+    }
+    
+    selectedHospital = hospital;
+    
+    drawRoute(userLocation, hospital.coords, currentTransportMode);
     
     closeAllPanels();
     routePanel.classList.add('open');
@@ -664,7 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bounds = L.latLngBounds([
       [userLocation.lat, userLocation.lng],
       [hospital.coords[0], hospital.coords[1]]
-    ]);
+    );
     map.fitBounds(bounds, { padding: [50, 50] });
   }
 
@@ -825,7 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
         map.setView(marker.getLatLng(), map.getZoom(), {
           animate: true,
           paddingTopLeft: [300, 0]
-        });
+        );
 
         document.querySelectorAll('.popup-btn[data-action="details"]').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -908,7 +915,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     darkModeToggle.addEventListener('change', toggleDarkMode);
     
-    btnBackEle('active'));
+    btnBackElements.forEach(btn => {
+      btn.addEventListener('click', closeAllPanels);
+    });
+    
+    // Transport mode buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentTransportMode = btn.getAttribute('data-mode');
         if (selectedHospital) {

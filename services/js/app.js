@@ -36,12 +36,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const hospitalPanel = document.getElementById('hospital-panel');
   const routePanel = document.getElementById('route-panel');
   const nearbyPanel = document.getElementById('nearby-panel');
+  const menuPanel = document.getElementById('menu-panel');
+  const searchContainer = document.getElementById('search-container');
   const notification = document.getElementById('notification');
-  const loadingOverlay = document.getElementById('loading');
-  const btnShowNearby = document.getElementById('btn-show-nearby');
-  const btnShowSettings = document.getElementById('btn-show-settings');
+  const loadingOverlay = document.getElementById('loading-overlay');
+  const btnSearch = document.getElementById('btn-search');
+  const btnNearby = document.getElementById('btn-nearby');
+  const btnMenu = document.getElementById('btn-menu');
+  const btnSearchSubmit = document.getElementById('btn-search-submit');
+  const btnSearchClose = document.getElementById('btn-search-close');
   const darkModeToggle = document.getElementById('dark-mode-toggle');
-  const notificationsToggle = document.getElementById('notifications-toggle');
+  const btnFabLocate = document.getElementById('fab-locate');
+  const btnCallHospital = document.getElementById('btn-call-hospital');
+  const btnShowRoute = document.getElementById('btn-show-route');
+  const btnMenuLocate = document.getElementById('menu-locate');
+  const btnMenuDarkmode = document.getElementById('menu-darkmode');
   const btnBackElements = document.querySelectorAll('.btn-back');
 
   // Custom Icons
@@ -165,10 +174,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Utility Functions
   function showNotification(message, duration = 3000) {
-    if (!notificationsToggle.checked) return;
-    
     const notificationMessage = document.getElementById('notification-message');
+    const notificationIcon = document.getElementById('notification-icon');
+    
     notificationMessage.textContent = message;
+    notificationIcon.className = 'notification-icon fas fa-info-circle';
     notification.classList.add('show');
     
     setTimeout(() => {
@@ -376,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const time = (distance * 12).toFixed(0); // Estimated time in minutes (assuming 5km/h walking speed)
       
       const emergencyBadge = hospital.emergency 
-        ? `<span class="emergency-badge"><i class="fas fa-ambulance"></i> اورژانس</span>`
+        ? `<span class="badge-emergency"><i class="fas fa-ambulance"></i> اورژانس</span>`
         : '';
       
       const item = document.createElement('li');
@@ -429,22 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
     nearbyPanel.classList.add('open');
   }
 
-  function showHospitalOnMap(hospitalId) {
-    const hospital = hospitals.find(h => h.id === hospitalId);
-    if (!hospital) return;
-    
-    map.setView(hospital.coords, 16, {
-      animate: true,
-      duration: 1
-    });
-    
-    if (hospitalMarkers[hospital.id]) {
-      hospitalMarkers[hospital.id].openPopup();
-    }
-    
-    closeAllPanels();
-  }
-
   function showHospitalDetails(hospitalId) {
     const hospital = hospitals.find(h => h.id === hospitalId);
     if (!hospital) return;
@@ -454,12 +448,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('hospital-name').textContent = hospital.name;
     document.getElementById('hospital-address').textContent = hospital.address;
     document.getElementById('hospital-phone').textContent = hospital.phone;
-    document.getElementById('hospital-type').textContent = hospital.type;
+    document.getElementById('hospital-description').textContent = hospital.description;
     
-    const emergencyRow = document.getElementById('emergency-row');
-    emergencyRow.style.display = hospital.emergency ? 'flex' : 'none';
+    document.getElementById('hospital-type-badge').textContent = hospital.type;
+    document.getElementById('hospital-emergency-badge').style.display = hospital.emergency ? 'flex' : 'none';
     
-    const specialtiesList = document.querySelector('#hospital-specialties ul');
+    const specialtiesList = document.getElementById('specialties-list');
     specialtiesList.innerHTML = '';
     hospital.specialties.forEach(spec => {
       const li = document.createElement('li');
@@ -515,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
       position: 'topleft',
       router: new L.Routing.osrmv1({
         serviceUrl: 'https://router.project-osrm.org/route/v1',
-        profile: currentTransportMode === 'walk' ? 'foot' : 'car'
+        profile: currentTransportMode === 'walk' ? 'foot' : (currentTransportMode === 'bike' ? 'bike' : 'car')
       })
     }).addTo(map);
     
@@ -585,27 +579,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <span>${hospital.name}</span>
       `;
       instructionsContainer.appendChild(endItem);
-      
-      // Add transport mode toggle
-      const modeToggle = document.createElement('div');
-      modeToggle.className = 'transport-mode-toggle';
-      modeToggle.innerHTML = `
-        <button class="mode-btn ${currentTransportMode === 'walk' ? 'active' : ''}" data-mode="walk">
-          <i class="fas fa-walking"></i> پیاده
-        </button>
-        <button class="mode-btn ${currentTransportMode === 'drive' ? 'active' : ''}" data-mode="drive">
-          <i class="fas fa-car"></i> خودرو
-        </button>
-      `;
-      instructionsContainer.appendChild(modeToggle);
-      
-      // Add event listeners for mode toggle
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          currentTransportMode = btn.getAttribute('data-mode');
-          showRoutePanel(hospitalId);
-        });
-      });
     });
     
     closeAllPanels();
@@ -616,14 +589,17 @@ document.addEventListener('DOMContentLoaded', () => {
     hospitalPanel.classList.remove('open');
     routePanel.classList.remove('open');
     nearbyPanel.classList.remove('open');
-    
-    const floatingSettings = document.getElementById('floating-settings');
-    floatingSettings.classList.remove('open');
+    menuPanel.classList.remove('open');
+    searchContainer.classList.remove('active');
     
     if (routingControl) {
       map.removeControl(routingControl);
       routingControl = null;
     }
+  }
+
+  function toggleSearch() {
+    searchContainer.classList.toggle('active');
   }
 
   function init() {
@@ -675,44 +651,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Event listeners
-    const floatingSettings = document.getElementById('floating-settings');
-    const btnShowSettings = document.getElementById('btn-show-settings');
-    
-    btnShowNearby.addEventListener('click', showNearbyHospitals);
-    
-    btnShowSettings.addEventListener('click', (e) => {
-      e.stopPropagation();
-      floatingSettings.classList.toggle('open');
+    btnSearch.addEventListener('click', toggleSearch);
+    btnSearchClose.addEventListener('click', toggleSearch);
+    btnNearby.addEventListener('click', showNearbyHospitals);
+    btnMenu.addEventListener('click', () => {
+      closeAllPanels();
+      menuPanel.classList.add('open');
     });
-    
-    document.getElementById('locate-option').addEventListener('click', () => {
-      floatingSettings.classList.remove('open');
-      locateUser();
-    });
-    
-    document.querySelectorAll('.btn-back').forEach(btn => {
-      btn.addEventListener('click', closeAllPanels);
-    });
-    
-    document.getElementById('btn-call-hospital').addEventListener('click', () => {
+    btnFabLocate.addEventListener('click', locateUser);
+    btnCallHospital.addEventListener('click', () => {
       if (selectedHospital) {
         window.open(`tel:${selectedHospital.phone}`);
       }
     });
-    
-    document.getElementById('btn-show-route').addEventListener('click', () => {
+    btnShowRoute.addEventListener('click', () => {
       if (selectedHospital) {
         showRoutePanel(selectedHospital.id);
       }
     });
+    btnMenuLocate.addEventListener('click', locateUser);
+    btnMenuDarkmode.addEventListener('click', () => {
+      darkModeToggle.checked = !darkModeToggle.checked;
+      toggleDarkMode();
+    });
     
     darkModeToggle.addEventListener('change', toggleDarkMode);
     
-    // Close settings when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!floatingSettings.contains(e.target) && !btnShowSettings.contains(e.target)) {
-        floatingSettings.classList.remove('open');
-      }
+    btnBackElements.forEach(btn => {
+      btn.addEventListener('click', closeAllPanels);
+    });
+    
+    // Transport mode buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTransportMode = btn.getAttribute('data-mode');
+        if (selectedHospital) {
+          showRoutePanel(selectedHospital.id);
+        }
+      });
     });
     
     // Show welcome notification

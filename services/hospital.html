@@ -12,17 +12,23 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#185a9d">
   <link rel="icon" href="assets/img/icons/medical-cross.png">
 </head>
 <body>
   <div class="app-container">
-    <!-- هدر جدید و مینیمال -->
+    <!-- هدر جدید و مدرن -->
     <header class="app-header">
       <div class="header-content">
-        <img src="assets/img/icons/medical-cross.png" alt="لوگو" class="header-logo">
+        <div class="logo-container">
+          <img src="assets/img/icons/medical-cross.png" alt="لوگو" class="logo">
+        </div>
         <h1 class="app-title">بیمارستان‌های بروجرد</h1>
-        <div class="header-placeholder"></div>
+        <div class="header-actions">
+          <button id="btn-show-settings" class="btn-settings" aria-label="تنظیمات">
+            <i class="fas fa-sliders-h"></i>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -34,9 +40,6 @@
       <!-- پنل اطلاعات بیمارستان -->
       <div id="hospital-panel" class="panel hospital-panel">
         <div class="panel-header">
-          <button class="btn-back" aria-label="بازگشت">
-            <i class="fas fa-times"></i>
-          </button>
           <h3 id="hospital-name">نام بیمارستان</h3>
         </div>
         <div class="panel-content">
@@ -77,9 +80,6 @@
       <!-- پنل مسیریابی -->
       <div id="route-panel" class="panel route-panel">
         <div class="panel-header">
-          <button class="btn-back" aria-label="بازگشت">
-            <i class="fas fa-times"></i>
-          </button>
           <h3>مسیریابی</h3>
         </div>
         <div class="panel-content">
@@ -97,24 +97,17 @@
         </div>
       </div>
 
-      <!-- پنل بیمارستان‌های نزدیک -->
-      <div id="nearby-panel" class="panel nearby-panel">
-        <div class="panel-header">
-          <button class="btn-back" aria-label="بازگشت">
-            <i class="fas fa-times"></i>
-          </button>
-          <h3>بیمارستان‌های نزدیک</h3>
+      <!-- پنل تنظیمات شناور -->
+      <div id="floating-settings" class="floating-settings-panel">
+        <div class="settings-option">
+          <i class="fas fa-location-arrow"></i>
+          <span>مکان‌یابی</span>
+          <label class="switch">
+            <input type="checkbox" id="location-toggle">
+            <span class="slider round"></span>
+          </label>
         </div>
-        <div class="panel-content">
-          <div class="nearby-list" id="nearby-list">
-            <!-- لیست بیمارستان‌های نزدیک اینجا قرار می‌گیرد -->
-          </div>
-        </div>
-      </div>
-
-      <!-- منوی شناور تنظیمات -->
-      <div id="floating-settings" class="floating-settings">
-        <div class="settings-option" id="dark-mode-option">
+        <div class="settings-option">
           <i class="fas fa-moon"></i>
           <span>حالت شب</span>
           <label class="switch">
@@ -130,19 +123,12 @@
             <span class="slider round"></span>
           </label>
         </div>
-        <div class="settings-option" id="locate-option">
-          <i class="fas fa-location-arrow"></i>
-          <span>مکان‌یابی</span>
-        </div>
       </div>
 
       <!-- دکمه‌های شناور -->
       <div class="floating-buttons">
-        <button id="btn-show-nearby" class="floating-action-btn primary" aria-label="نزدیک‌ترین‌ها">
+        <button id="btn-show-nearby" class="floating-action-btn primary" aria-label="بیمارستان‌های نزدیک">
           <i class="fas fa-hospital"></i>
-        </button>
-        <button id="btn-show-settings" class="floating-action-btn secondary" aria-label="تنظیمات">
-          <i class="fas fa-layer-group"></i>
         </button>
       </div>
 
@@ -161,7 +147,7 @@
       </div>
     </main>
 
-    <!-- فوتر جدید و مینیمال -->
+    <!-- فوتر جدید و مدرن -->
     <footer class="app-footer">
       <div class="footer-content">
         <p class="copyright">© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۸.۱</p>

@@ -10,8 +10,8 @@
   --border-color: #e2e8f0;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --header-height: 5rem;
-  --footer-height: 5rem;
+  --header-height: 6rem;
+  --footer-height: 4rem;
   --border-radius: 12px;
 }
 
@@ -58,7 +58,7 @@ body {
   height: 100vh;
 }
 
-/* هدر مدرن */
+/* هدر جدید */
 .app-header {
   position: fixed;
   top: 0;
@@ -83,45 +83,49 @@ body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-.logo-title {
+.logo-container {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
 }
 
 .logo {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 4rem;
+  height: 4rem;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .app-title {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 700;
   margin: 0;
+  flex: 1;
+  text-align: center;
+  color: var(--primary-color);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-locate {
-  background: var(--primary-color);
+.btn-settings {
+  background: none;
   border: none;
-  color: white;
-  width: 4rem;
-  height: 4rem;
+  color: var(--primary-color);
+  width: 4.5rem;
+  height: 4.5rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: var(--shadow);
+  font-size: 2rem;
 }
 
-.btn-locate:hover {
-  background: var(--primary-light);
-  transform: scale(1.05);
+.btn-settings:hover {
+  background: rgba(37, 99, 235, 0.1);
+  transform: rotate(30deg);
 }
 
 /* محتوای اصلی */
@@ -162,42 +166,21 @@ body {
 }
 
 .panel-header {
-  padding: 1.5rem 2rem;
+  padding: 2rem;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: center;
   position: relative;
   background: var(--card-bg);
   color: var(--text-color);
 }
 
 .panel-header h3 {
-  font-size: 1.8rem;
-  color: var(--text-color);
+  font-size: 2rem;
+  color: var(--primary-color);
   margin: 0;
   font-weight: 700;
-  flex: 1;
-  text-align: center;
-}
-
-.btn-back {
-  background: none;
-  border: none;
-  color: var(--text-color);
-  font-size: 2rem;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.btn-back:hover {
-  background: rgba(0, 0, 0, 0.05);
 }
 
 .panel-content {
@@ -367,100 +350,39 @@ body {
   text-align: center;
 }
 
-/* پنل بیمارستان‌های نزدیک */
-.nearby-list {
-  list-style: none;
-}
-
-.nearby-item {
-  padding: 1.8rem 0;
-  border-bottom: 1px solid var(--border-color);
-  transition: var(--transition);
-}
-
-.nearby-item:last-child {
-  border-bottom: none;
-}
-
-.nearby-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
-}
-
-.nearby-item h4 {
-  font-size: 1.7rem;
-  color: var(--primary-color);
-}
-
-.nearby-item p {
-  font-size: 1.4rem;
-  color: var(--text-light);
-  margin-bottom: 1.2rem;
-}
-
-.distance {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: 1.4rem;
-  color: var(--secondary-color);
-  margin-bottom: 1.2rem;
-}
-
-.hospital-type {
-  background: rgba(37, 99, 235, 0.1);
-  color: var(--primary-color);
-  padding: 0.5rem 1.2rem;
-  border-radius: 0.8rem;
-  font-size: 1.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.nearby-actions {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-}
-
-.nearby-btn {
-  flex: 1;
-  padding: 1.2rem;
+/* پنل تنظیمات شناور */
+.floating-settings-panel {
+  position: fixed;
+  bottom: calc(var(--footer-height) + 8rem);
+  left: 2rem;
+  background: var(--card-bg);
   border-radius: var(--border-radius);
-  border: none;
-  font-family: 'Vazirmatn', sans-serif;
-  font-size: 1.4rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.8rem;
-  transition: var(--transition);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background: var(--primary-color);
-  color: white;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  z-index: 1001;
+  transform: translateY(20px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
 }
 
-.nearby-btn:hover {
-  background: var(--primary-light);
-  transform: translateY(-2px);
+.floating-settings-panel.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
 }
 
-/* پنل تنظیمات */
 .settings-option {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 0;
-  border-bottom: 1px solid var(--border-color);
+  min-width: 20rem;
 }
 
-.settings-option:last-child {
-  border-bottom: none;
+.settings-option:not(:last-child) {
+  border-bottom: 1px solid var(--border-color);
 }
 
 .settings-option i {
@@ -538,8 +460,8 @@ input:checked + .slider:before {
 }
 
 .floating-action-btn {
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 6rem;
+  height: 6rem;
   border-radius: 50%;
   background: var(--card-bg);
   color: var(--primary-color);
@@ -550,16 +472,11 @@ input:checked + .slider:before {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  font-size: 2.2rem;
+  font-size: 2.5rem;
 }
 
 .floating-action-btn.primary {
   background: var(--primary-color);
-  color: white;
-}
-
-.floating-action-btn.secondary {
-  background: var(--secondary-color);
   color: white;
 }
 
@@ -646,7 +563,7 @@ input:checked + .slider:before {
   to { transform: rotate(360deg); }
 }
 
-/* فوتر مدرن */
+/* فوتر جدید */
 .app-footer {
   position: fixed;
   bottom: 0;
@@ -668,32 +585,12 @@ input:checked + .slider:before {
   max-width: 1200px;
   padding: 0 2rem;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.footer-link {
-  color: var(--text-light);
-  font-size: 1.3rem;
-  text-decoration: none;
-  transition: var(--transition);
-}
-
-.footer-link:hover {
-  color: var(--primary-color);
+  text-align: center;
 }
 
 .copyright {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: var(--text-light);
-  text-align: center;
 }
 
 /* پاپ‌آپ نقشه */
@@ -719,7 +616,6 @@ input:checked + .slider:before {
   margin: 0;
   text-align: right;
   direction: rtl;
-  padding-left: 2.5rem;
 }
 
 .leaflet-popup-tip-container {
@@ -731,32 +627,6 @@ input:checked + .slider:before {
   border: 1px solid var(--border-color);
   border-top: none;
   border-left: none;
-}
-
-.leaflet-popup-close-button {
-  right: auto !important;
-  left: 10px !important;
-  top: 10px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  font-size: 2rem !important;
-  color: var(--text-light) !important;
-  background: none !important;
-  border: none !important;
-  transition: var(--transition);
-  width: auto !important;
-  height: auto !important;
-  line-height: 1 !important;
-}
-
-.leaflet-popup-close-button:hover {
-  color: var(--accent-color) !important;
-  transform: scale(1.1);
-}
-
-.leaflet-popup-scrolled {
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
 }
 
 .leaflet-popup-content h4 {
@@ -819,15 +689,15 @@ input:checked + .slider:before {
 /* بهبود نمایش در حالت موبایل */
 @media (max-width: 768px) {
   :root {
-    --header-height: 5rem;
-    --footer-height: 5rem;
+    --header-height: 5.5rem;
+    --footer-height: 4rem;
   }
   
   .app-title {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
 
-  .panel-actions, .nearby-actions {
+  .panel-actions {
     flex-direction: column;
   }
   
@@ -847,21 +717,27 @@ input:checked + .slider:before {
   .leaflet-popup-content {
     min-width: 22rem;
   }
+
+  .floating-action-btn {
+    width: 5.5rem;
+    height: 5.5rem;
+    font-size: 2.3rem;
+  }
 }
 
 @media (max-width: 480px) {
   :root {
-    --header-height: 4.5rem;
-    --footer-height: 4.5rem;
+    --header-height: 5rem;
+    --footer-height: 3.5rem;
   }
   
   .logo {
-    width: 3rem;
-    height: 3rem;
+    width: 3.5rem;
+    height: 3.5rem;
   }
   
   .app-title {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
   
   .hospital-image {
@@ -869,19 +745,11 @@ input:checked + .slider:before {
   }
   
   .panel-header h3 {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
   
   .info-row {
     font-size: 1.3rem;
-  }
-  
-  .footer-links {
-    gap: 1.5rem;
-  }
-  
-  .footer-link {
-    font-size: 1.2rem;
   }
   
   .copyright {
@@ -890,18 +758,6 @@ input:checked + .slider:before {
   
   .leaflet-popup-content {
     min-width: 18rem;
-    padding-left: 2rem;
-  }
-  
-  .leaflet-popup-close-button {
-    left: 8px !important;
-    top: 8px !important;
-    font-size: 1.8rem !important;
-  }
-  
-  .popup-actions {
-    flex-direction: column;
-    gap: 0.8rem;
   }
   
   .floating-action-btn {
@@ -909,172 +765,4 @@ input:checked + .slider:before {
     height: 5rem;
     font-size: 2rem;
   }
-}
-
-
-/* هدر جدید */
-.app-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--header-height);
-  background: var(--card-bg);
-  color: var(--text-color);
-  padding: 0 1rem;
-  box-shadow: var(--shadow);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  transition: var(--transition);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.header-logo {
-  width: 3rem;
-  height: 3rem;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-.app-title {
-  font-size: 1.7rem;
-  font-weight: 700;
-  margin: 0;
-  text-align: center;
-  flex: 1;
-}
-
-.header-placeholder {
-  width: 3rem;
-  height: 3rem;
-}
-
-/* فوتر جدید */
-.app-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: var(--footer-height);
-  background: var(--card-bg);
-  color: var(--text-light);
-  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  z-index: 1000;
-  transition: var(--transition);
-  border-top: 1px solid var(--border-color);
-  padding: 0 1rem;
-}
-
-.footer-content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.copyright {
-  font-size: 1.2rem;
-  text-align: center;
-  color: var(--text-light);
-}
-
-/* منوی شناور تنظیمات */
-.floating-settings {
-  position: fixed;
-  bottom: calc(var(--footer-height) + 7rem);
-  left: 2rem;
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
-  z-index: 1001;
-  transform: translateY(20px);
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  width: 25rem;
-}
-
-.floating-settings.open {
-  transform: translateY(0);
-  opacity: 1;
-  visibility: visible;
-}
-
-.floating-settings .settings-option {
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.floating-settings .settings-option:last-child {
-  border-bottom: none;
-}
-
-.floating-settings .settings-option i {
-  color: var(--primary-color);
-  font-size: 1.6rem;
-  width: 3rem;
-  text-align: center;
-}
-
-.floating-settings .settings-option span {
-  flex: 1;
-  font-size: 1.4rem;
-}
-
-/* دکمه‌های شناور */
-.floating-buttons {
-  position: fixed;
-  bottom: calc(var(--footer-height) + 2rem);
-  left: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  z-index: 1000;
-}
-
-.floating-action-btn {
-  width: 5.5rem;
-  height: 5.5rem;
-  border-radius: 50%;
-  background: var(--card-bg);
-  color: var(--primary-color);
-  border: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  font-size: 2.2rem;
-}
-
-.floating-action-btn.primary {
-  background: var(--primary-color);
-  color: white;
-}
-
-.floating-action-btn.secondary {
-  background: var(--secondary-color);
-  color: white;
-}
-
-.floating-action-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }

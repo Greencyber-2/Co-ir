@@ -257,10 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('theme', currentTheme);
     loadMapLayer();
     updateMarkersStyle();
-    
-    // // Update theme icon
-    // const icon = currentTheme === 'dark' ? 'fa-sun' : 'fa-moon';
-    // toggleThemeBtn.innerHTML = `<i class="fas ${icon}"></i><span>حالت شب</span>`;
   }
 
   function updateMarkersStyle() {
@@ -473,88 +469,88 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showHospitalDetails(hospitalId) {
-      const hospital = hospitals.find(h => h.id === hospitalId);
-      if (!hospital) return;
-      
-      selectedHospital = hospital;
-      
-      // Update hospital info
-      document.getElementById('hospital-name').textContent = hospital.name;
-      document.getElementById('hospital-address').textContent = hospital.address;
-      document.getElementById('hospital-phone').textContent = hospital.phone;
-      document.getElementById('hospital-description').textContent = hospital.description;
-      
-      // Update badges
-      document.getElementById('hospital-type-badge').textContent = hospital.type;
-      document.getElementById('hospital-emergency-badge').style.display = hospital.emergency ? 'flex' : 'none';
-      
-      // Update specialties list
-      const specialtiesList = document.getElementById('specialties-list');
-      specialtiesList.innerHTML = '';
-      hospital.specialties.forEach(spec => {
-          const li = document.createElement('li');
-          li.textContent = spec;
-          specialtiesList.appendChild(li);
-      });
-      
-      // Handle hospital image with loading and error states
-      const hospitalImage = document.getElementById('hospital-image');
-      const imageContainer = document.querySelector('.hospital-image-container');
-      
-      // Clear previous content
+    const hospital = hospitals.find(h => h.id === hospitalId);
+    if (!hospital) return;
+    
+    selectedHospital = hospital;
+    
+    // Update hospital info
+    document.getElementById('hospital-name').textContent = hospital.name;
+    document.getElementById('hospital-address').textContent = hospital.address;
+    document.getElementById('hospital-phone').textContent = hospital.phone;
+    document.getElementById('hospital-description').textContent = hospital.description;
+    
+    // Update badges
+    document.getElementById('hospital-type-badge').textContent = hospital.type;
+    document.getElementById('hospital-emergency-badge').style.display = hospital.emergency ? 'flex' : 'none';
+    
+    // Update specialties list
+    const specialtiesList = document.getElementById('specialties-list');
+    specialtiesList.innerHTML = '';
+    hospital.specialties.forEach(spec => {
+      const li = document.createElement('li');
+      li.textContent = spec;
+      specialtiesList.appendChild(li);
+    });
+    
+    // Handle hospital image with loading and error states
+    const hospitalImage = document.getElementById('hospital-image');
+    const imageContainer = document.querySelector('.hospital-image-container');
+    
+    // Clear previous content
+    hospitalImage.innerHTML = '';
+    hospitalImage.style.backgroundImage = 'none';
+    
+    // Add loading state
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'image-loading';
+    loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    hospitalImage.appendChild(loadingDiv);
+    
+    // Create new image element to test loading
+    const img = new Image();
+    img.src = hospital.photo;
+    
+    img.onload = function() {
+      // Image loaded successfully
       hospitalImage.innerHTML = '';
-      hospitalImage.style.backgroundImage = 'none';
+      hospitalImage.style.backgroundImage = `url('${hospital.photo}')`;
+      hospitalImage.style.backgroundSize = 'cover';
+      hospitalImage.style.backgroundPosition = 'center';
+      hospitalImage.style.backgroundRepeat = 'no-repeat';
       
-      // Add loading state
-      const loadingDiv = document.createElement('div');
-      loadingDiv.className = 'image-loading';
-      loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-      hospitalImage.appendChild(loadingDiv);
-      
-      // Create new image element to test loading
-      const img = new Image();
-      img.src = hospital.photo;
-      
-      img.onload = function() {
-          // Image loaded successfully
-          hospitalImage.innerHTML = '';
-          hospitalImage.style.backgroundImage = `url('${hospital.photo}')`;
-          hospitalImage.style.backgroundSize = 'cover';
-          hospitalImage.style.backgroundPosition = 'center';
-          hospitalImage.style.backgroundRepeat = 'no-repeat';
-          
-          // Add gradient overlay
-          const overlay = document.createElement('div');
-          overlay.className = 'image-overlay';
-          hospitalImage.appendChild(overlay);
-      };
-      
-      img.onerror = function() {
-          // Image failed to load
-          hospitalImage.innerHTML = `
-              <div class="image-error">
-                  <i class="fas fa-image"></i>
-                  <p>تصویر بیمارستان در دسترس نیست</p>
-              </div>
-          `;
-          hospitalImage.style.backgroundImage = 'linear-gradient(to bottom, var(--bg-tertiary), var(--bg-secondary))';
-      };
-      
-      // Open panel and center map
-      closeAllPanels();
-      hospitalPanel.classList.add('open');
-      
-      // Center the map on the hospital with proper padding
-      map.setView(hospital.coords, 16, {
-          animate: true,
-          duration: 1,
-          paddingTopLeft: [300, 0]
-      });
-      
-      // Close any open popup for this hospital
-      if (hospitalMarkers[hospital.id]) {
-          hospitalMarkers[hospital.id].closePopup();
-      }
+      // Add gradient overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'image-overlay';
+      hospitalImage.appendChild(overlay);
+    };
+    
+    img.onerror = function() {
+      // Image failed to load
+      hospitalImage.innerHTML = `
+        <div class="image-error">
+          <i class="fas fa-image"></i>
+          <p>تصویر بیمارستان در دسترس نیست</p>
+        </div>
+      `;
+      hospitalImage.style.backgroundImage = 'linear-gradient(to bottom, var(--bg-tertiary), var(--bg-secondary))';
+    };
+    
+    // Open panel and center map
+    closeAllPanels();
+    hospitalPanel.classList.add('open');
+    
+    // Center the map on the hospital with proper padding
+    map.setView(hospital.coords, 16, {
+      animate: true,
+      duration: 1,
+      paddingTopLeft: [300, 0]
+    });
+    
+    // Close any open popup for this hospital
+    if (hospitalMarkers[hospital.id]) {
+      hospitalMarkers[hospital.id].closePopup();
+    }
   }
 
   function showRoutePanel(hospitalId) {
@@ -663,6 +659,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     closeAllPanels();
     routePanel.classList.add('open');
+    
+    // Center the map to show both points
+    const bounds = L.latLngBounds([
+      [userLocation.lat, userLocation.lng],
+      [hospital.coords[0], hospital.coords[1]]
+    ]);
+    map.fitBounds(bounds, { padding: [50, 50] });
   }
 
   function closeAllPanels() {
@@ -880,7 +883,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     btnShowRoute.addEventListener('click', () => {
       if (selectedHospital) {
-        showRoutePanel(selectedHospital.id);
+        if (!userLocation) {
+          locateUser();
+          setTimeout(() => {
+            if (userLocation && isInBorujerd) {
+              showRoutePanel(selectedHospital.id);
+            }
+          }, 1000);
+        } else if (isInBorujerd) {
+          showRoutePanel(selectedHospital.id);
+        }
       }
     });
     

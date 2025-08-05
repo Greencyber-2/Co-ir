@@ -3,9 +3,9 @@
   "short_name": "بیمارستان‌های بروجرد",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#185a9d",
-  "description": "نقشه هوشمند بیمارستان‌های شهر بروجرد",
-  "theme_color": "#185a9d",
+  "background_color": "#1a5a9d",
+  "description": "نقشه هوشمند بیمارستان‌های شهر بروجرد با رابط کاربری مدرن و حرفه‌ای",
+  "theme_color": "#1a5a9d",
   "orientation": "portrait",
   "icons": [
     {

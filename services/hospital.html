@@ -17,7 +17,7 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- هدر جدید -->
+    <!-- هدر مدرن و مینیمال -->
     <header class="app-header">
       <div class="header-content">
         <div class="logo-title">
@@ -25,7 +25,7 @@
           <h1 class="app-title">بیمارستان‌های بروجرد</h1>
         </div>
         <div class="header-actions">
-          <button class="btn-locate" aria-label="موقعیت من">
+          <button id="btn-locate" class="btn-locate" aria-label="موقعیت من">
             <i class="fas fa-location-arrow"></i>
           </button>
         </div>
@@ -39,12 +39,11 @@
 
       <!-- پنل اطلاعات بیمارستان -->
       <div id="hospital-panel" class="panel hospital-panel">
-        <div class="panel-handle"></div>
         <div class="panel-header">
-          <h3 id="hospital-name">نام بیمارستان</h3>
-          <button class="btn-close-panel" aria-label="بستن پنل">
+          <button class="btn-back" aria-label="بازگشت">
             <i class="fas fa-times"></i>
           </button>
+          <h3 id="hospital-name">نام بیمارستان</h3>
         </div>
         <div class="panel-content">
           <div class="hospital-image" id="hospital-image"></div>
@@ -71,11 +70,11 @@
             </div>
           </div>
           <div class="panel-actions">
-            <button class="btn-action btn-show-on-map" id="btn-show-on-map">
-              <i class="fas fa-map-marked-alt"></i> نمایش روی نقشه
-            </button>
             <button class="btn-action btn-call" id="btn-call-hospital">
               <i class="fas fa-phone"></i> تماس
+            </button>
+            <button class="btn-action btn-route" id="btn-show-route">
+              <i class="fas fa-route"></i> مسیریابی
             </button>
           </div>
         </div>
@@ -83,12 +82,11 @@
 
       <!-- پنل مسیریابی -->
       <div id="route-panel" class="panel route-panel">
-        <div class="panel-handle"></div>
         <div class="panel-header">
-          <h3>مسیریابی</h3>
-          <button class="btn-close-panel" aria-label="بستن پنل">
+          <button class="btn-back" aria-label="بازگشت">
             <i class="fas fa-times"></i>
           </button>
+          <h3>مسیریابی</h3>
         </div>
         <div class="panel-content">
           <div class="route-summary">
@@ -100,18 +98,6 @@
               <i class="fas fa-clock"></i>
               <span id="route-time">-- دقیقه</span>
             </div>
-            <div class="route-info">
-              <i class="fas fa-walking" id="route-mode-icon"></i>
-              <span id="route-mode">پیاده</span>
-            </div>
-          </div>
-          <div class="transport-modes">
-            <button class="transport-btn active" data-mode="walk">
-              <i class="fas fa-walking"></i> پیاده
-            </button>
-            <button class="transport-btn" data-mode="car">
-              <i class="fas fa-car"></i> ماشین
-            </button>
           </div>
           <div id="route-instructions" class="route-instructions"></div>
         </div>
@@ -119,12 +105,11 @@
 
       <!-- پنل بیمارستان‌های نزدیک -->
       <div id="nearby-panel" class="panel nearby-panel">
-        <div class="panel-handle"></div>
         <div class="panel-header">
-          <h3>بیمارستان‌های نزدیک</h3>
-          <button class="btn-close-panel" aria-label="بستن پنل">
+          <button class="btn-back" aria-label="بازگشت">
             <i class="fas fa-times"></i>
           </button>
+          <h3>بیمارستان‌های نزدیک</h3>
         </div>
         <div class="panel-content">
           <div class="nearby-list" id="nearby-list">
@@ -135,12 +120,11 @@
 
       <!-- منوی تنظیمات -->
       <div id="settings-panel" class="panel settings-panel">
-        <div class="panel-handle"></div>
         <div class="panel-header">
-          <h3>تنظیمات</h3>
-          <button class="btn-close-panel" aria-label="بستن پنل">
+          <button class="btn-back" aria-label="بازگشت">
             <i class="fas fa-times"></i>
           </button>
+          <h3>تنظیمات</h3>
         </div>
         <div class="panel-content">
           <div class="settings-option">
@@ -159,15 +143,6 @@
               <span class="slider round"></span>
             </label>
           </div>
-          <div class="settings-option">
-            <i class="fas fa-map"></i>
-            <span>نوع نقشه</span>
-            <select id="map-style-select" class="map-style-select">
-              <option value="light">روشن</option>
-              <option value="dark">تیره</option>
-              <option value="satellite">ماهواره</option>
-            </select>
-          </div>
         </div>
       </div>
 
@@ -177,7 +152,7 @@
           <i class="fas fa-map-marker-alt"></i>
         </button>
         <button id="btn-show-settings" class="floating-action-btn secondary" aria-label="تنظیمات">
-          <i class="fas fa-bars"></i>
+          <i class="fas fa-cog"></i>
         </button>
       </div>
 
@@ -196,7 +171,7 @@
       </div>
     </main>
 
-    <!-- فوتر جدید -->
+    <!-- فوتر مدرن -->
     <footer class="app-footer">
       <div class="footer-content">
         <div class="footer-links">
@@ -204,7 +179,7 @@
           <a href="#" class="footer-link">تماس با ما</a>
           <a href="#" class="footer-link">حریم خصوصی</a>
         </div>
-        <p class="copyright">© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۷.۰</p>
+        <p class="copyright">© ۱۴۰۳ نقشه هوشمند بیمارستان‌های بروجرد | نسخه ۸.۰</p>
       </div>
     </footer>
   </div>

@@ -1,29 +1,31 @@
 :root {
-  --primary-color: #185a9d;
-  --primary-light: #4d8ac8;
-  --secondary-color: #43cea2;
-  --accent-color: #ff6b6b;
-  --text-color: #333;
-  --text-light: #666;
-  --bg-color: #f7f9fc;
-  --card-bg: #fff;
-  --border-color: #e1e5eb;
-  --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  --header-height: 6rem;
-  --footer-height: 6rem;
+  --primary-color: #2563eb;
+  --primary-light: #3b82f6;
+  --secondary-color: #10b981;
+  --accent-color: #ef4444;
+  --text-color: #1e293b;
+  --text-light: #64748b;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --header-height: 5rem;
+  --footer-height: 5rem;
+  --border-radius: 12px;
 }
 
 [data-theme="dark"] {
-  --primary-color: #43cea2;
-  --primary-light: #6dd8b8;
-  --secondary-color: #185a9d;
-  --text-color: #f0f0f0;
-  --text-light: #ccc;
-  --bg-color: #1a1a2e;
-  --card-bg: #16213e;
-  --border-color: #2a2a4a;
-  --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  --primary-color: #3b82f6;
+  --primary-light: #60a5fa;
+  --secondary-color: #10b981;
+  --accent-color: #ef4444;
+  --text-color: #f8fafc;
+  --text-light: #cbd5e1;
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --border-color: #334155;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
 }
 
 /* Reset و پایه */
@@ -56,21 +58,22 @@ body {
   height: 100vh;
 }
 
-/* هدر جدید */
+/* هدر مدرن */
 .app-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: var(--header-height);
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
+  background: var(--card-bg);
+  color: var(--text-color);
   padding: 0 2rem;
   box-shadow: var(--shadow);
   z-index: 1000;
   display: flex;
   align-items: center;
   transition: var(--transition);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .header-content {
@@ -89,41 +92,35 @@ body {
 }
 
 .logo {
-  width: 4rem;
-  height: 4rem;
+  width: 3.5rem;
+  height: 3.5rem;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .app-title {
   font-size: 1.8rem;
   font-weight: 700;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.header-actions {
-  display: flex;
-  gap: 1rem;
 }
 
 .btn-locate {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--primary-color);
   border: none;
   color: white;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
 }
 
 .btn-locate:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--primary-light);
   transform: scale(1.05);
 }
 
@@ -146,57 +143,61 @@ body {
 /* پنل‌ها */
 .panel {
   position: fixed;
-  bottom: -100%;
+  top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
   background: var(--card-bg);
-  border-radius: 2rem 2rem 0 0;
-  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
   z-index: 1002;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  max-height: 80vh;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
   flex-direction: column;
   touch-action: pan-y;
+  overflow: hidden;
 }
 
 .panel.open {
-  bottom: var(--footer-height);
-}
-
-.panel.fullscreen {
-  bottom: 0;
-  border-radius: 0;
-  max-height: calc(100vh - var(--header-height));
+  transform: translateY(0);
 }
 
 .panel-header {
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--border-color);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 1.5rem;
   position: relative;
+  background: var(--card-bg);
+  color: var(--text-color);
 }
 
 .panel-header h3 {
   font-size: 1.8rem;
-  color: var(--primary-color);
+  color: var(--text-color);
   margin: 0;
   font-weight: 700;
+  flex: 1;
+  text-align: center;
 }
 
-.btn-close-panel {
+.btn-back {
   background: none;
   border: none;
-  color: var(--text-light);
+  color: var(--text-color);
   font-size: 2rem;
   cursor: pointer;
   transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
 }
 
-.btn-close-panel:hover {
-  color: var(--accent-color);
+.btn-back:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .panel-content {
@@ -209,10 +210,10 @@ body {
 /* پنل بیمارستان */
 .hospital-image {
   width: 100%;
-  height: 20rem;
+  height: 25rem;
   background-size: cover;
   background-position: center;
-  border-radius: 1rem;
+  border-radius: var(--border-radius);
   margin-bottom: 2rem;
   box-shadow: var(--shadow);
   transition: var(--transition);
@@ -265,7 +266,7 @@ body {
 }
 
 .specialties li {
-  background: rgba(24, 90, 157, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   color: var(--primary-color);
   padding: 0.8rem 1.2rem;
   border-radius: 0.8rem;
@@ -282,7 +283,7 @@ body {
 .btn-action {
   flex: 1;
   padding: 1.5rem;
-  border-radius: 1rem;
+  border-radius: var(--border-radius);
   border: none;
   font-family: 'Vazirmatn', sans-serif;
   font-size: 1.5rem;
@@ -296,23 +297,23 @@ body {
   box-shadow: var(--shadow);
 }
 
-.btn-show-on-map {
-  background: var(--primary-color);
-  color: white;
-}
-
-.btn-show-on-map:hover {
-  background: var(--primary-light);
-  transform: translateY(-2px);
-}
-
 .btn-call {
   background: var(--accent-color);
   color: white;
 }
 
 .btn-call:hover {
-  background: #ff5252;
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+.btn-route {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-route:hover {
+  background: var(--primary-light);
   transform: translateY(-2px);
 }
 
@@ -338,39 +339,9 @@ body {
   color: var(--primary-color);
 }
 
-.transport-modes {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
-.transport-btn {
-  flex: 1;
-  padding: 1.2rem;
-  background: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 1rem;
-  color: var(--text-light);
-  font-family: 'Vazirmatn', sans-serif;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  font-size: 1.4rem;
-}
-
-.transport-btn.active {
-  background: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-  box-shadow: 0 2px 8px rgba(24, 90, 157, 0.3);
-}
-
 .route-instructions {
   background: var(--bg-color);
-  border-radius: 1rem;
+  border-radius: var(--border-radius);
   padding: 1.5rem;
   margin-bottom: 2rem;
   font-size: 1.4rem;
@@ -439,7 +410,7 @@ body {
 }
 
 .hospital-type {
-  background: rgba(24, 90, 157, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   color: var(--primary-color);
   padding: 0.5rem 1.2rem;
   border-radius: 0.8rem;
@@ -459,7 +430,7 @@ body {
 .nearby-btn {
   flex: 1;
   padding: 1.2rem;
-  border-radius: 0.8rem;
+  border-radius: var(--border-radius);
   border: none;
   font-family: 'Vazirmatn', sans-serif;
   font-size: 1.4rem;
@@ -470,25 +441,12 @@ body {
   gap: 0.8rem;
   transition: var(--transition);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.nearby-btn-primary {
   background: var(--primary-color);
   color: white;
 }
 
-.nearby-btn-primary:hover {
+.nearby-btn:hover {
   background: var(--primary-light);
-  transform: translateY(-2px);
-}
-
-.nearby-btn-secondary {
-  background: var(--secondary-color);
-  color: white;
-}
-
-.nearby-btn-secondary:hover {
-  background: #6dd8b8;
   transform: translateY(-2px);
 }
 
@@ -568,24 +526,6 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-.map-style-select {
-  padding: 0.8rem 1.2rem;
-  border-radius: 0.8rem;
-  border: 1px solid var(--border-color);
-  background: var(--bg-color);
-  color: var(--text-color);
-  font-family: 'Vazirmatn', sans-serif;
-  font-size: 1.4rem;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.map-style-select:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(24, 90, 157, 0.2);
-}
-
 /* دکمه‌های شناور */
 .floating-buttons {
   position: fixed;
@@ -598,8 +538,8 @@ input:checked + .slider:before {
 }
 
 .floating-action-btn {
-  width: 6rem;
-  height: 6rem;
+  width: 5.5rem;
+  height: 5.5rem;
   border-radius: 50%;
   background: var(--card-bg);
   color: var(--primary-color);
@@ -637,7 +577,7 @@ input:checked + .slider:before {
   background: var(--card-bg);
   color: var(--text-color);
   padding: 1.5rem 2.5rem;
-  border-radius: 0.8rem;
+  border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   z-index: 1100;
   transition: var(--transition);
@@ -706,7 +646,7 @@ input:checked + .slider:before {
   to { transform: rotate(360deg); }
 }
 
-/* فوتر جدید */
+/* فوتر مدرن */
 .app-footer {
   position: fixed;
   bottom: 0;
@@ -756,7 +696,7 @@ input:checked + .slider:before {
   text-align: center;
 }
 
-/* پاپ‌آپ نقشه - نسخه بهینه‌شده */
+/* پاپ‌آپ نقشه */
 .leaflet-popup {
   direction: rtl;
 }
@@ -765,7 +705,7 @@ input:checked + .slider:before {
   background: var(--card-bg);
   color: var(--text-color);
   box-shadow: var(--shadow);
-  border-radius: 1rem;
+  border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
   text-align: right;
   direction: rtl;
@@ -774,7 +714,7 @@ input:checked + .slider:before {
 }
 
 .leaflet-popup-content {
-  min-width: 28rem;
+  min-width: 25rem;
   font-family: 'Vazirmatn', sans-serif;
   margin: 0;
   text-align: right;
@@ -845,8 +785,8 @@ input:checked + .slider:before {
 
 .popup-actions {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 1.8rem;
+  gap: 1rem;
+  margin-top: 1.5rem;
   direction: rtl;
 }
 
@@ -867,76 +807,32 @@ input:checked + .slider:before {
   direction: rtl;
   text-align: right;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.popup-btn-primary {
   background: var(--primary-color);
   color: white;
 }
 
-.popup-btn-primary:hover {
+.popup-btn:hover {
   background: var(--primary-light);
   transform: translateY(-2px);
-}
-
-.popup-btn-secondary {
-  background: var(--bg-color);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-}
-
-.popup-btn-secondary:hover {
-  background: var(--border-color);
-  transform: translateY(-2px);
-}
-
-/* کشیدن پنل برای فول‌اسکرین */
-.panel-handle {
-  width: 4rem;
-  height: 0.5rem;
-  background: var(--border-color);
-  border-radius: 0.5rem;
-  margin: 0 auto;
-  margin-bottom: 1rem;
-  cursor: ns-resize;
 }
 
 /* بهبود نمایش در حالت موبایل */
 @media (max-width: 768px) {
   :root {
-    --header-height: 5.5rem;
-    --footer-height: 5.5rem;
+    --header-height: 5rem;
+    --footer-height: 5rem;
   }
   
   .app-title {
     font-size: 1.6rem;
   }
 
-  .panel {
-    max-height: 70vh;
-  }
-
-  .floating-buttons {
-    bottom: calc(var(--footer-height) + 1.5rem);
-    left: 1.5rem;
-  }
-
-  .floating-action-btn {
-    width: 5.5rem;
-    height: 5.5rem;
-    font-size: 2rem;
-  }
-  
   .panel-actions, .nearby-actions {
     flex-direction: column;
   }
   
-  .btn-action, .nearby-btn {
-    width: 100%;
-  }
-  
   .hospital-image {
-    height: 16rem;
+    height: 20rem;
   }
   
   .info-row {
@@ -955,25 +851,21 @@ input:checked + .slider:before {
 
 @media (max-width: 480px) {
   :root {
-    --header-height: 5rem;
-    --footer-height: 5rem;
+    --header-height: 4.5rem;
+    --footer-height: 4.5rem;
   }
   
   .logo {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 3rem;
+    height: 3rem;
   }
   
   .app-title {
     font-size: 1.5rem;
   }
-
-  .panel {
-    max-height: 65vh;
-  }
   
   .hospital-image {
-    height: 14rem;
+    height: 18rem;
   }
   
   .panel-header h3 {
@@ -1010,5 +902,11 @@ input:checked + .slider:before {
   .popup-actions {
     flex-direction: column;
     gap: 0.8rem;
+  }
+  
+  .floating-action-btn {
+    width: 5rem;
+    height: 5rem;
+    font-size: 2rem;
   }
 }

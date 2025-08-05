@@ -36,29 +36,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const hospitalPanel = document.getElementById('hospital-panel');
   const routePanel = document.getElementById('route-panel');
   const nearbyPanel = document.getElementById('nearby-panel');
-  const settingsPanel = document.getElementById('settings-panel');
   const notification = document.getElementById('notification');
   const loadingOverlay = document.getElementById('loading');
   const btnShowNearby = document.getElementById('btn-show-nearby');
   const btnShowSettings = document.getElementById('btn-show-settings');
-  const btnLocate = document.getElementById('btn-locate');
   const darkModeToggle = document.getElementById('dark-mode-toggle');
   const notificationsToggle = document.getElementById('notifications-toggle');
   const btnBackElements = document.querySelectorAll('.btn-back');
 
-  // Icons
+  // Custom Icons
   const hospitalIcon = L.icon({
     iconUrl: 'assets/img/icons/hospital.png',
-    iconSize: [38, 38],
-    iconAnchor: [19, 38],
-    popupAnchor: [0, -38]
+    iconSize: [42, 42],
+    iconAnchor: [21, 42],
+    popupAnchor: [0, -42],
+    className: 'hospital-marker'
   });
 
   const userIcon = L.icon({
     iconUrl: 'assets/img/icons/user.png',
-    iconSize: [34, 34],
-    iconAnchor: [17, 34],
-    popupAnchor: [0, -34]
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+    popupAnchor: [0, -36],
+    className: 'user-marker'
   });
 
   // Hospital Data
@@ -163,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const hospitalMarkers = {};
 
+  // Utility Functions
   function showNotification(message, duration = 3000) {
     if (!notificationsToggle.checked) return;
     
@@ -222,10 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
     loadMapLayer();
-    updatePopupsStyle();
+    updateMarkersStyle();
   }
 
-  function updatePopupsStyle() {
+  function updateMarkersStyle() {
     Object.values(hospitalMarkers).forEach(marker => {
       if (marker.isPopupOpen()) {
         const popup = marker.getPopup();
@@ -240,18 +241,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function createPopupContent(hospital) {
+    const emergencyBadge = hospital.emergency 
+      ? `<span class="emergency-badge"><i class="fas fa-ambulance"></i> اورژانس</span>`
+      : '';
+    
     return `
       <div class="popup-content">
-        <h4>${hospital.name}</h4>
-        <p><i class="fas fa-hospital"></i> ${hospital.type}</p>
-        <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
-        <div class="popup-actions">
-          <button class="popup-btn" data-id="${hospital.id}" data-action="details">
-            <i class="fas fa-info-circle"></i> جزئیات
-          </button>
-          <button class="popup-btn" data-id="${hospital.id}" data-action="route">
-            <i class="fas fa-route"></i> مسیر
-          </button>
+        <div class="popup-header">
+          <h4>${hospital.name}</h4>
+          ${emergencyBadge}
+        </div>
+        <div class="popup-body">
+          <p><i class="fas fa-hospital"></i> ${hospital.type}</p>
+          <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+          <div class="popup-actions">
+            <button class="popup-btn details-btn" data-id="${hospital.id}" data-action="details">
+              <i class="fas fa-info-circle"></i> جزئیات
+            </button>
+            <button class="popup-btn route-btn" data-id="${hospital.id}" data-action="route">
+              <i class="fas fa-route"></i> مسیر
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -281,12 +291,22 @@ document.addEventListener('DOMContentLoaded', () => {
             map.removeLayer(userMarker);
           }
           
-          userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
-          userMarker.bindPopup('شما اینجا هستید').openPopup();
+          userMarker = L.marker([lat, lng], { 
+            icon: userIcon,
+            zIndexOffset: 1000
+          }).addTo(map);
+          
+          userMarker.bindPopup('شما اینجا هستید', {
+            className: 'user-popup',
+            closeButton: false
+          }).openPopup();
           
           map.setView([lat, lng], 15);
           showNotification('موقعیت شما با موفقیت مشخص شد');
           toggleLoading(false);
+          
+          // Auto show nearby hospitals if user is in Borujerd
+          showNearbyHospitals();
         },
         error => {
           console.error('خطا در دریافت موقعیت:', error);
@@ -353,20 +373,37 @@ document.addEventListener('DOMContentLoaded', () => {
         hospital.coords[1]
       ) / 1000;
       
+      const time = (distance * 12).toFixed(0); // Estimated time in minutes (assuming 5km/h walking speed)
+      
+      const emergencyBadge = hospital.emergency 
+        ? `<span class="emergency-badge"><i class="fas fa-ambulance"></i> اورژانس</span>`
+        : '';
+      
       const item = document.createElement('li');
       item.className = 'nearby-item';
       item.innerHTML = `
         <div class="nearby-item-header">
-          <h4>${hospital.name}</h4>
-          <span class="hospital-type">${hospital.type}</span>
+          <div class="hospital-info">
+            <h4>${hospital.name}</h4>
+            <span class="hospital-type">${hospital.type}</span>
+          </div>
+          ${emergencyBadge}
         </div>
-        <div class="distance">
-          <i class="fas fa-walking"></i> ${distance.toFixed(2)} کیلومتر
+        <div class="distance-time">
+          <div class="distance">
+            <i class="fas fa-ruler"></i> ${distance.toFixed(2)} کیلومتر
+          </div>
+          <div class="time">
+            <i class="fas fa-clock"></i> حدود ${time} دقیقه
+          </div>
         </div>
-        <p>${hospital.address}</p>
+        <p class="hospital-address">${hospital.address}</p>
         <div class="nearby-actions">
-          <button class="nearby-btn" data-id="${hospital.id}">
-            <i class="fas fa-map-marked-alt"></i> نمایش روی نقشه
+          <button class="nearby-btn details-btn" data-id="${hospital.id}">
+            <i class="fas fa-info-circle"></i> جزئیات
+          </button>
+          <button class="nearby-btn route-btn" data-id="${hospital.id}">
+            <i class="fas fa-route"></i> مسیریابی
           </button>
         </div>
       `;
@@ -374,10 +411,17 @@ document.addEventListener('DOMContentLoaded', () => {
       nearbyList.appendChild(item);
     });
     
-    nearbyList.querySelectorAll('.nearby-btn').forEach(btn => {
+    nearbyList.querySelectorAll('.details-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const hospitalId = parseInt(btn.getAttribute('data-id'));
-        showHospitalOnMap(hospitalId);
+        showHospitalDetails(hospitalId);
+      });
+    });
+    
+    nearbyList.querySelectorAll('.route-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const hospitalId = parseInt(btn.getAttribute('data-id'));
+        showRoutePanel(hospitalId);
       });
     });
     
@@ -487,7 +531,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const instructionsContainer = document.getElementById('route-instructions');
       instructionsContainer.innerHTML = '';
       
-      routes[0].instructions.slice(0, 5).forEach((instruction, index) => {
+      // Add summary instruction
+      const summaryItem = document.createElement('div');
+      summaryItem.className = 'route-instruction-item summary';
+      summaryItem.innerHTML = `
+        <i class="fas fa-info-circle"></i>
+        <span>مسیر پیشنهادی از موقعیت فعلی شما به ${hospital.name}</span>
+      `;
+      instructionsContainer.appendChild(summaryItem);
+      
+      // Add start point
+      const startItem = document.createElement('div');
+      startItem.className = 'route-instruction-item start';
+      startItem.innerHTML = `
+        <i class="fas fa-map-marker-alt"></i>
+        <span>موقعیت فعلی شما</span>
+      `;
+      instructionsContainer.appendChild(startItem);
+      
+      // Add route instructions
+      routes[0].instructions.slice(0, 8).forEach((instruction, index) => {
         const instructionItem = document.createElement('div');
         instructionItem.className = 'route-instruction-item';
         
@@ -500,10 +563,8 @@ document.addEventListener('DOMContentLoaded', () => {
           icon.className += ' fas fa-arrow-right';
         } else if (instruction.type.includes('Straight')) {
           icon.className += ' fas fa-arrow-up';
-        } else if (instruction.type.includes('Start')) {
-          icon.className += ' fas fa-map-marker-alt';
-        } else if (instruction.type.includes('End')) {
-          icon.className += ' fas fa-flag-checkered';
+        } else if (instruction.type.includes('Continue')) {
+          icon.className += ' fas fa-arrow-up';
         } else {
           icon.className += ' fas fa-arrow-up';
         }
@@ -515,6 +576,36 @@ document.addEventListener('DOMContentLoaded', () => {
         instructionItem.appendChild(text);
         instructionsContainer.appendChild(instructionItem);
       });
+      
+      // Add end point
+      const endItem = document.createElement('div');
+      endItem.className = 'route-instruction-item end';
+      endItem.innerHTML = `
+        <i class="fas fa-flag-checkered"></i>
+        <span>${hospital.name}</span>
+      `;
+      instructionsContainer.appendChild(endItem);
+      
+      // Add transport mode toggle
+      const modeToggle = document.createElement('div');
+      modeToggle.className = 'transport-mode-toggle';
+      modeToggle.innerHTML = `
+        <button class="mode-btn ${currentTransportMode === 'walk' ? 'active' : ''}" data-mode="walk">
+          <i class="fas fa-walking"></i> پیاده
+        </button>
+        <button class="mode-btn ${currentTransportMode === 'drive' ? 'active' : ''}" data-mode="drive">
+          <i class="fas fa-car"></i> خودرو
+        </button>
+      `;
+      instructionsContainer.appendChild(modeToggle);
+      
+      // Add event listeners for mode toggle
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentTransportMode = btn.getAttribute('data-mode');
+          showRoutePanel(hospitalId);
+        });
+      });
     });
     
     closeAllPanels();
@@ -525,7 +616,9 @@ document.addEventListener('DOMContentLoaded', () => {
     hospitalPanel.classList.remove('open');
     routePanel.classList.remove('open');
     nearbyPanel.classList.remove('open');
-    settingsPanel.classList.remove('open');
+    
+    const floatingSettings = document.getElementById('floating-settings');
+    floatingSettings.classList.remove('open');
     
     if (routingControl) {
       map.removeControl(routingControl);
@@ -533,7 +626,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // در بخش init() تغییرات زیر را اعمال کنید:
   function init() {
     // Load saved theme
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -544,16 +636,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load map layer
     loadMapLayer();
     
-    // Add hospital markers
+    // Add hospital markers with improved styling
     hospitals.forEach(hospital => {
       const marker = L.marker(hospital.coords, {
         icon: hospitalIcon,
-        riseOnHover: true
+        riseOnHover: true,
+        zIndexOffset: hospital.emergency ? 100 : 0
       }).addTo(map);
       
       marker.hospital = hospital;
       marker.bindPopup(createPopupContent(hospital), {
-        closeButton: true
+        className: 'hospital-popup',
+        closeButton: false,
+        maxWidth: 300,
+        minWidth: 250
       });
       
       marker.on('popupopen', () => {
@@ -584,7 +680,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     btnShowNearby.addEventListener('click', showNearbyHospitals);
     
-    btnShowSettings.addEventListener('click', () => {
+    btnShowSettings.addEventListener('click', (e) => {
+      e.stopPropagation();
       floatingSettings.classList.toggle('open');
     });
     

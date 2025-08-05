@@ -23,6 +23,7 @@ let currentTransportMode = 'walk';
 let startY = 0;
 let currentY = 0;
 let panelStartHeight = 0;
+let currentMapStyle = 'light';
 
 // عناصر DOM
 const hospitalPanel = document.getElementById('hospital-panel');
@@ -37,6 +38,8 @@ const btnShowSettings = document.getElementById('btn-show-settings');
 const btnClosePanels = document.querySelectorAll('.btn-close-panel');
 const transportBtns = document.querySelectorAll('.transport-btn');
 const darkModeToggle = document.getElementById('dark-mode-toggle');
+const notificationsToggle = document.getElementById('notifications-toggle');
+const mapStyleSelect = document.getElementById('map-style-select');
 
 // آیکون‌ها
 const hospitalIcon = L.icon({
@@ -158,6 +161,8 @@ const hospitalMarkers = {};
 
 // تابع برای نمایش اعلان
 function showNotification(message, duration = 3000) {
+  if (!notificationsToggle.checked) return;
+  
   const notificationMessage = document.getElementById('notification-message');
   notificationMessage.textContent = message;
   notification.classList.add('show');
@@ -201,15 +206,27 @@ function loadMapLayer() {
     }
   });
 
+  let tileLayerUrl;
+  let attribution;
+  
+  switch(currentMapStyle) {
+    case 'dark':
+      tileLayerUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      attribution = '&copy; OpenStreetMap';
+      break;
+    case 'satellite':
+      tileLayerUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+      attribution = 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+      break;
+    default: // light
+      tileLayerUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+      attribution = '&copy; OpenStreetMap';
+  }
+
   // اضافه کردن لایه جدید
-  const tileLayer = L.tileLayer(
-    currentTheme === 'dark' 
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    {
-      attribution: '&copy; OpenStreetMap'
-    }
-  ).addTo(map);
+  const tileLayer = L.tileLayer(tileLayerUrl, {
+    attribution: attribution
+  }).addTo(map);
 
   // فقط یک کنترل Zoom اضافه کنیم
   if (!map._zoomControl) {
@@ -238,6 +255,12 @@ function toggleDarkMode() {
       showRoutePanel(selectedHospital.id);
     }
   }
+}
+
+function changeMapStyle(style) {
+  currentMapStyle = style;
+  localStorage.setItem('mapStyle', style);
+  loadMapLayer();
 }
 
 // تابع برای به‌روزرسانی استایل پاپ‌آپ‌ها
@@ -665,11 +688,15 @@ function setupPanelDrag(panel) {
 
 // تابع برای مقداردهی اولیه
 function init() {
-  // بارگذاری تم ذخیره شده
+  // بارگذاری تنظیمات ذخیره شده
   const savedTheme = localStorage.getItem('theme') || 'light';
   currentTheme = savedTheme;
   document.documentElement.setAttribute('data-theme', currentTheme);
   darkModeToggle.checked = currentTheme === 'dark';
+  
+  const savedMapStyle = localStorage.getItem('mapStyle') || 'light';
+  currentMapStyle = savedMapStyle;
+  mapStyleSelect.value = currentMapStyle;
   
   // بارگذاری لایه نقشه
   loadMapLayer();
@@ -740,6 +767,10 @@ function init() {
     toggleDarkMode();
   });
   
+  mapStyleSelect.addEventListener('change', (e) => {
+    changeMapStyle(e.target.value);
+  });
+  
   // تنظیم کشیدن پنل‌ها
   setupPanelDrag(hospitalPanel);
   setupPanelDrag(routePanel);
@@ -765,6 +796,11 @@ function init() {
       settingsPanel.classList.remove('open');
     }
   });
+  
+  // نمایش پیام خوش‌آمدگویی
+  setTimeout(() => {
+    showNotification('به نقشه بیمارستان‌های بروجرد خوش آمدید');
+  }, 1000);
 }
 
 // شروع برنامه

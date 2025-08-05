@@ -67,7 +67,7 @@ body {
   height: var(--header-height);
   background: var(--card-bg);
   color: var(--text-color);
-  padding: 0 2rem;
+  padding: 0 1rem;
   box-shadow: var(--shadow);
   z-index: 1000;
   display: flex;
@@ -83,45 +83,27 @@ body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
-.logo-title {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.logo {
-  width: 3.5rem;
-  height: 3.5rem;
+.header-logo {
+  width: 3rem;
+  height: 3rem;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .app-title {
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   font-weight: 700;
   margin: 0;
+  text-align: center;
+  flex: 1;
 }
 
-.btn-locate {
-  background: var(--primary-color);
-  border: none;
-  color: white;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--shadow);
-}
-
-.btn-locate:hover {
-  background: var(--primary-light);
-  transform: scale(1.05);
+.header-placeholder {
+  width: 3rem;
+  height: 3rem;
 }
 
 /* محتوای اصلی */
@@ -138,6 +120,15 @@ body {
 .map-container {
   width: 100%;
   height: 100%;
+}
+
+/* استایل‌های سفارشی برای مارکرها */
+.hospital-marker {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.user-marker {
+  filter: drop-shadow(0 2px 6px rgba(37, 99, 235, 0.4));
 }
 
 /* پنل‌ها */
@@ -217,6 +208,18 @@ body {
   margin-bottom: 2rem;
   box-shadow: var(--shadow);
   transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.hospital-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
 }
 
 .hospital-info {
@@ -352,7 +355,7 @@ body {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 1rem 0;
+  padding: 1.2rem 0;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -360,11 +363,61 @@ body {
   border-bottom: none;
 }
 
+.route-instruction-item.summary {
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.route-instruction-item.start {
+  color: var(--secondary-color);
+}
+
+.route-instruction-item.end {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
 .route-instruction-icon {
   color: var(--primary-color);
   font-size: 1.8rem;
   width: 2.5rem;
   text-align: center;
+}
+
+.transport-mode-toggle {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  transition: var(--transition);
+}
+
+.mode-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.mode-btn:hover {
+  background: var(--primary-light);
+  color: white;
 }
 
 /* پنل بیمارستان‌های نزدیک */
@@ -385,28 +438,19 @@ body {
 .nearby-item-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 0.8rem;
+  gap: 1rem;
+}
+
+.hospital-info {
+  flex: 1;
 }
 
 .nearby-item h4 {
   font-size: 1.7rem;
   color: var(--primary-color);
-}
-
-.nearby-item p {
-  font-size: 1.4rem;
-  color: var(--text-light);
-  margin-bottom: 1.2rem;
-}
-
-.distance {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: 1.4rem;
-  color: var(--secondary-color);
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.5rem;
 }
 
 .hospital-type {
@@ -415,15 +459,54 @@ body {
   padding: 0.5rem 1.2rem;
   border-radius: 0.8rem;
   font-size: 1.3rem;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.nearby-actions {
+.emergency-badge {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-color);
+  padding: 0.5rem 1rem;
+  border-radius: 0.8rem;
+  font-size: 1.3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.distance-time {
   display: flex;
   gap: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.distance, .time {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.4rem;
+  color: var(--text-light);
+}
+
+.distance i {
+  color: var(--secondary-color);
+}
+
+.time i {
+  color: var(--primary-color);
+}
+
+.hospital-address {
+  font-size: 1.4rem;
+  color: var(--text-light);
+  margin-bottom: 1.2rem;
+}
+
+.nearby-actions {
+  display: flex;
+  gap: 1rem;
   margin-top: 1.5rem;
 }
 
@@ -441,89 +524,90 @@ body {
   gap: 0.8rem;
   transition: var(--transition);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.details-btn {
+  background: var(--bg-color);
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
+}
+
+.details-btn:hover {
+  background: rgba(37, 99, 235, 0.1);
+  transform: translateY(-2px);
+}
+
+.route-btn {
   background: var(--primary-color);
   color: white;
 }
 
-.nearby-btn:hover {
+.route-btn:hover {
   background: var(--primary-light);
   transform: translateY(-2px);
 }
 
-/* پنل تنظیمات */
-.settings-option {
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 0;
+  color: var(--text-light);
+  text-align: center;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: var(--primary-color);
+}
+
+/* منوی شناور تنظیمات */
+.floating-settings {
+  position: fixed;
+  bottom: calc(var(--footer-height) + 7rem);
+  left: 2rem;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  z-index: 1001;
+  transform: translateY(20px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  width: 25rem;
+}
+
+.floating-settings.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.floating-settings .settings-option {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 0;
-  border-bottom: 1px solid var(--border-color);
 }
 
-.settings-option:last-child {
+.floating-settings .settings-option:last-child {
   border-bottom: none;
 }
 
-.settings-option i {
+.floating-settings .settings-option i {
   color: var(--primary-color);
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   width: 3rem;
   text-align: center;
 }
 
-.settings-option span {
+.floating-settings .settings-option span {
   flex: 1;
-  font-size: 1.5rem;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 5rem;
-  height: 2.8rem;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--border-color);
-  transition: var(--transition);
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 2.2rem;
-  width: 2.2rem;
-  left: 0.3rem;
-  bottom: 0.3rem;
-  background-color: white;
-  transition: var(--transition);
-}
-
-input:checked + .slider {
-  background-color: var(--primary-color);
-}
-
-input:checked + .slider:before {
-  transform: translateX(2.2rem);
-}
-
-.slider.round {
-  border-radius: 3.4rem;
-}
-
-.slider.round:before {
-  border-radius: 50%;
+  font-size: 1.4rem;
 }
 
 /* دکمه‌های شناور */
@@ -654,54 +738,31 @@ input:checked + .slider:before {
   right: 0;
   height: var(--footer-height);
   background: var(--card-bg);
-  color: var(--text-color);
+  color: var(--text-light);
   box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   z-index: 1000;
   transition: var(--transition);
   border-top: 1px solid var(--border-color);
+  padding: 0 1rem;
 }
 
 .footer-content {
   width: 100%;
   max-width: 1200px;
-  padding: 0 2rem;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.footer-link {
-  color: var(--text-light);
-  font-size: 1.3rem;
-  text-decoration: none;
-  transition: var(--transition);
-}
-
-.footer-link:hover {
-  color: var(--primary-color);
 }
 
 .copyright {
   font-size: 1.2rem;
-  color: var(--text-light);
   text-align: center;
+  color: var(--text-light);
 }
 
-/* پاپ‌آپ نقشه */
-.leaflet-popup {
-  direction: rtl;
-}
-
-.leaflet-popup-content-wrapper {
+/* پاپ‌آپ نقشه سفارشی */
+.hospital-popup .leaflet-popup-content-wrapper,
+.user-popup .leaflet-popup-content-wrapper {
   background: var(--card-bg);
   color: var(--text-color);
   box-shadow: var(--shadow);
@@ -709,76 +770,72 @@ input:checked + .slider:before {
   border: 1px solid var(--border-color);
   text-align: right;
   direction: rtl;
-  padding: 1.5rem;
+  padding: 0;
   transition: var(--transition);
 }
 
-.leaflet-popup-content {
+.hospital-popup .leaflet-popup-content,
+.user-popup .leaflet-popup-content {
   min-width: 25rem;
   font-family: 'Vazirmatn', sans-serif;
   margin: 0;
   text-align: right;
   direction: rtl;
-  padding-left: 2.5rem;
+  padding: 0;
 }
 
-.leaflet-popup-tip-container {
+.hospital-popup .leaflet-popup-tip-container {
   direction: rtl;
 }
 
-.leaflet-popup-tip {
+.hospital-popup .leaflet-popup-tip {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-top: none;
   border-left: none;
 }
 
-.leaflet-popup-close-button {
-  right: auto !important;
-  left: 10px !important;
-  top: 10px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  font-size: 2rem !important;
-  color: var(--text-light) !important;
-  background: none !important;
-  border: none !important;
-  transition: var(--transition);
-  width: auto !important;
-  height: auto !important;
-  line-height: 1 !important;
+.popup-content {
+  padding: 1.5rem;
 }
 
-.leaflet-popup-close-button:hover {
-  color: var(--accent-color) !important;
-  transform: scale(1.1);
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.leaflet-popup-scrolled {
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.leaflet-popup-content h4 {
+.popup-header h4 {
+  font-size: 1.6rem;
   color: var(--primary-color);
-  margin: 0 0 1.5rem 0;
-  font-size: 1.8rem;
+  margin: 0;
   font-weight: 700;
-  text-align: right;
 }
 
-.leaflet-popup-content p {
-  margin: 0 0 1.2rem 0;
+.emergency-badge {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.6rem;
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.popup-body {
   font-size: 1.4rem;
-  color: var(--text-color);
-  text-align: right;
-  line-height: 1.6;
+}
+
+.popup-body p {
+  margin: 0 0 1rem 0;
   display: flex;
   align-items: flex-start;
   gap: 0.8rem;
 }
 
-.leaflet-popup-content p i {
+.popup-body p i {
   color: var(--primary-light);
   margin-top: 0.2rem;
 }
@@ -787,7 +844,6 @@ input:checked + .slider:before {
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
-  direction: rtl;
 }
 
 .popup-btn {
@@ -807,11 +863,25 @@ input:checked + .slider:before {
   direction: rtl;
   text-align: right;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.details-btn {
+  background: var(--bg-color);
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
+}
+
+.details-btn:hover {
+  background: rgba(37, 99, 235, 0.1);
+  transform: translateY(-2px);
+}
+
+.route-btn {
   background: var(--primary-color);
   color: white;
 }
 
-.popup-btn:hover {
+.route-btn:hover {
   background: var(--primary-light);
   transform: translateY(-2px);
 }
@@ -844,8 +914,13 @@ input:checked + .slider:before {
     font-size: 1.4rem;
   }
   
-  .leaflet-popup-content {
-    min-width: 22rem;
+  .floating-settings {
+    width: 22rem;
+    left: 1rem;
+  }
+  
+  .floating-buttons {
+    left: 1rem;
   }
 }
 
@@ -888,20 +963,10 @@ input:checked + .slider:before {
     font-size: 1.1rem;
   }
   
-  .leaflet-popup-content {
-    min-width: 18rem;
-    padding-left: 2rem;
-  }
-  
-  .leaflet-popup-close-button {
-    left: 8px !important;
-    top: 8px !important;
-    font-size: 1.8rem !important;
-  }
-  
-  .popup-actions {
-    flex-direction: column;
-    gap: 0.8rem;
+  .floating-settings {
+    width: 90%;
+    left: 5%;
+    bottom: calc(var(--footer-height) + 6rem);
   }
   
   .floating-action-btn {
@@ -909,172 +974,9 @@ input:checked + .slider:before {
     height: 5rem;
     font-size: 2rem;
   }
-}
-
-
-/* هدر جدید */
-.app-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--header-height);
-  background: var(--card-bg);
-  color: var(--text-color);
-  padding: 0 1rem;
-  box-shadow: var(--shadow);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  transition: var(--transition);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.header-logo {
-  width: 3rem;
-  height: 3rem;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-.app-title {
-  font-size: 1.7rem;
-  font-weight: 700;
-  margin: 0;
-  text-align: center;
-  flex: 1;
-}
-
-.header-placeholder {
-  width: 3rem;
-  height: 3rem;
-}
-
-/* فوتر جدید */
-.app-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: var(--footer-height);
-  background: var(--card-bg);
-  color: var(--text-light);
-  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  z-index: 1000;
-  transition: var(--transition);
-  border-top: 1px solid var(--border-color);
-  padding: 0 1rem;
-}
-
-.footer-content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.copyright {
-  font-size: 1.2rem;
-  text-align: center;
-  color: var(--text-light);
-}
-
-/* منوی شناور تنظیمات */
-.floating-settings {
-  position: fixed;
-  bottom: calc(var(--footer-height) + 7rem);
-  left: 2rem;
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
-  z-index: 1001;
-  transform: translateY(20px);
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  width: 25rem;
-}
-
-.floating-settings.open {
-  transform: translateY(0);
-  opacity: 1;
-  visibility: visible;
-}
-
-.floating-settings .settings-option {
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.floating-settings .settings-option:last-child {
-  border-bottom: none;
-}
-
-.floating-settings .settings-option i {
-  color: var(--primary-color);
-  font-size: 1.6rem;
-  width: 3rem;
-  text-align: center;
-}
-
-.floating-settings .settings-option span {
-  flex: 1;
-  font-size: 1.4rem;
-}
-
-/* دکمه‌های شناور */
-.floating-buttons {
-  position: fixed;
-  bottom: calc(var(--footer-height) + 2rem);
-  left: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  z-index: 1000;
-}
-
-.floating-action-btn {
-  width: 5.5rem;
-  height: 5.5rem;
-  border-radius: 50%;
-  background: var(--card-bg);
-  color: var(--primary-color);
-  border: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  font-size: 2.2rem;
-}
-
-.floating-action-btn.primary {
-  background: var(--primary-color);
-  color: white;
-}
-
-.floating-action-btn.secondary {
-  background: var(--secondary-color);
-  color: white;
-}
-
-.floating-action-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  
+  .popup-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
 }

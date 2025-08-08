@@ -257,10 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('theme', currentTheme);
     loadMapLayer();
     updateMarkersStyle();
-    
-    // // Update theme icon
-    // const icon = currentTheme === 'dark' ? 'fa-sun' : 'fa-moon';
-    // toggleThemeBtn.innerHTML = `<i class="fas ${icon}"></i><span>حالت شب</span>`;
   }
 
   function updateMarkersStyle() {
@@ -473,99 +469,91 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showHospitalDetails(hospitalId) {
-      const hospital = hospitals.find(h => h.id === hospitalId);
-      if (!hospital) return;
-      
-      selectedHospital = hospital;
-      
-      // Update hospital info
-      document.getElementById('hospital-name').textContent = hospital.name;
-      document.getElementById('hospital-address').textContent = hospital.address;
-      document.getElementById('hospital-phone').textContent = hospital.phone;
-      document.getElementById('hospital-description').textContent = hospital.description;
-      
-      // Update badges
-      document.getElementById('hospital-type-badge').textContent = hospital.type;
-      document.getElementById('hospital-emergency-badge').style.display = hospital.emergency ? 'flex' : 'none';
-      
-      // Update specialties list
-      const specialtiesList = document.getElementById('specialties-list');
-      specialtiesList.innerHTML = '';
-      hospital.specialties.forEach(spec => {
-          const li = document.createElement('li');
-          li.textContent = spec;
-          specialtiesList.appendChild(li);
-      });
-      
-      // Handle hospital image with loading and error states
-      const hospitalImage = document.getElementById('hospital-image');
-      const imageContainer = document.querySelector('.hospital-image-container');
-      
-      // Clear previous content
-      hospitalImage.innerHTML = '';
-      hospitalImage.style.backgroundImage = 'none';
-      
-      // Add loading state
-      const loadingDiv = document.createElement('div');
-      loadingDiv.className = 'image-loading';
-      loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-      hospitalImage.appendChild(loadingDiv);
-      
-      // Create new image element to test loading
-      const img = new Image();
-      img.src = hospital.photo;
-      
-      img.onload = function() {
-          // Image loaded successfully
-          hospitalImage.innerHTML = '';
-          hospitalImage.style.backgroundImage = `url('${hospital.photo}')`;
-          hospitalImage.style.backgroundSize = 'cover';
-          hospitalImage.style.backgroundPosition = 'center';
-          hospitalImage.style.backgroundRepeat = 'no-repeat';
-          
-          // Add gradient overlay
-          const overlay = document.createElement('div');
-          overlay.className = 'image-overlay';
-          hospitalImage.appendChild(overlay);
-      };
-      
-      img.onerror = function() {
-          // Image failed to load
-          hospitalImage.innerHTML = `
-              <div class="image-error">
-                  <i class="fas fa-image"></i>
-                  <p>تصویر بیمارستان در دسترس نیست</p>
-              </div>
-          `;
-          hospitalImage.style.backgroundImage = 'linear-gradient(to bottom, var(--bg-tertiary), var(--bg-secondary))';
-      };
-      
-      // Open panel and center map
-      closeAllPanels();
-      hospitalPanel.classList.add('open');
-      
-      // Center the map on the hospital with proper padding
-      map.setView(hospital.coords, 16, {
-          animate: true,
-          duration: 1,
-          paddingTopLeft: [300, 0]
-      });
-      
-      // Close any open popup for this hospital
-      if (hospitalMarkers[hospital.id]) {
-          hospitalMarkers[hospital.id].closePopup();
-      }
-  }
-
-  function showRoutePanel(hospitalId) {
     const hospital = hospitals.find(h => h.id === hospitalId);
-    if (!hospital || !userLocation || !isInBorujerd) {
-      showNotification('لطفاً ابتدا موقعیت خود را مشخص کنید و مطمئن شوید در بروجرد هستید', 3000, 'error');
-      return;
-    }
+    if (!hospital) return;
     
     selectedHospital = hospital;
     
+    // Update hospital info
+    document.getElementById('hospital-name').textContent = hospital.name;
+    document.getElementById('hospital-address').textContent = hospital.address;
+    document.getElementById('hospital-phone').textContent = hospital.phone;
+    document.getElementById('hospital-description').textContent = hospital.description;
+    
+    // Update badges
+    document.getElementById('hospital-type-badge').textContent = hospital.type;
+    document.getElementById('hospital-emergency-badge').style.display = hospital.emergency ? 'flex' : 'none';
+    
+    // Update specialties list
+    const specialtiesList = document.getElementById('specialties-list');
+    specialtiesList.innerHTML = '';
+    hospital.specialties.forEach(spec => {
+      const li = document.createElement('li');
+      li.textContent = spec;
+      specialtiesList.appendChild(li);
+    });
+    
+    // Handle hospital image with loading and error states
+    const hospitalImage = document.getElementById('hospital-image');
+    const imageContainer = document.querySelector('.hospital-image-container');
+    
+    // Clear previous content
+    hospitalImage.innerHTML = '';
+    hospitalImage.style.backgroundImage = 'none';
+    
+    // Add loading state
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'image-loading';
+    loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    hospitalImage.appendChild(loadingDiv);
+    
+    // Create new image element to test loading
+    const img = new Image();
+    img.src = hospital.photo;
+    
+    img.onload = function() {
+      // Image loaded successfully
+      hospitalImage.innerHTML = '';
+      hospitalImage.style.backgroundImage = `url('${hospital.photo}')`;
+      hospitalImage.style.backgroundSize = 'cover';
+      hospitalImage.style.backgroundPosition = 'center';
+      hospitalImage.style.backgroundRepeat = 'no-repeat';
+      
+      // Add gradient overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'image-overlay';
+      hospitalImage.appendChild(overlay);
+    };
+    
+    img.onerror = function() {
+      // Image failed to load
+      hospitalImage.innerHTML = `
+        <div class="image-error">
+          <i class="fas fa-image"></i>
+          <p>تصویر بیمارستان در دسترس نیست</p>
+        </div>
+      `;
+      hospitalImage.style.backgroundImage = 'linear-gradient(to bottom, var(--bg-tertiary), var(--bg-secondary))';
+    };
+    
+    // Open panel and center map
+    closeAllPanels();
+    hospitalPanel.classList.add('open');
+    
+    // Center the map on the hospital with proper padding
+    map.setView(hospital.coords, 16, {
+      animate: true,
+      duration: 1,
+      paddingTopLeft: [300, 0]
+    });
+    
+    // Close any open popup for this hospital
+    if (hospitalMarkers[hospital.id]) {
+      hospitalMarkers[hospital.id].closePopup();
+    }
+  }
+
+  function drawRoute(start, end, mode = 'walk') {
     if (routingControl) {
       map.removeControl(routingControl);
       routingControl = null;
@@ -573,8 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     routingControl = L.Routing.control({
       waypoints: [
-        L.latLng(userLocation.lat, userLocation.lng),
-        L.latLng(hospital.coords[0], hospital.coords[1])
+        L.latLng(start.lat, start.lng),
+        L.latLng(end[0], end[1])
       ],
       routeWhileDragging: false,
       showAlternatives: false,
@@ -582,14 +570,17 @@ document.addEventListener('DOMContentLoaded', () => {
       draggableWaypoints: false,
       fitSelectedRoutes: true,
       lineOptions: {
-        styles: [{color: currentTheme === 'dark' ? '#3b82f6' : '#2563eb', opacity: 0.8, weight: 6}]
+        styles: [{ 
+          color: currentTheme === 'dark' ? '#3b82f6' : '#2563eb', 
+          opacity: 0.8, 
+          weight: 6 
+        }]
       },
       createMarker: () => null,
       collapsible: false,
-      position: 'topleft',
       router: new L.Routing.osrmv1({
         serviceUrl: 'https://router.project-osrm.org/route/v1',
-        profile: currentTransportMode === 'walk' ? 'foot' : (currentTransportMode === 'bike' ? 'bike' : 'car')
+        profile: mode === 'walk' ? 'foot' : (mode === 'bike' ? 'bike' : 'car')
       })
     }).addTo(map);
     
@@ -610,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryItem.className = 'route-instruction-item summary';
       summaryItem.innerHTML = `
         <i class="fas fa-info-circle"></i>
-        <span>مسیر پیشنهادی از موقعیت فعلی شما به ${hospital.name}</span>
+        <span>مسیر پیشنهادی از موقعیت فعلی شما به ${selectedHospital.name}</span>
       `;
       instructionsContainer.appendChild(summaryItem);
       
@@ -656,13 +647,33 @@ document.addEventListener('DOMContentLoaded', () => {
       endItem.className = 'route-instruction-item end';
       endItem.innerHTML = `
         <i class="fas fa-flag-checkered"></i>
-        <span>${hospital.name}</span>
+        <span>${selectedHospital.name}</span>
       `;
       instructionsContainer.appendChild(endItem);
     });
+  }
+
+  function showRoutePanel(hospitalId) {
+    const hospital = hospitals.find(h => h.id === hospitalId);
+    if (!hospital || !userLocation || !isInBorujerd) {
+      showNotification('لطفاً ابتدا موقعیت خود را مشخص کنید و مطمئن شوید در بروجرد هستید', 3000, 'error');
+      return;
+    }
+    
+    selectedHospital = hospital;
+    
+    drawRoute(userLocation, hospital.coords, currentTransportMode);
     
     closeAllPanels();
     routePanel.classList.add('open');
+    
+    // Center the map to show both points
+    const bounds = L.latLngBounds([
+      L.latLng(userLocation.lat, userLocation.lng),
+      L.latLng(hospital.coords[0], hospital.coords[1])
+    ]);
+
+    map.fitBounds(bounds, { padding: [50, 50] });
   }
 
   function closeAllPanels() {
@@ -824,6 +835,7 @@ document.addEventListener('DOMContentLoaded', () => {
           paddingTopLeft: [300, 0]
         });
 
+
         document.querySelectorAll('.popup-btn[data-action="details"]').forEach(btn => {
           btn.addEventListener('click', () => {
             const hospitalId = parseInt(btn.getAttribute('data-id'));
@@ -880,7 +892,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     btnShowRoute.addEventListener('click', () => {
       if (selectedHospital) {
-        showRoutePanel(selectedHospital.id);
+        if (!userLocation) {
+          locateUser();
+          setTimeout(() => {
+            if (userLocation && isInBorujerd) {
+              showRoutePanel(selectedHospital.id);
+            }
+          }, 1000);
+        } else if (isInBorujerd) {
+          showRoutePanel(selectedHospital.id);
+        }
       }
     });
     
